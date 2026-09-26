@@ -1,0 +1,17 @@
+---
+/** Fine gold rule with an open diamond — the only decorative motif. Purely decorative. */
+interface Props {
+  onDark?: boolean;
+  class?: string | undefined;
+}
+
+const { onDark = false, class: className } = Astro.props;
+const tone = onDark ? 'bg-gold-light/70' : 'bg-gold';
+const border = onDark ? 'border-gold-light/70' : 'border-gold';
+---
+
+<div aria-hidden="true" class:list={['flex items-center gap-2.5', className]}>
+  <span class:list={['block h-px w-14', tone]}></span>
+  <span class:list={['block size-[7px] rotate-45 border', border]}></span>
+  <span class:list={['block h-px w-14', tone]}></span>
+</div>

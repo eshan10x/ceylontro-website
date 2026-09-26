@@ -1,0 +1,28 @@
+---
+/** Uppercase text link with a gold rule that extends on hover. */
+interface Props {
+  href: string;
+  onDark?: boolean;
+  class?: string | undefined;
+}
+
+const { href, onDark = false, class: className } = Astro.props;
+---
+
+<a
+  href={href}
+  class:list={[
+    'group inline-flex min-h-11 items-center gap-2.5 font-sans text-button font-semibold uppercase no-underline',
+    onDark ? 'text-cream' : 'text-espresso',
+    className,
+  ]}
+>
+  <slot />
+  <span
+    aria-hidden="true"
+    class:list={[
+      'block h-px w-7 transition-[width] duration-400 ease-out group-hover:w-13 group-focus-visible:w-13',
+      onDark ? 'bg-gold-light' : 'bg-gold',
+    ]}
+  ></span>
+</a>

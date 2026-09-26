@@ -1,0 +1,82 @@
+---
+/**
+ * Pill button. Renders a link when `href` is given, otherwise a <button>.
+ *
+ * Variants (D4 spec):
+ * - primary   espresso fill — Order Online only; one per screen area
+ * - secondary sand fill — View Menu and other second actions
+ * - cream     cream fill on espresso surfaces
+ * - outline-dark  cream outline on espresso surfaces
+ */
+import type { HTMLAttributes } from 'astro/types';
+
+type Variant = 'primary' | 'secondary' | 'cream' | 'outline-dark';
+type Size = 'md' | 'sm' | 'lg';
+
+type Props = {
+  variant?: Variant;
+  size?: Size;
+  href?: string;
+  /** Opens in a new tab and tells screen readers so. */
+  external?: boolean;
+  disabled?: boolean;
+  fullWidth?: boolean;
+  class?: string | undefined;
+} & Omit<HTMLAttributes<'button'>, 'class' | 'disabled'>;
+
+const {
+  variant = 'primary',
+  size = 'md',
+  href,
+  external = false,
+  disabled = false,
+  fullWidth = false,
+  class: className,
+  type = 'button',
+  ...rest
+} = Astro.props;
+
+const variants: Record<Variant, string> = {
+  primary:
+    'bg-espresso text-white shadow-button hover:-translate-y-0.5 hover:bg-espresso-hover hover:shadow-button-hover active:translate-y-px active:bg-espresso-press active:shadow-none',
+  secondary: 'bg-sand text-espresso hover:bg-sand-hover active:bg-sand-press',
+  cream: 'bg-cream text-espresso hover:bg-white active:bg-cream-muted',
+  'outline-dark':
+    'border-cream/50 text-cream hover:border-cream hover:bg-cream/10 active:bg-cream/15',
+};
+
+const sizes: Record<Size, string> = {
+  sm: 'min-h-11 px-4 text-[0.6875rem]',
+  md: 'min-h-[3.375rem] px-8 text-button',
+  lg: 'min-h-14 px-9 text-button',
+};
+
+const classes = [
+  'inline-flex items-center justify-center gap-3 rounded-full border border-transparent',
+  'font-sans font-semibold uppercase tracking-[0.12em] whitespace-nowrap no-underline',
+  'transition-[background-color,color,box-shadow,transform,border-color] duration-350 ease-out',
+  'motion-reduce:transform-none',
+  variants[variant],
+  sizes[size],
+  fullWidth && 'w-full',
+  disabled && 'pointer-events-none !bg-line !text-stone !shadow-none',
+  className,
+];
+---
+
+{
+  href && !disabled ? (
+    <a
+      href={href}
+      class:list={classes}
+      {...(external ? { target: '_blank', rel: 'noopener' } : {})}
+    >
+      <slot />
+      {external && <span class="sr-only"> (opens in a new tab)</span>}
+    </a>
+  ) : (
+    <button type={type} class:list={classes} disabled={disabled} aria-disabled={disabled || undefined} {...rest}>
+      <slot />
+    </button>
+  )
+}

@@ -1,0 +1,158 @@
+---
+/**
+ * Internal style guide: tokens and UI primitives in one place for review.
+ * Not linked from the site navigation and excluded from search engines.
+ */
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Section from '@/components/layout/Section.astro';
+import Container from '@/components/layout/Container.astro';
+import Button from '@/components/ui/Button.astro';
+import OrderButton from '@/components/ui/OrderButton.astro';
+import TextLink from '@/components/ui/TextLink.astro';
+import Pill from '@/components/ui/Pill.astro';
+import DietaryMarker from '@/components/ui/DietaryMarker.astro';
+import Eyebrow from '@/components/ui/Eyebrow.astro';
+import Ornament from '@/components/ui/Ornament.astro';
+import Photo from '@/components/ui/Photo.astro';
+import Logo from '@/components/ui/Logo.astro';
+import MissingData from '@/components/ui/MissingData.astro';
+import SectionHeading from '@/components/ui/SectionHeading.astro';
+
+const colours = [
+  ['white', '#FFFFFF', 'Page'],
+  ['linen', '#FAF7F2', 'Alternate sections'],
+  ['sand', '#F1EBE1', 'Secondary button'],
+  ['line', '#E6DFD4', 'Borders'],
+  ['ink', '#1A1714', 'Text · 17:1'],
+  ['stone', '#6B635A', 'Secondary text · 5.9:1'],
+  ['espresso', '#2B1B12', 'Order Online, dark bands'],
+  ['cream', '#F5EFE4', 'Text on espresso'],
+  ['gold', '#B8892F', 'Lines only'],
+  ['gold-deep', '#8A6420', 'Eyebrows · 5.4:1'],
+  ['gold-light', '#E0BC63', 'Gold on espresso'],
+  ['spice', '#A34E12', 'Spicy · 5.7:1'],
+  ['herb', '#3F5A2C', 'Vegetarian'],
+] as const;
+
+const typeScale = [
+  ['display-xl', 'text-display-xl font-display', 'Flavours'],
+  ['display-l', 'text-display-l font-display italic', 'Good food'],
+  ['h2', 'text-h2 font-display', 'Rice & Noodles'],
+  ['h3', 'text-h3 font-display', 'Ceylontro Kottu Special'],
+  ['dish', 'text-dish font-display', 'Honey Garlic Wings'],
+  ['body', 'text-body', 'Bold flavours. Fresh ingredients. A table where cultures come together.'],
+  ['small', 'text-small text-stone', 'Basmati rice / eggs / dice carrot / green onion / leeks'],
+] as const;
+---
+
+<BaseLayout title="Style guide" noindex>
+  <main id="main">
+    <Section surface="hero">
+      <Container class="flex flex-col gap-6">
+        <SectionHeading eyebrow="B1 · Foundation" level={1} size="display-l">
+          Style <i>guide</i>
+        </SectionHeading>
+        <p class="max-w-xl text-stone">
+          Tokens and primitives from the D4 design spec. Internal page — not linked in the navigation and not indexed.
+        </p>
+      </Container>
+    </Section>
+
+    <Section labelledby="sg-colour">
+      <Container class="flex flex-col gap-10">
+        <SectionHeading id="sg-colour" eyebrow="01" size="h3">Colour</SectionHeading>
+        <ul class="grid grid-cols-2 gap-5 md:grid-cols-4 lg:grid-cols-7">
+          {
+            colours.map(([name, hex, use]) => (
+              <li class="flex flex-col gap-2">
+                <span class="block h-20 rounded-thumb border border-line" style={`background:${hex}`} />
+                <span class="text-small font-semibold text-ink">{name}</span>
+                <span class="text-[0.75rem] text-stone">
+                  {hex} · {use}
+                </span>
+              </li>
+            ))
+          }
+        </ul>
+      </Container>
+    </Section>
+
+    <Section surface="linen" labelledby="sg-type">
+      <Container class="flex flex-col gap-10">
+        <SectionHeading id="sg-type" eyebrow="02" size="h3">Type</SectionHeading>
+        <dl class="flex flex-col">
+          {
+            typeScale.map(([name, cls, sample]) => (
+              <div class="grid gap-2 border-b border-line-soft py-5 md:grid-cols-[12rem_1fr] md:items-baseline">
+                <dt class="label text-stone">{name}</dt>
+                <dd class:list={[cls, 'overflow-hidden text-ellipsis whitespace-nowrap']}>{sample}</dd>
+              </div>
+            ))
+          }
+          <div class="grid gap-2 border-b border-line-soft py-5 md:grid-cols-[12rem_1fr]">
+            <dt class="label text-stone">eyebrow / label</dt>
+            <dd class="flex gap-8"><Eyebrow as="span">House favourites</Eyebrow><span class="label text-stone">Rice &amp; Noodles</span></dd>
+          </div>
+        </dl>
+      </Container>
+    </Section>
+
+    <Section labelledby="sg-buttons">
+      <Container class="flex flex-col gap-10">
+        <SectionHeading id="sg-buttons" eyebrow="03" size="h3">Buttons &amp; links</SectionHeading>
+        <div class="flex flex-wrap items-center gap-4">
+          <OrderButton />
+          <Button href="/menu" variant="secondary">View Menu</Button>
+          <Button disabled>Unavailable</Button>
+          <OrderButton size="sm" />
+          <TextLink href="/menu">See the full menu</TextLink>
+        </div>
+        <div class="grain surface-dark on-dark flex flex-wrap items-center gap-4 rounded-card p-8">
+          <div class="relative z-10 flex flex-wrap items-center gap-4">
+            <OrderButton onDark />
+            <Button href="/menu" variant="outline-dark">View Menu</Button>
+            <TextLink href="/our-story" onDark>Read our story</TextLink>
+          </div>
+        </div>
+        <p class="text-small text-stone">Hover and Tab through these to check hover and focus states.</p>
+      </Container>
+    </Section>
+
+    <Section surface="linen" labelledby="sg-pills">
+      <Container class="flex flex-col gap-10">
+        <SectionHeading id="sg-pills" eyebrow="04" size="h3">Pills, markers, missing data</SectionHeading>
+        <div class="flex flex-wrap gap-2">
+          <Pill href="#sg-pills">Appetizers</Pill>
+          <Pill href="#sg-pills" active>Rice &amp; Noodles</Pill>
+          <Pill href="#sg-pills">Devilled Items</Pill>
+          <Pill href="#sg-pills">Wings Special</Pill>
+        </div>
+        <div class="flex flex-wrap gap-2">
+          <Pill size="sm">Chicken</Pill><Pill size="sm">Beef</Pill><Pill size="sm">Seafood</Pill><Pill size="sm">Mix or Seafood</Pill>
+        </div>
+        <div class="flex flex-wrap items-center gap-6">
+          <DietaryMarker kind="spicy" />
+          <DietaryMarker kind="vegetarian" />
+          <MissingData label="Price" force />
+        </div>
+      </Container>
+    </Section>
+
+    <Section labelledby="sg-photo">
+      <Container class="flex flex-col gap-10">
+        <SectionHeading id="sg-photo" eyebrow="05" size="h3">Photo shapes &amp; ornament</SectionHeading>
+        <div class="grid grid-cols-2 items-end gap-6 md:grid-cols-5">
+          <Photo alt="Placeholder: arch 3:4" shape="arch" ratio="3 / 4" caption="Arch 3:4" showCaption elevated />
+          <Photo alt="Placeholder: rounded 4:3" shape="rounded" ratio="4 / 3" caption="4:3" showCaption />
+          <Photo alt="Placeholder: 1:1 thumbnail" shape="thumb" ratio="1 / 1" caption="Thumb" showCaption />
+          <Photo alt="Placeholder: round side dish" shape="circle" ratio="1 / 1" ring elevated />
+          <Photo alt="Placeholder: story 3:2" shape="rounded" ratio="3 / 2" caption="3:2" showCaption />
+        </div>
+        <div class="flex items-center gap-10">
+          <Ornament />
+          <Logo size={72} />
+        </div>
+      </Container>
+    </Section>
+  </main>
+</BaseLayout>

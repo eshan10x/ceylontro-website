@@ -1,0 +1,14 @@
+---
+/** Small uppercase line above a heading. */
+interface Props {
+  as?: 'p' | 'span' | 'div';
+  onDark?: boolean;
+  class?: string | undefined;
+}
+
+const { as: Tag = 'p', onDark = false, class: className } = Astro.props;
+---
+
+<Tag class:list={['eyebrow', onDark ? 'text-gold-light' : 'text-gold-deep', className]}>
+  <slot />
+</Tag>

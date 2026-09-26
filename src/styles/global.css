@@ -1,0 +1,264 @@
+/*
+ * Ceylontro Kitchen — global styles and design tokens.
+ * Every value here comes from the "D4 design spec" tab of the project plan.
+ * Change a token here and it updates everywhere; components never hard-code colours or sizes.
+ */
+
+@import 'tailwindcss';
+
+/* Self-hosted fonts (Latin subset, font-display: swap). */
+@import '@fontsource/cormorant-garamond/latin-500.css';
+@import '@fontsource/cormorant-garamond/latin-500-italic.css';
+@import '@fontsource/manrope/latin-400.css';
+@import '@fontsource/manrope/latin-500.css';
+@import '@fontsource/manrope/latin-600.css';
+
+@theme {
+  /* Reset Tailwind's default palette so only brand colours exist. */
+  --color-*: initial;
+  --color-transparent: transparent;
+  --color-current: currentColor;
+
+  /* Surfaces */
+  --color-white: #ffffff;
+  --color-linen: #faf7f2;
+  --color-sand: #f1ebe1;
+  --color-sand-hover: #e8decf;
+  --color-sand-press: #ddd0bd;
+  --color-line: #e6dfd4;
+  --color-line-soft: #efe9df;
+
+  /* Text */
+  --color-ink: #1a1714;
+  --color-stone: #6b635a;
+
+  /* Espresso (primary action, dark bands, footer) */
+  --color-espresso: #2b1b12;
+  --color-espresso-hover: #3d2719;
+  --color-espresso-press: #1e130c;
+  --color-espresso-glow: #4a2f1e;
+  --color-cream: #f5efe4;
+  --color-cream-muted: #cfc4b6;
+
+  /* Gold — lines and small details only, never body text on white */
+  --color-gold: #b8892f;
+  --color-gold-deep: #8a6420;
+  --color-gold-light: #e0bc63;
+
+  /* Markers */
+  --color-spice: #a34e12;
+  --color-herb: #3f5a2c;
+
+  /* Photo placeholder */
+  --color-photo-a: #dcc7a8;
+  --color-photo-b: #e8dac6;
+  --color-photo-c: #f2ebe0;
+
+  /* Fonts */
+  --font-display: 'Cormorant Garamond', 'Iowan Old Style', 'Palatino Linotype', Georgia, serif;
+  --font-sans: 'Manrope', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+
+  /* Type scale — fluid between 390 px and 1440 px viewports */
+  --text-display-xl: clamp(3.625rem, 1.0714rem + 10.4762vw, 10.5rem);
+  --text-display-xl--line-height: 0.9;
+  --text-display-xl--letter-spacing: -0.015em;
+  --text-display-l: clamp(3rem, 1.3286rem + 6.8571vw, 7.5rem);
+  --text-display-l--line-height: 0.92;
+  --text-display-l--letter-spacing: -0.015em;
+  --text-h2: clamp(2.5rem, 1.3857rem + 4.5714vw, 5.5rem);
+  --text-h2--line-height: 0.95;
+  --text-h2--letter-spacing: -0.015em;
+  --text-h3: clamp(2rem, 1.35rem + 2.6667vw, 3.75rem);
+  --text-h3--line-height: 1;
+  --text-h3--letter-spacing: -0.01em;
+  --text-dish: clamp(1.5rem, 1.3607rem + 0.5714vw, 1.875rem);
+  --text-dish--line-height: 1.08;
+  --text-body: clamp(1rem, 0.9768rem + 0.0952vw, 1.0625rem);
+  --text-body--line-height: 1.7;
+  --text-small: clamp(0.875rem, 0.8518rem + 0.0952vw, 0.9375rem);
+  --text-small--line-height: 1.6;
+  --text-eyebrow: 0.75rem;
+  --text-eyebrow--line-height: 1.3;
+  --text-eyebrow--letter-spacing: 0.22em;
+  --text-label: 0.6875rem;
+  --text-label--line-height: 1.3;
+  --text-label--letter-spacing: 0.2em;
+  --text-button: 0.8125rem;
+  --text-button--line-height: 1;
+  --text-button--letter-spacing: 0.12em;
+
+  /* Breakpoints (spec: 768 / 1024 / 1440 / 1920) */
+  --breakpoint-*: initial;
+  --breakpoint-md: 48rem;
+  --breakpoint-lg: 64rem;
+  --breakpoint-xl: 90rem;
+  --breakpoint-2xl: 120rem;
+
+  /* Layout */
+  --container-content: 81rem; /* 1296 px */
+
+  /* Radius */
+  --radius-logo: 0.375rem;
+  --radius-thumb: 1.25rem;
+  --radius-photo: 1.5rem;
+  --radius-card: 2rem;
+
+  /* Elevation */
+  --shadow-soft: 0 50px 100px -50px rgb(43 27 18 / 0.5), 0 14px 30px -20px rgb(43 27 18 / 0.25);
+  --shadow-button: 0 16px 36px -18px rgb(43 27 18 / 0.7);
+  --shadow-button-hover: 0 24px 44px -20px rgb(43 27 18 / 0.8);
+  --shadow-bar: 0 12px 24px -20px rgb(43 27 18 / 0.5);
+  --shadow-logo: 0 8px 20px -10px rgb(43 27 18 / 0.45);
+
+  /* Motion */
+  --ease-soft: cubic-bezier(0.2, 0.7, 0.2, 1);
+  --default-transition-duration: 350ms;
+}
+
+/* ---------- Base ---------- */
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    text-rendering: optimizeLegibility;
+    scroll-behavior: smooth;
+    scroll-padding-top: 6rem;
+  }
+
+  body {
+    @apply bg-white font-sans text-body text-ink antialiased;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    @apply font-display font-medium;
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  ::selection {
+    @apply bg-espresso text-cream;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-ink);
+    outline-offset: 4px;
+  }
+
+  .on-dark :focus-visible {
+    outline-color: var(--color-cream);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+/* ---------- Utilities ---------- */
+
+/* Arch shape used for photo frames — the brand's signature, from the arch in the logo. */
+@utility rounded-arch {
+  border-radius: 999px 999px 0 0;
+}
+
+/* Page gutters: 20 px mobile, 40 px tablet, 72 px desktop. */
+@utility gutter-x {
+  padding-inline: 1.25rem;
+
+  @media (width >= 48rem) {
+    padding-inline: 2.5rem;
+  }
+
+  @media (width >= 64rem) {
+    padding-inline: 4.5rem;
+  }
+}
+
+/* Section rhythm: 56–80 mobile, 96 tablet, 120–150 desktop. */
+@utility section-y {
+  padding-block: 4.5rem;
+
+  @media (width >= 48rem) {
+    padding-block: 6rem;
+  }
+
+  @media (width >= 64rem) {
+    padding-block: 8.75rem;
+  }
+}
+
+/* Uppercase label styles. */
+@utility eyebrow {
+  font-family: var(--font-sans);
+  font-weight: 600;
+  font-size: var(--text-eyebrow);
+  line-height: var(--text-eyebrow--line-height);
+  letter-spacing: var(--text-eyebrow--letter-spacing);
+  text-transform: uppercase;
+}
+
+@utility label {
+  font-family: var(--font-sans);
+  font-weight: 600;
+  font-size: var(--text-label);
+  line-height: var(--text-label--line-height);
+  letter-spacing: var(--text-label--letter-spacing);
+  text-transform: uppercase;
+}
+
+/* Film grain overlay. Apply to a positioned section; content above it needs `relative z-10`. */
+@utility grain {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 5;
+    pointer-events: none;
+    opacity: 0.12;
+    mix-blend-mode: multiply;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .55 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+}
+
+/* Surface backgrounds from the spec. */
+@utility surface-hero {
+  background: radial-gradient(ellipse 60% 55% at 50% 58%, #f1e6d6 0%, var(--color-linen) 45%, var(--color-white) 85%);
+}
+
+@utility surface-dark {
+  background: radial-gradient(
+    ellipse 60% 80% at 50% 100%,
+    var(--color-espresso-glow) 0%,
+    var(--color-espresso) 55%,
+    var(--color-espresso-press) 100%
+  );
+  color: var(--color-cream);
+}
+
+@utility surface-photo {
+  background: radial-gradient(
+    ellipse 60% 52% at 50% 50%,
+    var(--color-photo-a) 0%,
+    var(--color-photo-b) 50%,
+    var(--color-photo-c) 100%
+  );
+}

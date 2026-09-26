@@ -1,0 +1,52 @@
+---
+/**
+ * Eyebrow + heading pair. The `emphasis` slot renders in italic for the
+ * one-word italic accent used across the Arch direction.
+ */
+import Eyebrow from './Eyebrow.astro';
+import Ornament from './Ornament.astro';
+
+interface Props {
+  eyebrow?: string;
+  level?: 1 | 2 | 3;
+  size?: 'display-xl' | 'display-l' | 'h2' | 'h3';
+  align?: 'start' | 'center';
+  ornament?: boolean;
+  onDark?: boolean;
+  id?: string;
+  class?: string | undefined;
+}
+
+const {
+  eyebrow,
+  level = 2,
+  size = 'h2',
+  align = 'start',
+  ornament = false,
+  onDark = false,
+  id,
+  class: className,
+} = Astro.props;
+
+const Tag = `h${level}` as 'h1' | 'h2' | 'h3';
+const sizes = {
+  'display-xl': 'text-display-xl',
+  'display-l': 'text-display-l',
+  h2: 'text-h2',
+  h3: 'text-h3',
+} as const;
+---
+
+<div
+  class:list={[
+    'flex flex-col gap-4 md:gap-5',
+    align === 'center' ? 'items-center text-center' : 'items-start',
+    className,
+  ]}
+>
+  {ornament && <Ornament onDark={onDark} />}
+  {eyebrow && <Eyebrow onDark={onDark}>{eyebrow}</Eyebrow>}
+  <Tag id={id} class:list={[sizes[size], onDark ? 'text-cream' : 'text-ink']}>
+    <slot />
+  </Tag>
+</div>

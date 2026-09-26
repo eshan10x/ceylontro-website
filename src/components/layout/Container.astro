@@ -1,0 +1,12 @@
+---
+/** Centres content at the 1296 px content width with responsive gutters. */
+interface Props {
+  class?: string | undefined;
+}
+
+const { class: className } = Astro.props;
+---
+
+<div class:list={['gutter-x mx-auto w-full max-w-[calc(var(--container-content)+9rem)]', className]}>
+  <slot />
+</div>

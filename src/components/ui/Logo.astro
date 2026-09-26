@@ -1,0 +1,31 @@
+---
+/**
+ * The supplied Ceylontro Kitchen logo, used exactly as supplied (no crop, recolour or redraw).
+ * Replace `ceylontro-logo.jpg` with the flat/transparent master when the owner provides it.
+ */
+import { Image } from 'astro:assets';
+import logo from '@/assets/brand/ceylontro-logo.jpg';
+
+interface Props {
+  /** Rendered size in CSS pixels (square). */
+  size?: number;
+  /** Empty when the logo sits inside a link that already has a label. */
+  alt?: string;
+  priority?: boolean;
+  class?: string | undefined;
+}
+
+const { size = 44, alt = 'Ceylontro Kitchen', priority = false, class: className } = Astro.props;
+---
+
+<Image
+  src={logo}
+  alt={alt}
+  width={size}
+  height={size}
+  densities={[1, 2]}
+  format="webp"
+  quality={85}
+  loading={priority ? 'eager' : 'lazy'}
+  class:list={['block rounded-logo shadow-logo', className]}
+/>

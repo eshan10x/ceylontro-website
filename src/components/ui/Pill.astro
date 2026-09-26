@@ -1,0 +1,36 @@
+---
+/**
+ * Rounded pill for category navigation and option/size lists.
+ * - With `href`: a navigation link (`current` marks the active category).
+ * - Without: a static label (e.g. protein options, which are information only).
+ */
+interface Props {
+  href?: string;
+  active?: boolean;
+  size?: 'sm' | 'md';
+  class?: string | undefined;
+}
+
+const { href, active = false, size = 'md', class: className } = Astro.props;
+
+const classes = [
+  'inline-flex shrink-0 items-center whitespace-nowrap rounded-full border font-sans font-medium no-underline',
+  'transition-colors duration-350 ease-out',
+  size === 'md' ? 'min-h-11 px-[1.125rem] text-[0.875rem]' : 'min-h-[2.125rem] px-3.5 text-[0.8125rem]',
+  active ? 'border-espresso bg-espresso text-white' : 'border-line bg-white text-ink',
+  href && !active && 'hover:border-gold',
+  className,
+];
+---
+
+{
+  href ? (
+    <a href={href} class:list={classes} aria-current={active ? 'true' : undefined}>
+      <slot />
+    </a>
+  ) : (
+    <span class:list={classes}>
+      <slot />
+    </span>
+  )
+}

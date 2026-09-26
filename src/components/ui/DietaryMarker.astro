@@ -1,0 +1,27 @@
+---
+/**
+ * Spicy / vegetarian marker. Only render it where the owner's menu or the owner confirms it.
+ * Colour is never the only signal: the word is always shown.
+ */
+export type DietaryKind = 'spicy' | 'vegetarian';
+
+interface Props {
+  kind: DietaryKind;
+  class?: string | undefined;
+}
+
+const { kind, class: className } = Astro.props;
+
+const labels: Record<DietaryKind, string> = { spicy: 'Spicy', vegetarian: 'Vegetarian' };
+---
+
+<span
+  class:list={[
+    'label inline-flex items-center gap-1.5 tracking-[0.12em]',
+    kind === 'spicy' ? 'text-spice' : 'text-herb',
+    className,
+  ]}
+>
+  <span aria-hidden="true" class="block size-1.5 rounded-full bg-current"></span>
+  {labels[kind]}
+</span>

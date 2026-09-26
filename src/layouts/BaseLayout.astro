@@ -1,0 +1,63 @@
+---
+/**
+ * Base document: metadata, fonts, skip link. Every page uses this layout.
+ */
+import '@/styles/global.css';
+import cormorant500 from '@fontsource/cormorant-garamond/files/cormorant-garamond-latin-500-normal.woff2?url';
+import manrope400 from '@fontsource/manrope/files/manrope-latin-400-normal.woff2?url';
+import { site } from '@/config/site';
+
+interface Props {
+  /** Page title; the brand name is appended automatically. Omit on the home page. */
+  title?: string;
+  description?: string;
+  /** Keep the page out of search results (style guide, drafts). */
+  noindex?: boolean;
+  /** Optional social image, absolute or root-relative path. */
+  ogImage?: string;
+}
+
+const { title, description = site.description, noindex = false, ogImage } = Astro.props;
+
+const fullTitle = title ? `${title} — ${site.name}` : `${site.name} — ${site.tagline}`;
+const canonical = Astro.site ? new URL(Astro.url.pathname, Astro.site).href : undefined;
+const ogImageUrl = ogImage && Astro.site ? new URL(ogImage, Astro.site).href : undefined;
+---
+
+<!doctype html>
+<html lang={site.lang}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    {noindex && <meta name="robots" content="noindex, nofollow" />}
+    {canonical && <link rel="canonical" href={canonical} />}
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={site.name} />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:locale" content={site.locale} />
+    {canonical && <meta property="og:url" content={canonical} />}
+    {ogImageUrl && <meta property="og:image" content={ogImageUrl} />}
+    <meta name="twitter:card" content={ogImageUrl ? 'summary_large_image' : 'summary'} />
+
+    <meta name="theme-color" content="#ffffff" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+
+    <link rel="preload" href={cormorant500} as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href={manrope400} as="font" type="font/woff2" crossorigin />
+    <slot name="head" />
+  </head>
+  <body>
+    <a
+      href="#main"
+      class="label fixed top-3 left-3 z-50 -translate-y-24 rounded-full bg-espresso px-5 py-3 text-white transition-transform focus:translate-y-0"
+    >
+      Skip to content
+    </a>
+    <slot />
+  </body>
+</html>

@@ -1,0 +1,48 @@
+---
+/**
+ * Page section with a brand surface.
+ * - white / linen: plain backgrounds
+ * - hero: warm radial linen with grain (hero and page intros)
+ * - dark: espresso band with grain (one per page)
+ */
+type Surface = 'white' | 'linen' | 'hero' | 'dark';
+
+interface Props {
+  as?: 'section' | 'div' | 'header' | 'footer' | 'article';
+  surface?: Surface;
+  /** Apply the standard vertical rhythm. */
+  padded?: boolean;
+  id?: string;
+  label?: string;
+  labelledby?: string;
+  class?: string | undefined;
+}
+
+const {
+  as: Tag = 'section',
+  surface = 'white',
+  padded = true,
+  id,
+  label,
+  labelledby,
+  class: className,
+} = Astro.props;
+
+const surfaces: Record<Surface, string> = {
+  white: 'bg-white',
+  linen: 'bg-linen',
+  hero: 'surface-hero grain',
+  dark: 'surface-dark grain on-dark',
+};
+---
+
+<Tag
+  id={id}
+  aria-label={label}
+  aria-labelledby={labelledby}
+  class:list={['relative', surfaces[surface], padded && 'section-y', className]}
+>
+  <div class="relative z-10">
+    <slot />
+  </div>
+</Tag>

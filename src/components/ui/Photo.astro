@@ -1,0 +1,99 @@
+---
+/**
+ * Food and interior photography with a fixed shape and aspect ratio.
+ *
+ * - With `image`: an optimised, responsive <picture> (AVIF + WebP) from astro:assets.
+ * - Without: the sand placeholder at the same size, so layouts never shift when real
+ *   photos are added. The placeholder is labelled for screen readers with `alt`.
+ *
+ * Never pass stock or AI images off as the restaurant's own food.
+ */
+import type { ImageMetadata } from 'astro';
+import { Picture } from 'astro:assets';
+
+type Shape = 'arch' | 'rounded' | 'thumb' | 'circle' | 'square';
+
+interface Props {
+  image?: ImageMetadata | null;
+  alt: string;
+  /** CSS aspect-ratio, e.g. "4 / 5". */
+  ratio?: string;
+  shape?: Shape;
+  /** Responsive `sizes` attribute for the real image. */
+  sizes?: string;
+  /** Load eagerly with high priority (the hero image only). */
+  priority?: boolean;
+  /** Adds the soft photo shadow. */
+  elevated?: boolean;
+  /** Thick white ring used for overlapping photos (the round side dish, detail arch). */
+  ring?: boolean;
+  /** Placeholder caption, shown only in development and the style guide. */
+  caption?: string;
+  showCaption?: boolean;
+  class?: string | undefined;
+}
+
+const {
+  image,
+  alt,
+  ratio = '4 / 5',
+  shape = 'rounded',
+  sizes = '(min-width: 64rem) 40vw, 100vw',
+  priority = false,
+  elevated = false,
+  ring = false,
+  caption,
+  showCaption = import.meta.env.DEV,
+  class: className,
+} = Astro.props;
+
+const shapes: Record<Shape, string> = {
+  arch: 'rounded-arch',
+  rounded: 'rounded-photo',
+  thumb: 'rounded-thumb',
+  circle: 'rounded-full',
+  square: '',
+};
+
+const frame = [
+  'relative block overflow-hidden',
+  shapes[shape],
+  elevated && 'shadow-soft',
+  ring && 'border-[6px] border-white md:border-8',
+  className,
+];
+---
+
+{
+  image ? (
+    <div class:list={frame} style={`aspect-ratio: ${ratio}`}>
+      <Picture
+        src={image}
+        alt={alt}
+        formats={['avif', 'webp']}
+        sizes={sizes}
+        widths={[320, 480, 640, 800, 1024, 1280, 1600]}
+        loading={priority ? 'eager' : 'lazy'}
+        fetchpriority={priority ? 'high' : 'auto'}
+        decoding={priority ? 'sync' : 'async'}
+        class="absolute inset-0 size-full object-cover"
+      />
+    </div>
+  ) : (
+    <div class:list={[...frame, 'surface-photo']} style={`aspect-ratio: ${ratio}`} role="img" aria-label={alt}>
+      <span
+        aria-hidden="true"
+        class="absolute top-1/2 left-1/2 aspect-square h-1/2 max-h-[80%] -translate-x-1/2 -translate-y-1/2 rounded-full border border-gold-deep/25"
+      />
+      <span
+        aria-hidden="true"
+        class="absolute top-1/2 left-1/2 aspect-square h-[34%] max-h-[55%] -translate-x-1/2 -translate-y-1/2 rounded-full border border-gold-deep/15"
+      />
+      {showCaption && caption && (
+        <span aria-hidden="true" class="label absolute bottom-4 left-1/2 -translate-x-1/2 text-[0.625rem] whitespace-nowrap text-stone">
+          {caption}
+        </span>
+      )}
+    </div>
+  )
+}

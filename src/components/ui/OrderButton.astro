@@ -1,0 +1,30 @@
+---
+/**
+ * The site's primary conversion button. Points at the real ordering URL once it is
+ * set in `src/config/site.ts`; until then it goes to the ordering section on Contact.
+ */
+import Button from './Button.astro';
+import { orderLink } from '@/config/site';
+
+interface Props {
+  size?: 'sm' | 'md' | 'lg';
+  /** Use the cream variant on espresso surfaces. */
+  onDark?: boolean;
+  fullWidth?: boolean;
+  class?: string | undefined;
+}
+
+const { size = 'md', onDark = false, fullWidth = false, class: className } = Astro.props;
+const { href, external } = orderLink();
+---
+
+<Button
+  href={href}
+  external={external}
+  variant={onDark ? 'cream' : 'primary'}
+  size={size}
+  fullWidth={fullWidth}
+  class={className}
+>
+  Order Online
+</Button>

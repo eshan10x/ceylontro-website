@@ -1,0 +1,30 @@
+---
+/**
+ * Marks a business fact that the owner has not supplied yet.
+ * Visible only in development and the style guide; renders nothing in production,
+ * so a missing fact is simply absent on the live site — never guessed.
+ */
+interface Props {
+  label: string;
+  force?: boolean;
+  onDark?: boolean;
+  class?: string | undefined;
+}
+
+const { label, force = false, onDark = false, class: className } = Astro.props;
+const visible = force || import.meta.env.DEV;
+---
+
+{
+  visible && (
+    <span
+      class:list={[
+        'label inline-flex items-center self-start rounded-full border border-dashed px-3.5 py-2 tracking-[0.1em]',
+        onDark ? 'border-gold-light/60 text-gold-light' : 'border-gold text-gold-deep',
+        className,
+      ]}
+    >
+      {label} — awaiting owner
+    </span>
+  )
+}
