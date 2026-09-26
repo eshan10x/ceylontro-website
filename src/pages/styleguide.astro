@@ -3,7 +3,7 @@
  * Internal style guide: tokens and UI primitives in one place for review.
  * Not linked from the site navigation and excluded from search engines.
  */
-import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageLayout from '@/layouts/PageLayout.astro';
 import Section from '@/components/layout/Section.astro';
 import Container from '@/components/layout/Container.astro';
 import Button from '@/components/ui/Button.astro';
@@ -52,9 +52,8 @@ const typeScale = [
 ] as const;
 ---
 
-<BaseLayout title="Style guide" noindex>
-  <main id="main">
-    <Section surface="hero">
+<PageLayout title="Style guide" noindex overlayHeader>
+    <Section surface="hero" class="pt-header">
       <Container class="flex flex-col gap-6">
         <SectionHeading eyebrow="B1 · Foundation" level={1} size="display-l">
           Style <i>guide</i>
@@ -192,5 +191,4 @@ const typeScale = [
         </p>
       </Container>
     </Section>
-  </main>
-</BaseLayout>
+</PageLayout>

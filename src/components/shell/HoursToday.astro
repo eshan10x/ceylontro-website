@@ -1,0 +1,26 @@
+---
+/**
+ * Today's opening hours. Every supplied day is rendered hidden; `src/scripts/shell.ts`
+ * reveals the one matching the visitor's weekday. Renders nothing until hours exist.
+ */
+import { restaurant } from '@/data/restaurant';
+import { JS_DAY, WEEKDAYS, formatPeriods } from '@/lib/format';
+
+interface Props {
+  class?: string | undefined;
+}
+
+const { class: className } = Astro.props;
+const days = WEEKDAYS.flatMap((day) => {
+  const periods = restaurant.hours[day];
+  return periods === null ? [] : [{ day: JS_DAY[day], text: periods.length ? `Open today ${formatPeriods(periods)}` : 'Closed today' }];
+});
+---
+
+{
+  days.map(({ day, text }) => (
+    <p data-weekday={day} hidden class={className}>
+      {text}
+    </p>
+  ))
+}

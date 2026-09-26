@@ -118,11 +118,26 @@
 /* ---------- Base ---------- */
 
 @layer base {
+  /* Header height at the top of the page: 68 px mobile, 104 px desktop (D4 spec). */
+  :root {
+    --header-h: 4.25rem;
+
+    @media (width >= 64rem) {
+      --header-h: 6.5rem;
+    }
+  }
+
   html {
     -webkit-text-size-adjust: 100%;
     text-rendering: optimizeLegibility;
     scroll-behavior: smooth;
     scroll-padding-top: 6rem;
+    scrollbar-gutter: stable;
+  }
+
+  /* The open mobile drawer is a modal; lock the page behind it. */
+  html:has(dialog[open]) {
+    overflow: hidden;
   }
 
   body {
@@ -191,15 +206,23 @@
 
 /* Section rhythm: 56–80 mobile, 96 tablet, 120–150 desktop. */
 @utility section-y {
-  padding-block: 4.5rem;
+  --section-pad: 4.5rem;
+  padding-block: var(--section-pad);
+  padding-top: calc(var(--section-pad) + var(--header-offset, 0px));
 
   @media (width >= 48rem) {
-    padding-block: 6rem;
+    --section-pad: 6rem;
   }
 
   @media (width >= 64rem) {
-    padding-block: 8.75rem;
+    --section-pad: 8.75rem;
   }
+}
+
+/* Top padding for a page's first section when the header overlays it (Home hero, page intros). */
+@utility pt-header {
+  --header-offset: var(--header-h);
+  padding-top: calc(var(--header-h) + var(--section-pad, 0px));
 }
 
 /* Uppercase label styles. */

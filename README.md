@@ -2,7 +2,7 @@
 
 *Flavours Beyond Borders.* This is the website for Ceylontro Kitchen, a Canadian restaurant with Sri Lankan, Asian and Western influences.
 
-The site is static, built with **Astro 7**, **TypeScript** (strictest settings) and **Tailwind CSS 4**. It ships no client-side JavaScript so far.
+The site is static, built with **Astro 7**, **TypeScript** (strictest settings) and **Tailwind CSS 4**. The only client-side JavaScript is the site shell script (under 0.5 KB gzipped).
 
 ## Requirements
 
@@ -26,6 +26,7 @@ src/
   assets/brand/        Supplied logo (swap in the flat/transparent master when available)
   components/
     layout/            Section (brand surfaces), Container (widths and gutters)
+    shell/             SiteHeader, MobileNav (drawer), MenuToggle, HoursToday, SiteFooter
     ui/                Button, OrderButton, TextLink, Pill, DietaryMarker, Eyebrow,
                        SectionHeading, Ornament, Photo, Logo, MissingData
   assets/photos/       The owner's photographs (empty until supplied)
@@ -39,8 +40,12 @@ src/
     images.ts          Resolves photo slots to optimised images
     report.ts          Missing-facts report and data validation
     types.ts           Content types
-  layouts/BaseLayout   <head> metadata, font preloads, skip link
-  pages/               index (temporary until B4), styleguide (internal, noindex)
+  layouts/
+    BaseLayout         <head> metadata, font preloads, skip link
+    PageLayout         BaseLayout + header, drawer, <main>, footer (use this for pages)
+  lib/format.ts        Hours, address, phone and current-page helpers
+  pages/               index (temporary until B4), 404, styleguide (internal, noindex)
+  scripts/shell.ts     Header scroll state, drawer fallback, today's hours
   styles/global.css    Design tokens (@theme) and base styles
 scripts/
   missing-facts.ts     Runs the report (used by `npm run build`)
@@ -60,6 +65,13 @@ The owner's facts all go in `src/data/`, and none of it requires touching compon
 - **Restaurant facts:** replace a `null` in `restaurant.ts` with the owner's value. Hours are in 24-hour `HH:MM` format, and an empty list means closed that day.
 - **Photos:** add the file to `src/assets/photos/` and set `file` in `photos.ts`.
 - **Checking progress:** `npm run report` lists what is still missing. The build fails only on broken data, such as a duplicate id, a bad time format or a photo file that doesn't exist.
+
+## Site shell
+
+- Every page uses `PageLayout`. Pass `overlayHeader` when the page opens with a hero, and give that first section the `pt-header` class so its content starts below the header.
+- The header is transparent over a hero and turns solid after 40 px of scroll; without JavaScript it stays solid.
+- The mobile drawer is a native modal `<dialog>` (focus stays inside, Esc closes it). It opens with the HTML `command` attribute, with a fallback in `shell.ts` for older browsers.
+- Footer and drawer blocks for address, hours, phone, email and social links appear on their own once the data exists in `restaurant.ts`.
 
 ## Content rules
 

@@ -1,0 +1,140 @@
+---
+/**
+ * Espresso footer (D3 Home footer, D4 "Footer").
+ * Desktop: brand · Explore · Visit · Follow + Order Online (always the last column).
+ * Mobile: one centred column.
+ * Address, hours, phone, email and social links render only once the owner supplies them;
+ * in development a "awaiting owner" badge marks each gap.
+ */
+import Logo from '@/components/ui/Logo.astro';
+import OrderButton from '@/components/ui/OrderButton.astro';
+import Ornament from '@/components/ui/Ornament.astro';
+import MissingData from '@/components/ui/MissingData.astro';
+import { navigation, site } from '@/config/site';
+import { restaurant } from '@/data/restaurant';
+import { addressLines, groupHours, phoneHref } from '@/lib/format';
+
+const { address, phone, email, social } = restaurant;
+const hours = groupHours(restaurant.hours);
+const year = new Date().getFullYear();
+const dev = import.meta.env.DEV;
+const hasVisit = Boolean(address || phone || email || hours.length) || dev;
+const hasFollow = social.length > 0 || dev;
+
+const heading = 'label text-cream-muted';
+const link =
+  'text-cream no-underline decoration-gold-light/70 underline-offset-4 transition-colors duration-350 hover:text-white hover:underline';
+---
+
+<footer class="on-dark bg-espresso text-cream">
+  <div class="mx-auto flex max-w-[calc(var(--container-content)+9rem)] flex-col gap-14 px-5 pt-16 pb-9 md:px-10 md:pt-20 lg:px-18 lg:pt-24 lg:pb-10">
+    <div class="grid justify-items-center gap-10 text-center md:grid-cols-2 md:justify-items-start md:gap-x-10 md:gap-y-12 md:text-left lg:grid-cols-4">
+      <div class="flex flex-col items-center gap-5 md:items-start">
+        <a href="/" class="rounded-logo" aria-label={`${site.name} — home`}>
+          <Logo size={112} alt="" class="size-24 shadow-[0_20px_40px_-18px_rgb(0_0_0/0.9)] lg:size-28" />
+        </a>
+        <p class="font-display text-[1.75rem] leading-[1.05] font-medium tracking-[-0.015em] italic lg:text-[1.875rem]">
+          {site.tagline}
+        </p>
+      </div>
+
+      <nav aria-labelledby="footer-explore" class="flex flex-col items-center gap-3 md:items-start">
+        <h2 id="footer-explore" class:list={[heading, 'sr-only md:not-sr-only']}>Explore</h2>
+        <ul class="flex flex-wrap justify-center gap-x-5 md:flex-col md:gap-y-1">
+          {
+            navigation.map((item) => (
+              <li>
+                <a href={item.href} class:list={[link, 'inline-flex min-h-11 items-center text-[0.875rem] font-medium']}>
+                  {item.label}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </nav>
+
+      {
+        hasVisit && (
+          <section aria-labelledby="footer-visit" class="flex flex-col items-center gap-4 text-small md:items-start">
+            <h2 id="footer-visit" class={heading}>Visit</h2>
+            {address ? (
+              <address class="not-italic">
+                {address.directionsUrl ? (
+                  <a href={address.directionsUrl} class={link} target="_blank" rel="noopener">
+                    {addressLines(address).map((line) => (
+                      <span class="block">{line}</span>
+                    ))}
+                    <span class="sr-only"> (directions, opens in a new tab)</span>
+                  </a>
+                ) : (
+                  addressLines(address).map((line) => <span class="block">{line}</span>)
+                )}
+              </address>
+            ) : (
+              <MissingData label="Address" onDark />
+            )}
+            {hours.length ? (
+              <dl class="grid grid-cols-[auto_auto] gap-x-4 gap-y-1 text-left">
+                {hours.map((row) => (
+                  <>
+                    <dt class="text-cream-muted">
+                      <span aria-hidden="true">{row.label}</span>
+                      <span class="sr-only">{row.longLabel}</span>
+                    </dt>
+                    <dd>{row.text}</dd>
+                  </>
+                ))}
+              </dl>
+            ) : (
+              <MissingData label="Hours" onDark />
+            )}
+            {phone ? (
+              <a href={phoneHref(phone)} class:list={[link, 'inline-flex min-h-11 items-center']}>
+                {phone}
+              </a>
+            ) : (
+              <MissingData label="Phone" onDark />
+            )}
+            {email ? (
+              <a href={`mailto:${email}`} class:list={[link, 'inline-flex min-h-11 items-center break-all']}>
+                {email}
+              </a>
+            ) : (
+              <MissingData label="Email" onDark />
+            )}
+          </section>
+        )
+      }
+
+      <div class="flex flex-col items-center gap-4 md:items-start lg:col-start-4">
+        {
+          hasFollow && (
+            <section aria-labelledby="footer-follow" class="flex flex-col items-center gap-3 md:items-start">
+              <h2 id="footer-follow" class={heading}>Follow</h2>
+              {social.length ? (
+                <ul class="flex flex-wrap justify-center gap-x-5 md:flex-col md:gap-y-1">
+                  {social.map((item) => (
+                    <li>
+                      <a href={item.url} class:list={[link, 'inline-flex min-h-11 items-center text-[0.875rem] font-medium']} target="_blank" rel="noopener me">
+                        {item.label}
+                        <span class="sr-only"> (opens in a new tab)</span>
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <MissingData label="Social links" onDark />
+              )}
+            </section>
+          )
+        }
+        <OrderButton onDark class="mt-2" />
+      </div>
+    </div>
+
+    <div class="flex flex-col-reverse items-center gap-5 border-t border-cream/15 pt-7 md:flex-row md:justify-between">
+      <p class="text-[0.8125rem] text-cream-muted">© {year} {site.name}</p>
+      <Ornament onDark />
+    </div>
+  </div>
+</footer>

@@ -1,0 +1,37 @@
+---
+/**
+ * Standard page: header, drawer, <main> and footer around the page content.
+ * Pages whose first section is a hero pass `overlayHeader` and start that section with
+ * the `pt-header` utility; other pages get a spacer so content starts below the header.
+ */
+import BaseLayout from './BaseLayout.astro';
+import SiteHeader from '@/components/shell/SiteHeader.astro';
+import MobileNav from '@/components/shell/MobileNav.astro';
+import SiteFooter from '@/components/shell/SiteFooter.astro';
+
+interface Props {
+  title?: string;
+  description?: string;
+  noindex?: boolean;
+  ogImage?: string;
+  /** Header is transparent over the first section until the page scrolls. */
+  overlayHeader?: boolean;
+}
+
+const { overlayHeader = false, ...meta } = Astro.props;
+---
+
+<BaseLayout {...meta}>
+  <slot name="head" slot="head" />
+  <SiteHeader overlay={overlayHeader} />
+  <MobileNav />
+  <main id="main" tabindex="-1" class="outline-none">
+    {!overlayHeader && <div aria-hidden="true" class="h-(--header-h)"></div>}
+    <slot />
+  </main>
+  <SiteFooter />
+</BaseLayout>
+
+<script>
+  import '@/scripts/shell';
+</script>

@@ -40,4 +40,10 @@ export const copy = {
     source: 'draft',
     usedIn: 'Default search and social description',
   },
+  notFoundHeading: { text: 'This page is off the menu', source: 'draft', usedIn: '404 page title' },
+  notFoundBody: {
+    text: 'The page you were looking for has moved or doesn’t exist. The food, happily, is right where we left it.',
+    source: 'draft',
+    usedIn: '404 page',
+  },
 } as const satisfies Record<string, CopyLine>;

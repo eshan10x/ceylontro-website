@@ -1,0 +1,157 @@
+---
+/**
+ * Site header (D4 spec, "Header" and "Motion").
+ *
+ * - Mobile and tablet (< 1024 px): logo · Order Online · menu button, 68 px.
+ * - Desktop: nav left · logo centred · Order Online right; 104 px at the top of the
+ *   page, 72 px once the page has scrolled 40 px.
+ * - `overlay`: transparent over the page's hero until scrolled, then solid.
+ *   Without `overlay` (or without JavaScript) the header is always solid.
+ *
+ * The scroll state is set by `src/scripts/shell.ts` from a sentinel 40 px down the page.
+ */
+import Logo from '@/components/ui/Logo.astro';
+import OrderButton from '@/components/ui/OrderButton.astro';
+import MenuToggle from './MenuToggle.astro';
+import { navigation, site } from '@/config/site';
+import { isCurrent } from '@/lib/format';
+
+interface Props {
+  overlay?: boolean;
+}
+
+const { overlay = false } = Astro.props;
+const pathname = Astro.url.pathname;
+---
+
+<div data-header-sentinel aria-hidden="true" class="pointer-events-none absolute top-10 left-0 h-px w-px"></div>
+
+<header id="site-header" class="site-header fixed inset-x-0 top-0 z-40" data-overlay={overlay ? 'true' : 'false'}>
+  <div
+    class="site-header__bar mx-auto flex max-w-[calc(var(--container-content)+9rem)] items-center gap-2.5 px-4 md:px-10 lg:grid lg:grid-cols-[1fr_auto_1fr] lg:gap-6 lg:px-18"
+  >
+    <nav aria-label="Main" class="hidden lg:block">
+      <ul class="flex items-center gap-7 xl:gap-9">
+        {
+          navigation.map((link) => {
+            const current = isCurrent(link.href, pathname);
+            return (
+              <li>
+                <a
+                  href={link.href}
+                  aria-current={current ? 'page' : undefined}
+                  class:list={['nav-link', current ? 'text-gold-deep' : 'text-ink']}
+                >
+                  {link.label}
+                </a>
+              </li>
+            );
+          })
+        }
+      </ul>
+    </nav>
+
+    <a href="/" class="site-header__logo shrink-0 rounded-logo lg:justify-self-center" aria-label={`${site.name} — home`}>
+      <Logo size={60} alt="" priority class="size-10 lg:size-15" />
+    </a>
+
+    <div class="flex flex-1 items-center justify-end gap-2.5 lg:gap-0">
+      <OrderButton size="sm" class="lg:min-h-12 lg:px-6.5 lg:text-button" />
+      <MenuToggle mode="open" class="lg:hidden" />
+    </div>
+  </div>
+</header>
+
+<noscript>
+  <style>
+    /* Without JavaScript the scroll state never updates, so keep the header solid. */
+    .site-header::before {
+      opacity: 1 !important;
+    }
+  </style>
+</noscript>
+
+<style>
+  /* Solid backdrop sits on a pseudo-element so it can fade in without repainting the bar. */
+  .site-header::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: rgb(255 255 255 / 0.92);
+    border-bottom: 1px solid var(--color-line-soft);
+    backdrop-filter: saturate(1.4) blur(14px);
+    -webkit-backdrop-filter: saturate(1.4) blur(14px);
+    opacity: 1;
+    transition:
+      opacity 300ms var(--ease-soft),
+      box-shadow 300ms var(--ease-soft);
+  }
+
+  .site-header[data-overlay='true']:not([data-scrolled='true'])::before {
+    opacity: 0;
+  }
+
+  .site-header[data-scrolled='true']::before {
+    box-shadow: var(--shadow-bar);
+  }
+
+  .site-header__bar {
+    height: 4.25rem;
+    transition: height 300ms var(--ease-soft);
+  }
+
+  .site-header__logo :global(img) {
+    transition: transform 300ms var(--ease-soft);
+    transform-origin: center;
+  }
+
+  @media (width >= 64rem) {
+    .site-header__bar {
+      height: 6.5rem;
+    }
+
+    .site-header[data-scrolled='true'] .site-header__bar {
+      height: 4.5rem;
+    }
+
+    .site-header[data-scrolled='true'] .site-header__logo :global(img) {
+      transform: scale(0.7334); /* 60 → 44 px */
+    }
+  }
+
+  /* Desktop nav link: 14 px Manrope 500, gold hairline grows from the centre on hover. */
+  .nav-link {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    min-height: 2.75rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    line-height: 1;
+    text-decoration: none;
+    transition: color 350ms ease;
+  }
+
+  .nav-link::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0.625rem;
+    height: 1px;
+    background: var(--color-gold);
+    transform: scaleX(0);
+    transition: transform 400ms var(--ease-soft);
+  }
+
+  .nav-link:hover::after,
+  .nav-link:focus-visible::after,
+  .nav-link[aria-current='page']::after {
+    transform: scaleX(1);
+  }
+
+  .nav-link:hover {
+    color: var(--color-gold-deep);
+  }
+</style>

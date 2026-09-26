@@ -1,0 +1,171 @@
+---
+/**
+ * Mobile and tablet navigation drawer (D3 "MobileNav", D4 "Mobile drawer").
+ *
+ * A native modal <dialog>: the page behind is inert, focus stays inside, Esc closes it
+ * and focus returns to the menu button. It opens and closes through the HTML `command`
+ * attributes on MenuToggle, with a small fallback in `src/scripts/shell.ts`.
+ *
+ * The "Today" block shows hours and phone only when the owner has supplied them.
+ */
+import Logo from '@/components/ui/Logo.astro';
+import OrderButton from '@/components/ui/OrderButton.astro';
+import Photo from '@/components/ui/Photo.astro';
+import MissingData from '@/components/ui/MissingData.astro';
+import MenuToggle from './MenuToggle.astro';
+import HoursToday from './HoursToday.astro';
+import { navigation, site } from '@/config/site';
+import { restaurant } from '@/data/restaurant';
+import { getPhoto } from '@/data/images';
+import { hasAnyHours, isCurrent, phoneHref } from '@/lib/format';
+
+const pathname = Astro.url.pathname;
+const { phone } = restaurant;
+const hours = hasAnyHours(restaurant.hours);
+const showToday = hours || Boolean(phone) || import.meta.env.DEV;
+const dish = getPhoto('nav-dish');
+---
+
+<dialog id="site-drawer" class="drawer" aria-label="Menu">
+  <div class="drawer__panel surface-drawer grain flex min-h-full flex-col">
+    <div class="relative z-10 flex h-17 shrink-0 items-center gap-2.5 px-4 md:px-10">
+      <a href="/" class="rounded-logo" aria-label={`${site.name} — home`}>
+        <Logo size={60} alt="" class="size-10" />
+      </a>
+      <span class="flex-1"></span>
+      <MenuToggle mode="close" />
+    </div>
+
+    <nav aria-label="Main" class="relative z-10 px-6 pt-7 md:px-10">
+      <ol class="flex flex-col">
+        {
+          navigation.map((link, index) => {
+            const current = isCurrent(link.href, pathname);
+            return (
+              <li class="drawer__item" style={`--i: ${index}`}>
+                <a
+                  href={link.href}
+                  aria-current={current ? 'page' : undefined}
+                  class:list={[
+                    'group flex items-baseline gap-4.5 border-b border-line py-4 no-underline',
+                    current ? 'text-gold-deep' : 'text-ink',
+                  ]}
+                >
+                  <span aria-hidden="true" class:list={['label', current ? 'text-gold-deep' : 'text-stone']}>
+                    {String(index + 1).padStart(2, '0')}
+                  </span>
+                  <span
+                    class:list={[
+                      'font-display text-[3rem] leading-none font-medium tracking-[-0.015em] transition-colors duration-350',
+                      current ? 'italic' : 'group-hover:text-gold-deep',
+                    ]}
+                  >
+                    {link.label}
+                  </span>
+                </a>
+              </li>
+            );
+          })
+        }
+      </ol>
+    </nav>
+
+    <div class="drawer__item relative z-10 px-6 pt-7 md:px-10" style="--i: 4">
+      <OrderButton size="lg" fullWidth class="min-h-[3.625rem] md:w-auto" />
+    </div>
+
+    {
+      showToday && (
+        <div class="drawer__item relative z-10 flex flex-col items-start gap-2.5 px-6 pt-7 md:px-10" style="--i: 5">
+          <p class="label text-stone">Today</p>
+          {hours ? <HoursToday class="text-small text-ink" /> : <MissingData label="Hours today" />}
+          {phone ? (
+            <a href={phoneHref(phone)} class="inline-flex min-h-11 items-center text-small font-semibold text-espresso underline decoration-gold underline-offset-4">
+              Call {phone}
+            </a>
+          ) : (
+            <MissingData label="Phone" />
+          )}
+        </div>
+      )
+    }
+
+    <div class="flex-1"></div>
+
+    <div class="relative z-10 flex items-end justify-between gap-6 px-6 pt-10 pb-8 md:px-10">
+      <p class="font-display text-[1.625rem] leading-[1.05] font-medium tracking-[-0.015em] italic">
+        Flavours<br />Beyond Borders
+      </p>
+      <Photo image={dish.image} alt={dish.image ? dish.alt : ''} shape="arch" ratio="92 / 118" elevated showCaption={false} class="w-23 shrink-0" />
+    </div>
+  </div>
+</dialog>
+
+<style>
+  /* Full-screen sheet: fades and settles in, links follow with an 60 ms stagger. */
+  .drawer {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    max-width: none;
+    height: 100dvh;
+    max-height: none;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    background: var(--color-white);
+    color: var(--color-ink);
+    opacity: 0;
+    transform: translateY(-0.5rem);
+    transition:
+      opacity 350ms var(--ease-soft),
+      transform 350ms var(--ease-soft),
+      overlay 350ms allow-discrete,
+      display 350ms allow-discrete;
+  }
+
+  .drawer[open] {
+    opacity: 1;
+    transform: none;
+  }
+
+  @starting-style {
+    .drawer[open] {
+      opacity: 0;
+      transform: translateY(-0.5rem);
+    }
+  }
+
+  .drawer::backdrop {
+    background: transparent;
+  }
+
+  .drawer__item {
+    transition:
+      opacity 500ms var(--ease-soft),
+      transform 500ms var(--ease-soft);
+    transition-delay: calc(80ms + var(--i, 0) * 60ms);
+  }
+
+  @starting-style {
+    .drawer[open] .drawer__item {
+      opacity: 0;
+      transform: translateY(0.75rem);
+    }
+  }
+
+  .surface-drawer {
+    background: radial-gradient(ellipse 100% 60% at 80% 100%, #f1e6d6 0%, var(--color-linen) 60%, var(--color-white) 100%);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .drawer,
+    .drawer[open],
+    .drawer__item {
+      transform: none;
+      transition-delay: 0ms;
+    }
+  }
+</style>

@@ -1,0 +1,78 @@
+---
+/**
+ * Round sand button that opens or closes the mobile drawer (D4: 44 px, sand fill).
+ * Uses the HTML `command` attributes; `src/scripts/shell.ts` adds a fallback for
+ * browsers that don't support them yet.
+ */
+interface Props {
+  mode: 'open' | 'close';
+  class?: string | undefined;
+}
+
+const { mode, class: className } = Astro.props;
+const open = mode === 'open';
+---
+
+<button
+  type="button"
+  class:list={['menu-toggle', !open && 'is-close', className]}
+  commandfor="site-drawer"
+  command={open ? 'show-modal' : 'close'}
+  aria-haspopup={open ? 'dialog' : undefined}
+  aria-controls="site-drawer"
+  aria-label={open ? 'Open menu' : 'Close menu'}
+  autofocus={!open || undefined}
+>
+  <span aria-hidden="true"></span><span aria-hidden="true"></span>
+</button>
+
+<style>
+  /* Layered so Tailwind utilities on the element (e.g. `lg:hidden`) still win. */
+  @layer components {
+    .menu-toggle {
+      position: relative;
+      flex-shrink: 0;
+      width: 2.75rem;
+      height: 2.75rem;
+      border-radius: 999px;
+      background: var(--color-sand);
+      color: var(--color-ink);
+      cursor: pointer;
+      transition: background-color 350ms ease;
+    }
+
+    .menu-toggle:hover {
+      background: var(--color-sand-hover);
+    }
+
+    .menu-toggle:active {
+      background: var(--color-sand-press);
+    }
+
+    /* Two 16 px lines, 6 px apart; they cross into an × for the close state. */
+    .menu-toggle span {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 1rem;
+      height: 1.5px;
+      margin: -0.75px 0 0 -0.5rem;
+      border-radius: 1px;
+      background: currentColor;
+      transform: translateY(-3.75px);
+      transition: transform 350ms var(--ease-soft);
+    }
+
+    .menu-toggle span:last-child {
+      transform: translateY(3.75px);
+    }
+
+    .menu-toggle.is-close span:first-child {
+      transform: rotate(45deg);
+    }
+
+    .menu-toggle.is-close span:last-child {
+      transform: rotate(-45deg);
+    }
+  }
+</style>

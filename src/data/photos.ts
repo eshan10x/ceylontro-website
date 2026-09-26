@@ -21,6 +21,7 @@ const sitePhotos: Record<string, PhotoEntry> = {
   'story-kitchen': { alt: 'The kitchen at Ceylontro Kitchen', file: null, ratio: '3:2' },
   'story-canadian-journey': { alt: 'Ceylontro Kitchen in Canada', file: null, ratio: '3:2' },
   'contact-dining-room': { alt: 'The Ceylontro Kitchen dining room', file: null, ratio: '4:5 (arch crop)' },
+  'nav-dish': { alt: 'A dish from Ceylontro Kitchen', file: null, ratio: '3:4 (small arch in the mobile menu)' },
 };
 
 /** One entry per menu item and category, derived from the menu so nothing is forgotten. */
