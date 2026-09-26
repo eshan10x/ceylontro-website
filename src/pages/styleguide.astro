@@ -17,6 +17,13 @@ import Photo from '@/components/ui/Photo.astro';
 import Logo from '@/components/ui/Logo.astro';
 import MissingData from '@/components/ui/MissingData.astro';
 import SectionHeading from '@/components/ui/SectionHeading.astro';
+import { menu, findMenuItem } from '@/data/menu';
+import { buildReport } from '@/data/report';
+import { getPhoto } from '@/data/images';
+
+const sample = findMenuItem('special-nasi-goreng');
+const samplePhoto = getPhoto(sample?.image);
+const report = buildReport();
 
 const colours = [
   ['white', '#FFFFFF', 'Page'],
@@ -152,6 +159,37 @@ const typeScale = [
           <Ornament />
           <Logo size={72} />
         </div>
+      </Container>
+    </Section>
+    <Section surface="linen" labelledby="sg-data">
+      <Container class="flex flex-col gap-10">
+        <SectionHeading id="sg-data" eyebrow="06" size="h3">Data layer</SectionHeading>
+        <div class="flex flex-wrap gap-2">
+          {menu.map((category) => <Pill>{category.name} · {category.items.length}</Pill>)}
+        </div>
+        {
+          sample && (
+            <article class="flex max-w-xl gap-5 border-b border-line-soft py-5">
+              <Photo image={samplePhoto.image} alt={samplePhoto.alt} shape="thumb" ratio="1 / 1" class="w-24 shrink-0 self-start" />
+              <div class="flex flex-col gap-2">
+                <h3 class="text-dish">{sample.name}</h3>
+                {sample.description && <p class="text-small text-stone">{sample.description}</p>}
+                {sample.options?.map((group) => (
+                  <p class="text-[0.75rem] font-medium">{group.values.join(' · ')}</p>
+                ))}
+                <div class="flex items-center gap-4">
+                  {sample.tags.map((tag) => <DietaryMarker kind={tag} />)}
+                  {sample.price ?? <MissingData label="Price" force />}
+                </div>
+              </div>
+            </article>
+          )
+        }
+        <p class="text-small text-stone">
+          Missing-facts report: {report.summary.missingFacts} facts missing · {report.summary.questions} questions ·
+          {' '}{report.summary.drafts} draft lines · {report.summary.photosNeeded}/{report.summary.photosTotal} photos needed.
+          Run <code>npm run report</code> for the full list.
+        </p>
       </Container>
     </Section>
   </main>

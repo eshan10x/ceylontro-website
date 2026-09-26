@@ -4,7 +4,7 @@
  *
  * - With `image`: an optimised, responsive <picture> (AVIF + WebP) from astro:assets.
  * - Without: the sand placeholder at the same size, so layouts never shift when real
- *   photos are added. The placeholder is labelled for screen readers with `alt`.
+ *   photos are added. The placeholder is decorative and hidden from screen readers.
  *
  * Never pass stock or AI images off as the restaurant's own food.
  */
@@ -80,7 +80,7 @@ const frame = [
       />
     </div>
   ) : (
-    <div class:list={[...frame, 'surface-photo']} style={`aspect-ratio: ${ratio}`} role="img" aria-label={alt}>
+    <div class:list={[...frame, 'surface-photo']} style={`aspect-ratio: ${ratio}`} aria-hidden="true" data-photo-placeholder>
       <span
         aria-hidden="true"
         class="absolute top-1/2 left-1/2 aspect-square h-1/2 max-h-[80%] -translate-x-1/2 -translate-y-1/2 rounded-full border border-gold-deep/25"
