@@ -11,10 +11,9 @@ import Button from '@/components/ui/Button.astro';
 import TextLink from '@/components/ui/TextLink.astro';
 import { copy } from '@/data/copy';
 
-// The last word of the heading takes the Arch direction's italic accent.
-const words = copy.notFoundHeading.text.split(' ');
-const accent = words.pop();
-const lead = words.join(' ');
+import { splitAccent } from '@/lib/text';
+
+const { lead, accent } = splitAccent(copy.notFoundHeading.text);
 ---
 
 <PageLayout title="Page not found" noindex overlayHeader>
@@ -27,7 +26,7 @@ const lead = words.join(' ');
       </div>
       <Eyebrow class="relative">Error 404</Eyebrow>
       <h1 id="not-found-title" class="relative max-w-[12ch] text-display-l text-ink">
-        {lead} <i>{accent}</i>
+        {lead}{' '}<i>{accent}</i>
       </h1>
       <p class="relative max-w-md text-stone">{copy.notFoundBody.text}</p>
       <div class="relative flex w-full max-w-xs flex-col items-center gap-3 pt-2 md:max-w-none md:flex-row md:justify-center md:gap-8">

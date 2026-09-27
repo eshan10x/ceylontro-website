@@ -7,7 +7,7 @@
  * Pure TypeScript with no Astro imports, so `scripts/missing-facts.ts` can run it with Node.
  */
 import { copy } from './copy.ts';
-import { menu } from './menu.ts';
+import { homeFavourites, homeFavouritesConfirmed, homeFeaturedItem, menu } from './menu.ts';
 import { photos } from './photos.ts';
 import { restaurant } from './restaurant.ts';
 import { story } from './story.ts';
@@ -85,6 +85,21 @@ export function buildReport(options: { photoFileExists?: (file: string) => boole
     }
   }
   if (unpriced) facts.push(`Prices for ${unpriced} of ${items} menu items`);
+
+  // --- Home selections ---
+  for (const tab of homeFavourites) {
+    if (!categoryIds.has(tab.category)) errors.push(`Home favourites use unknown category "${tab.category}".`);
+    if (!tab.items.length || tab.items.length > 4) errors.push(`Home favourites for "${tab.category}" need 1–4 dishes.`);
+    for (const id of tab.items) {
+      if (!itemIds.has(id)) errors.push(`Home favourites use unknown menu item "${id}".`);
+    }
+  }
+  if (!itemIds.has(homeFeaturedItem)) errors.push(`Home featured dish "${homeFeaturedItem}" is not on the menu.`);
+  if (!homeFavouritesConfirmed) {
+    questions.push(
+      `Home "House favourites": confirm the dishes shown (${homeFavourites.map((tab) => tab.items.length).reduce((a, b) => a + b, 0)} picks across ${homeFavourites.length} categories) and the featured dish.`,
+    );
+  }
 
   // --- Story ---
   if (!story.intro) facts.push('Our Story introduction');

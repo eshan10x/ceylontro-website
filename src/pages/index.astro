@@ -1,27 +1,22 @@
 ---
 /**
- * Temporary home page until B4 builds the full Home page; kept out of search results
- * until then. It already uses the site shell with the header over the hero.
+ * Home (D3 "Main" and "HomeDesktop"): hero, house favourites, featured dish, story teaser,
+ * the espresso order band, and the visit teaser (shown once the owner's facts exist).
  */
 import PageLayout from '@/layouts/PageLayout.astro';
-import Section from '@/components/layout/Section.astro';
-import Container from '@/components/layout/Container.astro';
-import SectionHeading from '@/components/ui/SectionHeading.astro';
-import OrderButton from '@/components/ui/OrderButton.astro';
-import Button from '@/components/ui/Button.astro';
-import { site } from '@/config/site';
+import HomeHero from '@/components/home/HomeHero.astro';
+import HouseFavourites from '@/components/home/HouseFavourites.astro';
+import FeaturedDish from '@/components/home/FeaturedDish.astro';
+import StoryTeaser from '@/components/home/StoryTeaser.astro';
+import OrderBand from '@/components/home/OrderBand.astro';
+import VisitTeaser from '@/components/home/VisitTeaser.astro';
 ---
 
-<PageLayout noindex overlayHeader>
-  <Section surface="hero" padded={false} class="pt-header">
-    <Container class="flex min-h-[calc(100svh-var(--header-h))] flex-col items-center justify-center gap-10 py-20 text-center">
-      <SectionHeading eyebrow={site.name} level={1} size="display-xl" align="center">
-        Flavours <i>Beyond</i> Borders
-      </SectionHeading>
-      <div class="flex w-full max-w-sm flex-col gap-3 md:max-w-none md:flex-row md:justify-center">
-        <OrderButton />
-        <Button href="/menu" variant="secondary">View Menu</Button>
-      </div>
-    </Container>
-  </Section>
+<PageLayout overlayHeader>
+  <HomeHero />
+  <HouseFavourites />
+  <FeaturedDish />
+  <StoryTeaser />
+  <OrderBand />
+  <VisitTeaser />
 </PageLayout>

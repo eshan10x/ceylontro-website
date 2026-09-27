@@ -1,0 +1,27 @@
+---
+/**
+ * The page's one espresso band (D3 Home "Order online"): the owner's own line
+ * "Good food brings people together", a fine gold arch behind it, and Order Online.
+ */
+import Section from '@/components/layout/Section.astro';
+import Container from '@/components/layout/Container.astro';
+import Eyebrow from '@/components/ui/Eyebrow.astro';
+import OrderButton from '@/components/ui/OrderButton.astro';
+import { copy } from '@/data/copy';
+---
+
+<Section surface="dark" labelledby="order-band-title" padded={false} class="py-20 md:py-28 lg:py-[9.375rem]">
+  <div
+    aria-hidden="true"
+    class="rounded-arch pointer-events-none absolute top-10 left-1/2 aspect-[5/6] w-[18.75rem] -translate-x-1/2 border border-b-0 border-gold-light/35 md:w-[26rem] lg:top-[4.375rem] lg:aspect-[28/31] lg:w-[35rem]"
+  >
+  </div>
+  <Container class="relative flex flex-col items-center gap-6 text-center lg:gap-9">
+    <Eyebrow onDark>Order online</Eyebrow>
+    <h2 id="order-band-title" class="max-w-[14ch] text-display-l text-cream italic lg:max-w-[18ch] lg:text-[clamp(5rem,7.2vw,6.5rem)]">
+      {copy.goodFood.text}
+    </h2>
+    <p class="label text-cream-muted">{copy.freshlyFried.text}</p>
+    <OrderButton onDark fullWidth class="md:w-auto" />
+  </Container>
+</Section>

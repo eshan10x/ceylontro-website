@@ -7,7 +7,7 @@
  * - `vegetarian` is set only when the owner confirms it (the printed leaf icon is still unconfirmed).
  * - Prices are `null` until the owner supplies them.
  */
-import type { MenuCategory, MenuItemWithCategory } from './types.ts';
+import type { MenuCategory, MenuItemWithCategory, MenuOptionGroup } from './types.ts';
 
 const PROTEIN = { label: 'Protein', values: ['Chicken', 'Beef', 'Seafood', 'Mix or Seafood'] } as const;
 const PROTEIN_NOTE = '"Mix or Seafood" protein option: what does it mean?';
@@ -308,17 +308,42 @@ export function allMenuItems(): MenuItemWithCategory[] {
   );
 }
 
-/** Items shown in the Home page "House favourites" rail, in order. */
-export const houseFavourites: readonly string[] = [
-  'ceylontro-kottu-special',
-  'special-nasi-goreng',
-  'fried-rice',
-  'pilawoos-cheese-kottu',
+/**
+ * Home page "House favourites": one tab per category, up to four dishes each, in order.
+ * This selection is a design pick until the owner confirms it (listed by the missing-facts report).
+ */
+export const homeFavourites: readonly { category: string; items: readonly string[] }[] = [
+  {
+    category: 'rice-noodles',
+    items: ['ceylontro-kottu-special', 'special-nasi-goreng', 'fried-rice', 'pilawoos-cheese-kottu'],
+  },
+  {
+    category: 'devilled-items',
+    items: ['chicken-devilled', 'chilli-chicken', 'hot-buttered-cuttlefish', 'devilled-pork'],
+  },
+  {
+    category: 'wings-special',
+    items: ['ceylontro-chef-specials-wings', 'honey-garlic-wings', 'chicken-chilli-wings', 'parmesan-caesar-wings'],
+  },
+  {
+    category: 'handhelds',
+    items: ['ceylontro-classic-beef-burger', 'crispy-chicken-burger', 'nashville-hot-chicken'],
+  },
 ];
+export const homeFavouritesConfirmed = false;
 
 /** Featured dish on the Home page. */
 export const homeFeaturedItem = 'ceylontro-kottu-special';
 
 export function findMenuItem(id: string): MenuItemWithCategory | undefined {
   return allMenuItems().find((item) => item.id === id);
+}
+
+export function findCategory(id: string): MenuCategory | undefined {
+  return menu.find((category) => category.id === id);
+}
+
+/** An item's own option groups, or the ones its category shares. */
+export function optionsFor(item: MenuItemWithCategory): readonly MenuOptionGroup[] {
+  return item.options ?? findCategory(item.category)?.sharedOptions ?? [];
 }

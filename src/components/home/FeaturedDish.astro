@@ -1,0 +1,120 @@
+---
+/**
+ * Featured dish (D3 Home): a large 1:1 overhead photo with a smaller arch detail overlapping
+ * its lower-left corner, beside the dish's name, printed description, options and price.
+ * Options and price appear only when the menu data has them.
+ */
+import Container from '@/components/layout/Container.astro';
+import Eyebrow from '@/components/ui/Eyebrow.astro';
+import Photo from '@/components/ui/Photo.astro';
+import Pill from '@/components/ui/Pill.astro';
+import DietaryMarker from '@/components/ui/DietaryMarker.astro';
+import MissingData from '@/components/ui/MissingData.astro';
+import OrderButton from '@/components/ui/OrderButton.astro';
+import { findMenuItem, homeFeaturedItem, optionsFor } from '@/data/menu';
+import { getPhoto } from '@/data/images';
+import { spaceSlashes } from '@/lib/text';
+
+const item = findMenuItem(homeFeaturedItem);
+const overhead = getPhoto('featured-overhead');
+const detail = getPhoto('featured-detail');
+const options = item ? optionsFor(item) : [];
+---
+
+{
+  item && (
+    <section aria-labelledby="featured-title" class="bg-white pb-20 md:pb-24 lg:pt-10 lg:pb-[10.625rem]">
+      <Container class="grid items-center gap-y-5 lg:grid-cols-12 lg:gap-x-6">
+        <div class="featured-media relative w-full md:mx-auto md:max-w-[34rem] lg:order-2 lg:col-span-6 lg:col-start-7 lg:max-w-none">
+          <Photo
+            image={overhead.image}
+            alt={overhead.alt}
+            shape="rounded"
+            ratio="1 / 1"
+            sizes="(min-width: 81rem) 600px, (min-width: 64rem) 46vw, 100vw"
+            caption="Photo · Overhead · 1:1"
+            class="featured-media__main lg:rounded-[1.75rem]"
+          />
+          <Photo
+            image={detail.image}
+            alt={detail.alt}
+            shape="arch"
+            ratio="11 / 15"
+            ring
+            elevated
+            sizes="(min-width: 64rem) 220px, 124px"
+            class="featured-media__detail"
+          />
+        </div>
+
+        <div class="flex w-full flex-col items-start gap-4.5 md:mx-auto md:max-w-[34rem] lg:order-1 lg:col-span-5 lg:max-w-none lg:gap-6.5">
+          <Eyebrow>{item.categoryName} · Featured</Eyebrow>
+          <h2 id="featured-title" class="text-h3 text-ink">
+            {item.name}
+          </h2>
+          {item.description && <p class="max-w-md text-small text-stone">{spaceSlashes(item.description)}</p>}
+          {item.tags.length > 0 && (
+            <div class="flex gap-4">
+              {item.tags.map((tag) => (
+                <DietaryMarker kind={tag} />
+              ))}
+            </div>
+          )}
+          {options.map((group) => (
+            <div class="flex flex-col gap-2.5">
+              <p class="label text-stone">{group.label}</p>
+              <ul class="flex flex-wrap gap-2" role="list">
+                {group.values.map((value) => (
+                  <li>
+                    <Pill size="sm">{value}</Pill>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+          <div class="flex flex-wrap items-center gap-x-6 gap-y-4 pt-1">
+            <OrderButton />
+            {item.price ? <p class="font-display text-dish text-ink">{item.price}</p> : <MissingData label="Price" />}
+          </div>
+        </div>
+      </Container>
+    </section>
+  )
+}
+
+<style is:global>
+  /* Mobile: detail arch sits over the bottom-left of the overhead photo, below its edge. */
+  .featured-media {
+    padding-bottom: 3.75rem;
+  }
+
+  .featured-media__detail {
+    position: absolute;
+    left: 1.125rem;
+    bottom: 0;
+    width: 7.75rem;
+  }
+
+  @media (width >= 48rem) {
+    .featured-media__detail {
+      width: 11rem;
+    }
+  }
+
+  /* Desktop: square photo on the right, detail overlaps its lower-left corner. */
+  @media (width >= 64rem) {
+    .featured-media {
+      padding: 0 0 2.5rem;
+    }
+
+    .featured-media__main {
+      width: 91%;
+      margin-left: auto;
+    }
+
+    .featured-media__detail {
+      left: 0;
+      width: 33%;
+    }
+  }
+</style>

@@ -1,0 +1,81 @@
+---
+/**
+ * Dish arch card (D4 "Dish arch card"): arch photo, dish name, then the spicy marker when
+ * the menu shows one, otherwise the category. Hover and focus lift the photo 8 px and turn
+ * the name italic. Links to the dish on the Menu page.
+ */
+import Photo from '@/components/ui/Photo.astro';
+import DietaryMarker from '@/components/ui/DietaryMarker.astro';
+import { getPhoto } from '@/data/images';
+import type { MenuItemWithCategory } from '@/data/types';
+
+interface Props {
+  item: MenuItemWithCategory;
+  /** Stagger: pushes the card up so neighbouring arches sit at different heights. */
+  raised?: boolean;
+  sizes?: string;
+  class?: string | undefined;
+}
+
+const { item, raised = false, sizes = '(min-width: 64rem) 22vw, 210px', class: className } = Astro.props;
+const photo = getPhoto(item.image);
+const spicy = item.tags.includes('spicy');
+---
+
+<a href={`/menu#${item.id}`} class:list={['dish-card group', raised && 'dish-card--raised', className]}>
+  <Photo
+    image={photo.image}
+    alt=""
+    shape="arch"
+    ratio="3 / 4"
+    sizes={sizes}
+    caption={item.name}
+    class="dish-card__photo"
+  />
+  <div class="flex flex-col items-center gap-3 text-center">
+    <h3 class="dish-card__name text-dish text-ink">{item.name}</h3>
+    {spicy ? <DietaryMarker kind="spicy" /> : <span class="label text-stone">{item.categoryName}</span>}
+  </div>
+</a>
+
+<style is:global>
+  .dish-card {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    color: var(--color-ink);
+    text-decoration: none;
+    border-radius: 999px 999px var(--radius-thumb) var(--radius-thumb);
+  }
+
+  .dish-card--raised {
+    padding-bottom: 2.5rem;
+  }
+
+  .dish-card__photo {
+    transition: transform 600ms ease;
+  }
+
+  .dish-card:hover .dish-card__photo,
+  .dish-card:focus-visible .dish-card__photo {
+    transform: translateY(-0.5rem);
+  }
+
+  .dish-card:hover .dish-card__name,
+  .dish-card:focus-visible .dish-card__name {
+    font-style: italic;
+  }
+
+  @media (width >= 64rem) {
+    .dish-card--raised {
+      padding-bottom: 3.75rem;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .dish-card:hover .dish-card__photo,
+    .dish-card:focus-visible .dish-card__photo {
+      transform: none;
+    }
+  }
+</style>

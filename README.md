@@ -2,7 +2,7 @@
 
 *Flavours Beyond Borders.* This is the website for Ceylontro Kitchen, a Canadian restaurant with Sri Lankan, Asian and Western influences.
 
-The site is static, built with **Astro 7**, **TypeScript** (strictest settings) and **Tailwind CSS 4**. The only client-side JavaScript is the site shell script (under 0.5 KB gzipped).
+The site is static, built with **Astro 7**, **TypeScript** (strictest settings) and **Tailwind CSS 4**. Client-side JavaScript is limited to the site shell and the Home favourites tabs (under 1 KB gzipped on Home).
 
 ## Requirements
 
@@ -27,6 +27,8 @@ src/
   components/
     layout/            Section (brand surfaces), Container (widths and gutters)
     shell/             SiteHeader, MobileNav (drawer), MenuToggle, HoursToday, SiteFooter
+    home/              HomeHero, HouseFavourites, FeaturedDish, StoryTeaser, OrderBand, VisitTeaser
+    menu/              DishArchCard (shared with the Menu page in B5)
     ui/                Button, OrderButton, TextLink, Pill, DietaryMarker, Eyebrow,
                        SectionHeading, Ornament, Photo, Logo, MissingData
   assets/photos/       The owner's photographs (empty until supplied)
@@ -44,8 +46,11 @@ src/
     BaseLayout         <head> metadata, font preloads, skip link
     PageLayout         BaseLayout + header, drawer, <main>, footer (use this for pages)
   lib/format.ts        Hours, address, phone and current-page helpers
-  pages/               index (temporary until B4), 404, styleguide (internal, noindex)
-  scripts/shell.ts     Header scroll state, drawer fallback, today's hours
+  lib/text.ts          Italic-accent headings, menu description spacing
+  pages/               index (Home), 404, styleguide (internal, noindex)
+  scripts/
+    shell.ts           Header scroll state, drawer fallback, today's hours
+    favourites-tabs.ts Home "House favourites" category tabs
   styles/global.css    Design tokens (@theme) and base styles
 scripts/
   missing-facts.ts     Runs the report (used by `npm run build`)
@@ -61,6 +66,7 @@ scripts/
 
 The owner's facts all go in `src/data/`, and none of it requires touching components.
 
+- **Home selections:** `homeFavourites` and `homeFeaturedItem` at the bottom of `menu.ts` choose the dishes on Home. Set `homeFavouritesConfirmed = true` once the owner approves them.
 - **Menu:** edit `menu.ts`. Set `price` (e.g. `'$14.99'`) and add `'vegetarian'` to `tags` only when the owner confirms it. Delete a `confirm` note once its question is answered.
 - **Restaurant facts:** replace a `null` in `restaurant.ts` with the owner's value. Hours are in 24-hour `HH:MM` format, and an empty list means closed that day.
 - **Photos:** add the file to `src/assets/photos/` and set `file` in `photos.ts`.

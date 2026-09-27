@@ -1,0 +1,163 @@
+---
+/**
+ * "House favourites" (D3 Home): category pills over a row of dish arch cards.
+ *
+ * Without JavaScript each pill is a link to that category on the Menu page and the first
+ * category's dishes are shown. `favourites-tabs.ts` upgrades the pills to an accessible
+ * tab list (arrow keys, Home/End) that swaps the dishes in place.
+ * Mobile: the cards form a swipeable rail. Desktop: four across, alternate cards raised.
+ */
+import Section from '@/components/layout/Section.astro';
+import Container from '@/components/layout/Container.astro';
+import SectionHeading from '@/components/ui/SectionHeading.astro';
+import TextLink from '@/components/ui/TextLink.astro';
+import DishArchCard from '@/components/menu/DishArchCard.astro';
+import { copy } from '@/data/copy';
+import { findCategory, findMenuItem, homeFavourites, menu } from '@/data/menu';
+import type { MenuItemWithCategory } from '@/data/types';
+import { splitAccent } from '@/lib/text';
+
+const tabs = homeFavourites.map((tab) => ({
+  id: tab.category,
+  name: findCategory(tab.category)?.name ?? tab.category,
+  items: tab.items.map((id) => findMenuItem(id)).filter((item): item is MenuItemWithCategory => Boolean(item)),
+}));
+const heading = splitAccent(copy.favouritesHeading.text);
+const pill =
+  'fav-pill inline-flex min-h-11 shrink-0 items-center whitespace-nowrap rounded-full border px-[1.125rem] text-[0.875rem] font-medium no-underline transition-colors duration-350';
+---
+
+<Section labelledby="favourites-title" padded={false} class="py-18 md:py-24 lg:pt-[9.375rem] lg:pb-[8.75rem]">
+  <div class="flex flex-col gap-6 lg:gap-16">
+    <Container>
+      <SectionHeading id="favourites-title" eyebrow="House favourites" ornament align="center">
+        {heading.lead}{' '}<i>{heading.accent}</i>
+      </SectionHeading>
+    </Container>
+
+    <div data-favourites class="flex flex-col gap-6 lg:gap-16">
+      <div class="fav-pills gutter-x flex gap-2 overflow-x-auto lg:justify-center lg:gap-2.5">
+        <div data-tablist aria-label="Favourites by category" class="flex gap-2 lg:gap-2.5">
+          {
+            tabs.map((tab, index) => (
+              <a
+                href={`/menu#${tab.id}`}
+                id={`fav-tab-${tab.id}`}
+                data-tab={tab.id}
+                aria-current={index === 0 ? 'true' : undefined}
+                class={pill}
+              >
+                {tab.name}
+              </a>
+            ))
+          }
+        </div>
+        <a href="/menu" class:list={[pill, 'border-line bg-white text-ink hover:border-gold']}>
+          All {menu.length === 9 ? 'nine' : menu.length}
+        </a>
+      </div>
+
+      {
+        tabs.map((tab, index) => (
+          <div id={`fav-panel-${tab.id}`} data-panel={tab.id} hidden={index !== 0} aria-labelledby={`fav-tab-${tab.id}`} class="fav-panel">
+            <Container class="fav-rail">
+              <ul class="fav-list" role="list">
+                {tab.items.map((item, i) => (
+                  <li>
+                    <DishArchCard item={item} raised={i % 2 === 1} />
+                  </li>
+                ))}
+              </ul>
+            </Container>
+          </div>
+        ))
+      }
+    </div>
+
+    <Container class="flex justify-center">
+      <TextLink href="/menu">See the full menu</TextLink>
+    </Container>
+  </div>
+</Section>
+
+<script>
+  import '@/scripts/favourites-tabs';
+</script>
+
+<style is:global>
+  /* Pills: white with a hairline; the selected category is espresso (D4 "Category pill"). */
+  .fav-pill {
+    border-color: var(--color-line);
+    background: var(--color-white);
+    color: var(--color-ink);
+  }
+
+  .fav-pill:hover {
+    border-color: var(--color-gold);
+  }
+
+  .fav-pill[aria-current='true'],
+  .fav-pill[aria-selected='true'] {
+    border-color: var(--color-espresso);
+    background: var(--color-espresso);
+    color: var(--color-white);
+  }
+
+  .fav-pills {
+    scrollbar-width: none;
+  }
+
+  .fav-pills::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Mobile/tablet: a swipeable rail that runs off the right edge. */
+  .fav-list {
+    display: flex;
+    align-items: flex-end;
+    gap: 1rem;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: 1.25rem;
+    margin-inline: -1.25rem;
+    padding: 0.75rem 1.25rem 0.25rem;
+    scrollbar-width: none;
+  }
+
+  .fav-list::-webkit-scrollbar {
+    display: none;
+  }
+
+  .fav-list > li {
+    flex: 0 0 13.125rem;
+    scroll-snap-align: start;
+  }
+
+  @media (width >= 48rem) {
+    .fav-list {
+      gap: 1.5rem;
+      margin-inline: -2.5rem;
+      padding-inline: 2.5rem;
+      scroll-padding-inline: 2.5rem;
+    }
+
+    .fav-list > li {
+      flex-basis: 15rem;
+    }
+  }
+
+  /* Desktop: four across (a three-dish category stays centred). */
+  @media (width >= 64rem) {
+    .fav-list {
+      justify-content: center;
+      gap: 2rem;
+      overflow: visible;
+      margin: 0;
+      padding: 0;
+    }
+
+    .fav-list > li {
+      flex: 0 0 calc((100% - 6rem) / 4);
+    }
+  }
+</style>

@@ -1,0 +1,88 @@
+---
+/**
+ * "Visit us" (D3 Home): address, hours and phone. Each fact appears only when the owner has
+ * supplied it, and the whole section is left out of the live site until at least one exists.
+ */
+import Section from '@/components/layout/Section.astro';
+import Container from '@/components/layout/Container.astro';
+import Eyebrow from '@/components/ui/Eyebrow.astro';
+import MissingData from '@/components/ui/MissingData.astro';
+import TextLink from '@/components/ui/TextLink.astro';
+import { restaurant } from '@/data/restaurant';
+import { addressLines, groupHours, phoneHref } from '@/lib/format';
+
+const { address, phone } = restaurant;
+const hours = groupHours(restaurant.hours);
+const dev = import.meta.env.DEV;
+const show = Boolean(address || phone || hours.length) || dev;
+const fact = 'flex flex-col gap-2.5 border-b border-line-soft py-5 lg:gap-3.5 lg:border-t lg:border-b-0 lg:border-line lg:pt-6 lg:pb-0';
+const value = 'text-body text-ink';
+---
+
+{
+  show && (
+    <Section labelledby="visit-title">
+      <Container class="grid gap-1.5 lg:grid-cols-12 lg:gap-6">
+        <div class="flex flex-col items-start gap-1.5 lg:col-span-4 lg:gap-4.5">
+          <Eyebrow>Visit us</Eyebrow>
+          <h2 id="visit-title" class="pb-2 text-h2 text-ink lg:pb-0">
+            Find <i>us</i>
+          </h2>
+          <TextLink href="/contact" class="hidden lg:inline-flex">
+            Contact &amp; directions
+          </TextLink>
+        </div>
+
+        <dl class="grid lg:col-span-7 lg:col-start-6 lg:grid-cols-3 lg:items-start lg:gap-6">
+          <div class={fact}>
+            <dt class="label text-stone">Address</dt>
+            <dd class={value}>
+              {address ? (
+                <address class="not-italic">
+                  {addressLines(address).map((line) => (
+                    <span class="block">{line}</span>
+                  ))}
+                </address>
+              ) : (
+                <MissingData label="Address" />
+              )}
+            </dd>
+          </div>
+          <div class={fact}>
+            <dt class="label text-stone">Hours</dt>
+            <dd class={value}>
+              {hours.length ? (
+                <ul role="list">
+                  {hours.map((row) => (
+                    <li>
+                      <span aria-hidden="true" class="text-stone">{row.label}</span>
+                      <span class="sr-only">{row.longLabel}</span> {row.text}
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <MissingData label="Hours" />
+              )}
+            </dd>
+          </div>
+          <div class={fact}>
+            <dt class="label text-stone">Phone</dt>
+            <dd class={value}>
+              {phone ? (
+                <a href={phoneHref(phone)} class="underline decoration-gold underline-offset-4">
+                  {phone}
+                </a>
+              ) : (
+                <MissingData label="Phone" />
+              )}
+            </dd>
+          </div>
+        </dl>
+
+        <TextLink href="/contact" class="pt-5 lg:hidden">
+          Contact &amp; directions
+        </TextLink>
+      </Container>
+    </Section>
+  )
+}
