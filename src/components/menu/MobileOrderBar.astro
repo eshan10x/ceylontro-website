@@ -1,0 +1,14 @@
+---
+/**
+ * Mobile order bar: Order Online pinned to the bottom of the screen while the menu is on
+ * screen (below 1024 px). It is `position: sticky` inside the menu, so it comes to rest at
+ * the end of the menu instead of covering the footer. Pure CSS, no JavaScript.
+ */
+import OrderButton from '@/components/ui/OrderButton.astro';
+---
+
+<div
+  class="sticky bottom-0 z-30 border-t border-line-soft bg-white/95 px-4 pt-3 pb-[max(0.875rem,env(safe-area-inset-bottom))] shadow-[0_-16px_30px_-24px_rgb(43_27_18/0.5)] backdrop-blur-md md:flex md:justify-center md:px-10 lg:hidden"
+>
+  <OrderButton fullWidth class="md:max-w-md" />
+</div>

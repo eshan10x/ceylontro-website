@@ -71,6 +71,9 @@
   --text-h3: clamp(2rem, 1.35rem + 2.6667vw, 3.75rem);
   --text-h3--line-height: 1;
   --text-h3--letter-spacing: -0.01em;
+  --text-feature: clamp(1.875rem, 1.4571rem + 1.7143vw, 3rem);
+  --text-feature--line-height: 1.02;
+  --text-feature--letter-spacing: -0.01em;
   --text-dish: clamp(1.5rem, 1.3607rem + 0.5714vw, 1.875rem);
   --text-dish--line-height: 1.08;
   --text-body: clamp(1rem, 0.9768rem + 0.0952vw, 1.0625rem);

@@ -2,7 +2,7 @@
 
 *Flavours Beyond Borders.* This is the website for Ceylontro Kitchen, a Canadian restaurant with Sri Lankan, Asian and Western influences.
 
-The site is static, built with **Astro 7**, **TypeScript** (strictest settings) and **Tailwind CSS 4**. Client-side JavaScript is limited to the site shell and the Home favourites tabs (under 1 KB gzipped on Home).
+The site is static, built with **Astro 7**, **TypeScript** (strictest settings) and **Tailwind CSS 4**. Client-side JavaScript is limited to the site shell, the Home favourites tabs and the Menu scroll-spy (under 1 KB gzipped per page).
 
 ## Requirements
 
@@ -28,7 +28,9 @@ src/
     layout/            Section (brand surfaces), Container (widths and gutters)
     shell/             SiteHeader, MobileNav (drawer), MenuToggle, HoursToday, SiteFooter
     home/              HomeHero, HouseFavourites, FeaturedDish, StoryTeaser, OrderBand, VisitTeaser
-    menu/              DishArchCard (shared with the Menu page in B5)
+    menu/              DishArchCard (Home), and the Menu page: MenuIntro, MenuCategoryBar (mobile),
+                       MenuSideNav (desktop), MenuCategory, MenuFeaturedCard, MenuRow,
+                       MenuComboCard, MenuItemOptions, MenuPrice, MobileOrderBar
     ui/                Button, OrderButton, TextLink, Pill, DietaryMarker, Eyebrow,
                        SectionHeading, Ornament, Photo, Logo, MissingData
   assets/photos/       The owner's photographs (empty until supplied)
@@ -47,10 +49,11 @@ src/
     PageLayout         BaseLayout + header, drawer, <main>, footer (use this for pages)
   lib/format.ts        Hours, address, phone and current-page helpers
   lib/text.ts          Italic-accent headings, menu description spacing
-  pages/               index (Home), 404, styleguide (internal, noindex)
+  pages/               index (Home), menu, 404, styleguide (internal, noindex)
   scripts/
     shell.ts           Header scroll state, drawer fallback, today's hours
     favourites-tabs.ts Home "House favourites" category tabs
+    menu-nav.ts        Menu scroll-spy: marks the category in view in both category navigations
   styles/global.css    Design tokens (@theme) and base styles
 scripts/
   missing-facts.ts     Runs the report (used by `npm run build`)
@@ -67,7 +70,7 @@ scripts/
 The owner's facts all go in `src/data/`, and none of it requires touching components.
 
 - **Home selections:** `homeFavourites` and `homeFeaturedItem` at the bottom of `menu.ts` choose the dishes on Home. Set `homeFavouritesConfirmed = true` once the owner approves them.
-- **Menu:** edit `menu.ts`. Set `price` (e.g. `'$14.99'`) and add `'vegetarian'` to `tags` only when the owner confirms it. Delete a `confirm` note once its question is answered.
+- **Menu:** edit `menu.ts`. Set `price` (e.g. `'$14.99'`) and add `'vegetarian'` to `tags` only when the owner confirms it. Delete a `confirm` note once its question is answered. `featured: true` puts a dish on the category's large card (one per category) and `combo: true` on the espresso combo card. The Menu page updates on its own: category navigation, numbering and the marker key all come from this file.
 - **Restaurant facts:** replace a `null` in `restaurant.ts` with the owner's value. Hours are in 24-hour `HH:MM` format, and an empty list means closed that day.
 - **Photos:** add the file to `src/assets/photos/` and set `file` in `photos.ts`.
 - **Checking progress:** `npm run report` lists what is still missing. The build fails only on broken data, such as a duplicate id, a bad time format or a photo file that doesn't exist.
@@ -78,6 +81,14 @@ The owner's facts all go in `src/data/`, and none of it requires touching compon
 - The header is transparent over a hero and turns solid after 40 px of scroll; without JavaScript it stays solid.
 - The mobile drawer is a native modal `<dialog>` (focus stays inside, Esc closes it). It opens with the HTML `command` attribute, with a fallback in `shell.ts` for older browsers.
 - Footer and drawer blocks for address, hours, phone, email and social links appear on their own once the data exists in `restaurant.ts`.
+
+## Menu page
+
+- Mobile and tablet: a sticky bar of category pills under the header, and Order Online pinned to the bottom of the screen until the end of the menu. Desktop: a sticky category list with Order Online beside the menu.
+- Dish rows are text-first. A square thumbnail appears on a row once that dish's real photo is added; featured and combo cards always keep their photo frame.
+- A category's rows switch to a compact name-and-price list when none of its dishes has a description, options or photo (for example Wings Special).
+- Choices shared by a whole category (for example the Handhelds side) are shown once in the category header.
+- Every dish has an anchor (`/menu#honey-garlic-wings`), used by the Home cards; the dish is briefly highlighted on arrival.
 
 ## Content rules
 

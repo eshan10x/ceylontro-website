@@ -187,6 +187,7 @@ export const menu: readonly MenuCategory[] = [
         price: null,
         image: 'wings-and-fries-combo',
         tags: [],
+        combo: true,
       },
     ],
   },

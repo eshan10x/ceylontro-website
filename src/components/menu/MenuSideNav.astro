@@ -1,0 +1,86 @@
+---
+/**
+ * Desktop category list (D3 "MenuDesktop"): sticky beside the menu. The category in view is
+ * marked with a gold rule and set in italic display type; every row has the same height so
+ * the list never shifts. Order Online sits underneath.
+ */
+import OrderButton from '@/components/ui/OrderButton.astro';
+import type { MenuCategory } from '@/data/types';
+
+interface Props {
+  categories: readonly MenuCategory[];
+}
+
+const { categories } = Astro.props;
+---
+
+<div class="sticky top-28 flex flex-col gap-7">
+  <nav aria-labelledby="menu-side-title">
+    <p id="menu-side-title" class="label pb-3 text-stone">Categories</p>
+    <ul role="list">
+      {
+        categories.map((category) => (
+          <li>
+            <a href={`#${category.id}`} data-menu-link={category.id} class="side-link">
+              <span aria-hidden="true" class="side-link__rule" />
+              <span class="side-link__name">{category.name}</span>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </nav>
+  <OrderButton fullWidth />
+</div>
+
+<style>
+  .side-link {
+    display: flex;
+    align-items: center;
+    height: 3rem;
+    color: var(--color-stone);
+    text-decoration: none;
+    white-space: nowrap;
+  }
+
+  .side-link__rule {
+    display: block;
+    width: 0;
+    height: 1px;
+    margin-right: 0;
+    background: var(--color-gold);
+    transition:
+      width 400ms var(--ease-soft),
+      margin 400ms var(--ease-soft);
+  }
+
+  .side-link__name {
+    font-size: 0.875rem;
+    font-weight: 500;
+    line-height: 1;
+    transition: color 350ms ease;
+  }
+
+  .side-link:hover .side-link__name {
+    color: var(--color-ink);
+  }
+
+  .side-link[aria-current='true'] .side-link__rule {
+    width: 1.5rem;
+    margin-right: 0.75rem;
+  }
+
+  .side-link[aria-current='true'] .side-link__name {
+    font-family: var(--font-display);
+    font-size: 1.625rem;
+    font-style: italic;
+    letter-spacing: -0.01em;
+    color: var(--color-gold-deep);
+  }
+
+  @media (width >= 90rem) {
+    .side-link[aria-current='true'] .side-link__name {
+      font-size: 1.875rem;
+    }
+  }
+</style>

@@ -35,6 +35,11 @@ export const copy = {
     source: 'draft',
     usedIn: 'Menu intro',
   },
+  menuMeta: {
+    text: 'The Ceylontro Kitchen menu: appetizers, rice and noodles, devilled dishes, wings, handhelds and more, with Sri Lankan, Asian and Western flavours.',
+    source: 'draft',
+    usedIn: 'Menu page search and social description',
+  },
   metaDescription: {
     text: 'Ceylontro Kitchen — Sri Lankan, Asian and Western flavours, made with fresh ingredients. Flavours Beyond Borders.',
     source: 'draft',

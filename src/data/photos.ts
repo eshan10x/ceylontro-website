@@ -16,6 +16,7 @@ const sitePhotos: Record<string, PhotoEntry> = {
   'featured-overhead': { alt: 'Ceylontro Kottu Special from above', file: null, ratio: '1:1' },
   'featured-detail': { alt: 'Close-up detail of Ceylontro Kottu Special', file: null, ratio: '3:4 (arch crop)' },
   'menu-intro': { alt: 'A spread of Ceylontro Kitchen dishes', file: null, ratio: '4:5 (arch crop)' },
+  'menu-intro-side': { alt: 'A side dish from Ceylontro Kitchen', file: null, ratio: '1:1 (round crop)' },
   'story-hero': { alt: 'Inside Ceylontro Kitchen', file: null, ratio: '4:5 (arch crop)' },
   'story-origin': { alt: 'Ceylontro Kitchen', file: null, ratio: '3:2' },
   'story-kitchen': { alt: 'The kitchen at Ceylontro Kitchen', file: null, ratio: '3:2' },
@@ -33,7 +34,8 @@ function menuPhotos(): Record<string, PhotoEntry> {
     }
     for (const item of category.items) {
       if (item.image) {
-        entries[item.image] = { alt: item.name, file: null, ratio: item.featured ? '4:3' : '1:1' };
+        const ratio = item.combo ? '4:5 (arch crop)' : item.featured ? '4:3' : '1:1';
+        entries[item.image] = { alt: item.name, file: null, ratio };
       }
     }
   }

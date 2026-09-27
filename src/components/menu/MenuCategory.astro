@@ -1,0 +1,145 @@
+---
+/**
+ * One menu category: numbered heading, printed intro and shared choices, sizes, then the
+ * featured card, the rows and the combo card. Rows switch to the compact layout when none
+ * of the category's dishes has a description, options or photo.
+ */
+import Photo from '@/components/ui/Photo.astro';
+import Pill from '@/components/ui/Pill.astro';
+import MenuFeaturedCard from './MenuFeaturedCard.astro';
+import MenuComboCard from './MenuComboCard.astro';
+import MenuRow from './MenuRow.astro';
+import { getPhoto } from '@/data/images';
+import type { MenuCategory, MenuItemWithCategory } from '@/data/types';
+import { pad2, spaceSlashes, splitAccent } from '@/lib/text';
+
+interface Props {
+  category: MenuCategory;
+  /** 1-based position, for the "02 / 09" counter. */
+  index: number;
+  total: number;
+}
+
+const { category, index, total } = Astro.props;
+
+const items: MenuItemWithCategory[] = category.items.map((item) => ({
+  ...item,
+  category: category.id,
+  categoryName: category.name,
+}));
+const featured = items.find((item) => item.featured);
+const combo = items.find((item) => item.combo);
+const rows = items.filter((item) => item !== featured && item !== combo);
+const compact = rows.every(
+  (item) => !item.description && !item.options?.length && !item.addOns?.length && !getPhoto(item.image).image,
+);
+
+const heading = splitAccent(category.name);
+const headingId = `${category.id}-title`;
+const banner = getPhoto(category.image);
+const hasAside = Boolean(category.intro || category.sharedOptions?.length || category.sizes?.length);
+---
+
+<section id={category.id} data-menu-section aria-labelledby={headingId} class="menu-category flex flex-col gap-6 lg:gap-8">
+  <header class="flex flex-col gap-4 md:flex-row md:items-end md:justify-between md:gap-6">
+    <div class="flex items-end gap-3.5">
+      {
+        banner.image && (
+          <Photo
+            image={banner.image}
+            alt=""
+            shape="arch"
+            ratio="4 / 5"
+            sizes="84px"
+            class="w-21 shrink-0 lg:hidden"
+          />
+        )
+      }
+      <div class="flex flex-col gap-1.5 lg:gap-2.5">
+        <p class="label text-gold-deep" aria-hidden="true">{pad2(index)} / {pad2(total)}</p>
+        <h2 id={headingId} class="text-h2 text-ink">
+          {heading.lead && `${heading.lead} `}<i>{heading.accent}</i>
+        </h2>
+      </div>
+    </div>
+
+    {
+      hasAside && (
+        <div class="flex flex-col gap-3 md:max-w-[22rem] md:items-end md:pb-2 md:text-right">
+          {category.intro && <p class="text-small text-stone">{spaceSlashes(category.intro)}</p>}
+          {category.sharedOptions?.map((group) => (
+            <p class="text-[0.8125rem] leading-normal">
+              <span class="text-stone">{group.label}: </span>
+              <span class="font-medium text-ink">{group.values.join(' · ')}</span>
+            </p>
+          ))}
+          {category.sizes && category.sizes.length > 0 && (
+            <div class="flex items-center gap-3">
+              <span class="label text-stone">Sizes</span>
+              <ul class="flex gap-1.5" role="list">
+                {category.sizes.map((size) => (
+                  <li>
+                    <Pill size="sm">{size}</Pill>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </div>
+      )
+    }
+  </header>
+
+  {featured && <MenuFeaturedCard item={featured} />}
+
+  {
+    rows.length > 0 && (
+      <div
+        class:list={[
+          'grid md:gap-x-10',
+          compact ? 'md:grid-cols-2 xl:grid-cols-3' : 'md:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2 xl:gap-x-14',
+        ]}
+      >
+        {rows.map((item) => (
+          <MenuRow item={item} variant={compact ? 'compact' : 'full'} />
+        ))}
+      </div>
+    )
+  }
+
+  {combo && <MenuComboCard item={combo} />}
+</section>
+
+<style is:global>
+  /* Arriving from a link to one dish (e.g. a Home card): a brief linen wash and italic name. */
+  .menu-item {
+    scroll-margin-top: 3.75rem;
+  }
+
+  .menu-item:target .menu-item__name {
+    font-style: italic;
+  }
+
+  .menu-item:target:not(.menu-feature):not(.surface-dark) {
+    animation: menu-item-arrive 2.4s var(--ease-soft);
+  }
+
+  @keyframes menu-item-arrive {
+    0%,
+    35% {
+      background-color: var(--color-linen);
+      box-shadow: -1.25rem 0 0 var(--color-linen), 1.25rem 0 0 var(--color-linen);
+    }
+  }
+
+  .menu-category {
+    scroll-margin-top: 3.75rem;
+  }
+
+  @media (width >= 64rem) {
+    .menu-item,
+    .menu-category {
+      scroll-margin-top: 0.5rem;
+    }
+  }
+</style>

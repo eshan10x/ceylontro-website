@@ -1,0 +1,42 @@
+---
+/**
+ * Menu (D3 "MenuMobile" / "MenuDesktop"): intro, then every category from `src/data/menu.ts`.
+ * Mobile and tablet: sticky category bar and a sticky Order Online bar.
+ * Desktop: a sticky category list beside the menu. `menu-nav.ts` marks the category in view.
+ */
+import PageLayout from '@/layouts/PageLayout.astro';
+import Container from '@/components/layout/Container.astro';
+import MenuIntro from '@/components/menu/MenuIntro.astro';
+import MenuCategoryBar from '@/components/menu/MenuCategoryBar.astro';
+import MenuSideNav from '@/components/menu/MenuSideNav.astro';
+import MenuCategory from '@/components/menu/MenuCategory.astro';
+import MobileOrderBar from '@/components/menu/MobileOrderBar.astro';
+import { copy } from '@/data/copy';
+import { menu } from '@/data/menu';
+---
+
+<PageLayout title="Menu" description={copy.menuMeta.text} overlayHeader>
+  <MenuIntro />
+
+  <div class="menu-body relative">
+    <MenuCategoryBar categories={menu} />
+
+    <Container
+      class="pt-10 pb-18 md:pt-14 md:pb-24 lg:grid lg:grid-cols-[13rem_minmax(0,1fr)] lg:gap-12 lg:pt-18 lg:pb-35 xl:grid-cols-[15.625rem_minmax(0,1fr)] xl:gap-20"
+    >
+      <aside class="hidden lg:block">
+        <MenuSideNav categories={menu} />
+      </aside>
+
+      <div class="flex flex-col gap-18 md:gap-24 lg:gap-28">
+        {menu.map((category, index) => <MenuCategory category={category} index={index + 1} total={menu.length} />)}
+      </div>
+    </Container>
+
+    <MobileOrderBar />
+  </div>
+</PageLayout>
+
+<script>
+  import '@/scripts/menu-nav';
+</script>

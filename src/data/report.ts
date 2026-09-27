@@ -70,6 +70,9 @@ export function buildReport(options: { photoFileExists?: (file: string) => boole
     if (category.items.filter((item) => item.featured).length > 1) {
       errors.push(`Category "${category.id}" has more than one featured item.`);
     }
+    if (category.items.filter((item) => item.combo).length > 1) {
+      errors.push(`Category "${category.id}" has more than one combo item.`);
+    }
 
     for (const item of category.items) {
       items += 1;
@@ -77,6 +80,7 @@ export function buildReport(options: { photoFileExists?: (file: string) => boole
       itemIds.add(item.id);
       if (!item.name.trim()) errors.push(`Menu item "${item.id}" has no name.`);
       if (item.image && !photos[item.image]) errors.push(`Menu item "${item.id}" uses unknown photo "${item.image}".`);
+      if (item.featured && item.combo) errors.push(`Menu item "${item.id}" cannot be both featured and a combo.`);
       if (item.price === null) unpriced += 1;
       for (const note of item.confirm ?? []) {
         const line = `${item.name}: ${note}`;

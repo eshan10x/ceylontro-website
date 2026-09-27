@@ -1,0 +1,51 @@
+---
+/**
+ * Featured dish card (D4 "Featured dish card"): the category's one featured dish on a linen
+ * card with a large 4:3 photo. Stacked on mobile and tablet; photo beside text from 1440 px.
+ */
+import Photo from '@/components/ui/Photo.astro';
+import Eyebrow from '@/components/ui/Eyebrow.astro';
+import DietaryMarker from '@/components/ui/DietaryMarker.astro';
+import MenuPrice from './MenuPrice.astro';
+import MenuItemOptions from './MenuItemOptions.astro';
+import { getPhoto } from '@/data/images';
+import type { MenuItemWithCategory } from '@/data/types';
+import { spaceSlashes } from '@/lib/text';
+
+interface Props {
+  item: MenuItemWithCategory;
+}
+
+const { item } = Astro.props;
+const photo = getPhoto(item.image);
+// Choices shared by the whole category are shown once, in the category header.
+const groups = item.options ?? [];
+---
+
+<article
+  id={item.id}
+  data-menu-item
+  class="menu-item menu-feature grid gap-4 rounded-card bg-linen p-3.5 pb-6 md:p-5 md:pb-8 xl:grid-cols-2 xl:items-center xl:gap-12 xl:p-6"
+>
+  <Photo
+    image={photo.image}
+    alt={photo.alt}
+    ratio="4 / 3"
+    shape="rounded"
+    sizes="(min-width: 90rem) 30rem, (min-width: 64rem) 55vw, 92vw"
+    caption={`${item.name} · 4:3`}
+    class="menu-feature__photo rounded-[1.25rem] xl:rounded-[1.375rem]"
+  />
+  <div class="flex flex-col gap-3 px-1.5 md:gap-4 md:px-2 xl:gap-4.5 xl:pr-6">
+    <Eyebrow class="text-[0.6875rem]">Featured</Eyebrow>
+    <h3 class="menu-item__name text-feature text-ink">{item.name}</h3>
+    {item.description && <p class="text-small text-stone">{spaceSlashes(item.description)}</p>}
+    <MenuItemOptions groups={groups} addOns={item.addOns} variant="pills" class="pt-1" />
+    {(item.tags.length > 0 || item.price || import.meta.env.DEV) && (
+      <div class="flex flex-wrap items-center gap-x-4 gap-y-2 pt-1">
+        {item.tags.map((tag) => <DietaryMarker kind={tag} />)}
+        <MenuPrice price={item.price} size="md" />
+      </div>
+    )}
+  </div>
+</article>

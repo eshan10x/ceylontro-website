@@ -1,0 +1,46 @@
+---
+/**
+ * Mobile and tablet category bar (D4 "Menu category bar"): sticky under the header, a
+ * swipeable row of pills. `menu-nav.ts` marks the category in view (espresso pill) and
+ * keeps it scrolled into sight. Without JavaScript the pills are plain anchor links.
+ */
+import type { MenuCategory } from '@/data/types';
+
+interface Props {
+  categories: readonly MenuCategory[];
+}
+
+const { categories } = Astro.props;
+---
+
+<nav
+  aria-label="Menu categories"
+  class="menu-bar sticky top-(--header-h) z-30 border-y border-line-soft bg-white/95 shadow-bar backdrop-blur-md lg:hidden"
+>
+  <ul data-menu-bar class="menu-bar__list gutter-x flex gap-2 overflow-x-auto py-3" role="list">
+    {
+      categories.map((category) => (
+        <li class="shrink-0">
+          <a
+            href={`#${category.id}`}
+            data-menu-link={category.id}
+            class="inline-flex min-h-11 items-center rounded-full border border-line bg-white px-[1.125rem] text-[0.875rem] font-medium whitespace-nowrap text-ink no-underline transition-colors duration-350 hover:border-gold aria-[current=true]:border-espresso aria-[current=true]:bg-espresso aria-[current=true]:text-white"
+          >
+            {category.name}
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+</nav>
+
+<style>
+  .menu-bar__list {
+    scrollbar-width: none;
+    overscroll-behavior-x: contain;
+  }
+
+  .menu-bar__list::-webkit-scrollbar {
+    display: none;
+  }
+</style>

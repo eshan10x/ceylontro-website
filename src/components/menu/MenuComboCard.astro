@@ -1,0 +1,41 @@
+---
+/**
+ * Combo card (D4 "Combo card"): an espresso card with grain for a category's combination
+ * order, e.g. Wings & Fries. Printed description only; price once the owner supplies it.
+ */
+import Photo from '@/components/ui/Photo.astro';
+import Eyebrow from '@/components/ui/Eyebrow.astro';
+import MenuPrice from './MenuPrice.astro';
+import { getPhoto } from '@/data/images';
+import type { MenuItemWithCategory } from '@/data/types';
+
+interface Props {
+  item: MenuItemWithCategory;
+}
+
+const { item } = Astro.props;
+const photo = getPhoto(item.image);
+---
+
+<article
+  id={item.id}
+  data-menu-item
+  class="menu-item surface-dark grain on-dark mt-4 flex items-center gap-4 rounded-[1.5rem] p-4.5 md:gap-8 md:rounded-card md:px-9 md:py-7"
+>
+  <Photo
+    image={photo.image}
+    alt={photo.alt}
+    shape="arch"
+    ratio="4 / 5"
+    sizes="(min-width: 48rem) 130px, 84px"
+    class="relative z-10 w-21 shrink-0 md:w-32.5"
+  />
+  <div class="relative z-10 flex grow flex-col gap-1.5 md:flex-row md:items-center md:gap-8">
+    <div class="flex grow flex-col gap-1.5 md:gap-2">
+      <Eyebrow onDark class="text-[0.6875rem]">Combo</Eyebrow>
+      <h3 class="menu-item__name text-[1.5rem] leading-[1.05] text-cream md:text-[2.5rem] md:leading-none">{item.name}</h3>
+      {item.description && <p class="text-[0.8125rem] leading-[1.45] text-cream-muted md:text-small">{item.description}</p>}
+    </div>
+    <MenuPrice price={item.price} size="md" onDark class="shrink-0" />
+  </div>
+</article>

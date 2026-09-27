@@ -34,6 +34,8 @@ export interface MenuItem {
   tags: readonly DietaryTag[];
   /** Shown as the category's large featured card. At most one per category. */
   featured?: boolean;
+  /** A combination order (e.g. wings with fries), shown as the category's espresso combo card. */
+  combo?: boolean;
   /** Open questions for the owner about this item. Listed by the missing-facts report. */
   confirm?: readonly string[];
 }

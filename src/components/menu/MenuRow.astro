@@ -1,0 +1,70 @@
+---
+/**
+ * Menu row (D4 "Menu row").
+ * - `full`: optional square thumb (only once a real photo exists), name, printed description,
+ *   options, markers and price. Text-first rows keep the same alignment without a photo.
+ * - `compact`: name and markers on the left, price on the right — for categories whose
+ *   dishes have no description or options (e.g. Wings Special).
+ */
+import Photo from '@/components/ui/Photo.astro';
+import DietaryMarker from '@/components/ui/DietaryMarker.astro';
+import MenuPrice from './MenuPrice.astro';
+import MenuItemOptions from './MenuItemOptions.astro';
+import { getPhoto } from '@/data/images';
+import type { MenuItemWithCategory } from '@/data/types';
+import { spaceSlashes } from '@/lib/text';
+
+interface Props {
+  item: MenuItemWithCategory;
+  variant?: 'full' | 'compact';
+}
+
+const { item, variant = 'full' } = Astro.props;
+const photo = getPhoto(item.image);
+// Choices shared by the whole category are shown once, in the category header.
+const groups = item.options ?? [];
+---
+
+{
+  variant === 'compact' ? (
+    <article id={item.id} data-menu-item class="menu-item flex min-h-18 items-center justify-between gap-4 border-b border-line-soft py-4 lg:py-4.5">
+      <div class="flex flex-col gap-1.5">
+        <h3 class="menu-item__name text-[1.375rem] leading-[1.08] text-ink lg:text-dish">{item.name}</h3>
+        {item.tags.length > 0 && (
+          <div class="flex gap-3">
+            {item.tags.map((tag) => (
+              <DietaryMarker kind={tag} />
+            ))}
+          </div>
+        )}
+      </div>
+      <MenuPrice price={item.price} class="shrink-0" />
+    </article>
+  ) : (
+    <article id={item.id} data-menu-item class="menu-item flex gap-4 border-b border-line-soft py-5 md:gap-5 lg:py-6.5">
+      {photo.image && (
+        <Photo
+          image={photo.image}
+          alt={photo.alt}
+          shape="thumb"
+          ratio="1 / 1"
+          sizes="(min-width: 64rem) 120px, 92px"
+          class="w-23 shrink-0 self-start lg:w-30"
+        />
+      )}
+      <div class="flex min-w-0 grow flex-col gap-1.5 lg:gap-2">
+        <h3 class="menu-item__name text-dish text-ink">{item.name}</h3>
+        {item.description && <p class="text-small text-stone">{spaceSlashes(item.description)}</p>}
+        <MenuItemOptions groups={groups} addOns={item.addOns} class="pt-0.5" />
+        {(item.tags.length > 0 || item.price || import.meta.env.DEV) && (
+          <div class="flex flex-wrap items-center gap-x-4 gap-y-2 pt-1">
+            {item.tags.map((tag) => (
+              <DietaryMarker kind={tag} />
+            ))}
+            <MenuPrice price={item.price} />
+          </div>
+        )}
+      </div>
+    </article>
+  )
+}

@@ -1,0 +1,27 @@
+---
+/**
+ * A menu price, shown only once the owner has supplied it. Until then the site shows
+ * nothing (a "Price — awaiting owner" badge appears in development only).
+ */
+import MissingData from '@/components/ui/MissingData.astro';
+
+interface Props {
+  price: string | null;
+  /** `md` on featured and combo cards. */
+  size?: 'sm' | 'md';
+  onDark?: boolean;
+  class?: string | undefined;
+}
+
+const { price, size = 'sm', onDark = false, class: className } = Astro.props;
+---
+
+{
+  price ? (
+    <p class:list={['font-semibold tabular-nums', size === 'md' ? 'text-base' : 'text-[0.9375rem]', onDark ? 'text-cream' : 'text-ink', className]}>
+      {price}
+    </p>
+  ) : (
+    <MissingData label="Price" onDark={onDark} class={className} />
+  )
+}

@@ -17,3 +17,6 @@ export function splitAccent(text: string): { lead: string; accent: string } {
  * around the slashes ("Carrots / leeks / onions") so lines can wrap. Wording is unchanged.
  */
 export const spaceSlashes = (text: string): string => text.replace(/\s*\/\s*/g, ' / ');
+
+/** Two-digit counter for editorial numbering: 2 → "02". */
+export const pad2 = (value: number): string => String(value).padStart(2, '0');

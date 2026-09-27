@@ -1,0 +1,53 @@
+---
+/**
+ * An item's choices (protein, sauce, filling, side) and add-ons, as printed on the menu.
+ * - `pills`: static pills, for the featured card.
+ * - `text`: one compact line per group, for menu rows.
+ * Information only: nothing here is selectable until online ordering exists.
+ */
+import Pill from '@/components/ui/Pill.astro';
+import type { MenuOptionGroup } from '@/data/types';
+
+interface Props {
+  groups: readonly MenuOptionGroup[];
+  addOns?: readonly string[] | undefined;
+  variant?: 'pills' | 'text';
+  class?: string | undefined;
+}
+
+const { groups, addOns = [], variant = 'text', class: className } = Astro.props;
+---
+
+{
+  (groups.length > 0 || addOns.length > 0) && (
+    <dl class:list={['flex flex-col', variant === 'pills' ? 'gap-3' : 'gap-1', className]}>
+      {groups.map((group) =>
+        variant === 'pills' ? (
+          <div class="flex flex-col gap-2">
+            <dt class="label text-stone">{group.label}</dt>
+            <dd>
+              <ul class="flex flex-wrap gap-1.5" role="list">
+                {group.values.map((value) => (
+                  <li>
+                    <Pill size="sm">{value}</Pill>
+                  </li>
+                ))}
+              </ul>
+            </dd>
+          </div>
+        ) : (
+          <div class="flex flex-wrap items-baseline gap-x-2 text-[0.8125rem] leading-normal">
+            <dt class="text-stone">{group.label}</dt>
+            <dd class="font-medium text-ink">{group.values.join(' · ')}</dd>
+          </div>
+        ),
+      )}
+      {addOns.length > 0 && (
+        <div class="flex flex-wrap items-baseline gap-x-2 text-[0.8125rem] leading-normal">
+          <dt class="text-stone">Extras</dt>
+          <dd class="font-medium text-ink">{addOns.join(' · ')}</dd>
+        </div>
+      )}
+    </dl>
+  )
+}
