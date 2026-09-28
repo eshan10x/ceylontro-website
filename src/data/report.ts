@@ -41,7 +41,7 @@ export function buildReport(options: { photoFileExists?: (file: string) => boole
   if (!restaurant.ordering.url) facts.push('Online ordering URL');
   if (!restaurant.ordering.platformName) facts.push('Ordering platform name');
   if (!restaurant.social.length) facts.push('Social media links');
-  if (!restaurant.domain) facts.push('Website domain');
+  if (!restaurant.domain) facts.push('Website domain (until it is set, search engines are asked not to index the site)');
   if (restaurant.acceptsReservations === null) facts.push('Whether reservations are accepted');
 
   for (const day of WEEKDAYS) {
@@ -50,6 +50,9 @@ export function buildReport(options: { photoFileExists?: (file: string) => boole
         errors.push(`Hours for ${day} must be 24-hour HH:MM (got ${period.opens}–${period.closes}).`);
       }
     }
+  }
+  if (restaurant.domain && !/^https:\/\/[^/]+$/.test(restaurant.domain)) {
+    errors.push('Domain must be an https:// URL with no path or trailing slash, e.g. "https://www.example.ca".');
   }
   if (restaurant.ordering.url && !/^https:\/\//.test(restaurant.ordering.url)) {
     errors.push('Ordering URL must start with https://');

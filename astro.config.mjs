@@ -1,10 +1,11 @@
 // @ts-check
 import { defineConfig } from 'astro/config';
 import tailwindcss from '@tailwindcss/vite';
+import { restaurant } from './src/data/restaurant.ts';
 
-// The production domain is not decided yet. Set SITE_URL (e.g. in the host's
-// environment settings) once it is; canonical URLs are only emitted when it exists.
-const site = process.env['SITE_URL'];
+// The production domain is an owner fact (src/data/restaurant.ts). Until it is set, canonical
+// URLs are not emitted and every page asks search engines not to index it (see src/lib/seo.ts).
+const site = restaurant.domain ?? undefined;
 
 export default defineConfig({
   ...(site ? { site } : {}),

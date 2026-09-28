@@ -25,16 +25,16 @@ const side = getPhoto('hero-side-dish');
 <Section surface="hero" padded={false} class="pt-header" labelledby="hero-title">
   <Container class="pt-9 pb-12 md:pt-14 md:pb-18 lg:pt-10 lg:pb-18">
     <div class="hero">
-      <Eyebrow class="hero__eyebrow">{site.name}</Eyebrow>
+      <Eyebrow class="hero__eyebrow enter">{site.name}</Eyebrow>
 
       <h1 id="hero-title" class="hero__title font-display font-medium text-ink">
-        <span class="hero__word hero__word--1">Flavours</span>{' '}
-        <span class="hero__word hero__word--2 text-espresso italic">Beyond</span>{' '}
-        <span class="hero__word hero__word--3">Borders</span>
+        <span class="hero__word hero__word--1 enter" style="--enter-i: 1">Flavours</span>{' '}
+        <span class="hero__word hero__word--2 enter text-espresso italic" style="--enter-i: 2">Beyond</span>{' '}
+        <span class="hero__word hero__word--3 enter" style="--enter-i: 3">Borders</span>
       </h1>
 
       <div class="hero__media">
-        <div aria-hidden="true" class="hero__outline rounded-arch border border-b-0 border-gold/55"></div>
+        <div aria-hidden="true" class="hero__outline enter rounded-arch border border-b-0 border-gold/55" style="--enter-i: 3"></div>
         <Photo
           image={hero.image}
           alt={hero.alt}
@@ -44,7 +44,7 @@ const side = getPhoto('hero-side-dish');
           elevated
           sizes="(min-width: 81rem) 500px, (min-width: 64rem) 38vw, 300px"
           caption="Photo · Hero dish · arch"
-          class="hero__photo"
+          class="hero__photo enter-arch"
         />
         <Photo
           image={side.image}
@@ -54,13 +54,15 @@ const side = getPhoto('hero-side-dish');
           ring
           elevated
           sizes="(min-width: 64rem) 220px, 124px"
-          class="hero__side"
+          reveal={false}
+          style="--enter-i: 5"
+          class="hero__side enter"
         />
       </div>
 
-      <p class="hero__support text-stone">{copy.heroSupport.text}</p>
+      <p class="hero__support enter text-stone" style="--enter-i: 5">{copy.heroSupport.text}</p>
 
-      <div class="hero__actions">
+      <div class="hero__actions enter" style="--enter-i: 6">
         <OrderButton fullWidth class="md:w-auto" />
         <Button href="/menu" variant="secondary" fullWidth class="md:w-auto">View Menu</Button>
       </div>
@@ -83,6 +85,11 @@ const side = getPhoto('hero-side-dish');
     font-size: clamp(3.25rem, 1.5rem + 7.8vw, 5.5rem);
     line-height: 0.92;
     letter-spacing: -0.015em;
+  }
+
+  /* Inline-block so each word can rise on its own during the entrance. */
+  .hero__word {
+    display: inline-block;
   }
 
   .hero__media {

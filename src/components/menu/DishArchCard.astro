@@ -1,8 +1,8 @@
 ---
 /**
  * Dish arch card (D4 "Dish arch card"): arch photo, dish name, then the spicy marker when
- * the menu shows one, otherwise the category. Hover and focus lift the photo 8 px and turn
- * the name italic. Links to the dish on the Menu page.
+ * the menu shows one, otherwise the category. Hover and focus lift the arch 8 px, ease the
+ * photo in slightly and turn the name italic. Links to the dish on the Menu page.
  */
 import Photo from '@/components/ui/Photo.astro';
 import DietaryMarker from '@/components/ui/DietaryMarker.astro';
@@ -13,11 +13,13 @@ interface Props {
   item: MenuItemWithCategory;
   /** Stagger: pushes the card up so neighbouring arches sit at different heights. */
   raised?: boolean;
+  /** Position in its row, to stagger the scroll reveal. */
+  index?: number;
   sizes?: string;
   class?: string | undefined;
 }
 
-const { item, raised = false, sizes = '(min-width: 64rem) 22vw, 210px', class: className } = Astro.props;
+const { item, raised = false, index = 0, sizes = '(min-width: 64rem) 22vw, 210px', class: className } = Astro.props;
 const photo = getPhoto(item.image);
 const spicy = item.tags.includes('spicy');
 ---
@@ -30,6 +32,7 @@ const spicy = item.tags.includes('spicy');
     ratio="3 / 4"
     sizes={sizes}
     caption={item.name}
+    revealIndex={index}
     class="dish-card__photo"
   />
   <div class="flex flex-col items-center gap-3 text-center">
@@ -52,13 +55,15 @@ const spicy = item.tags.includes('spicy');
     padding-bottom: 2.5rem;
   }
 
-  .dish-card__photo {
-    transition: transform 600ms ease;
-  }
-
+  /* Transitions come from the photo's reveal rule in global.css (lift 600 ms, slow inner zoom). */
   .dish-card:hover .dish-card__photo,
   .dish-card:focus-visible .dish-card__photo {
     transform: translateY(-0.5rem);
+  }
+
+  .dish-card:hover .dish-card__photo > *,
+  .dish-card:focus-visible .dish-card__photo > * {
+    transform: scale(1.04);
   }
 
   .dish-card:hover .dish-card__name,
@@ -74,7 +79,9 @@ const spicy = item.tags.includes('spicy');
 
   @media (prefers-reduced-motion: reduce) {
     .dish-card:hover .dish-card__photo,
-    .dish-card:focus-visible .dish-card__photo {
+    .dish-card:focus-visible .dish-card__photo,
+    .dish-card:hover .dish-card__photo > *,
+    .dish-card:focus-visible .dish-card__photo > * {
       transform: none;
     }
   }

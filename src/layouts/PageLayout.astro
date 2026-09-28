@@ -13,7 +13,8 @@ interface Props {
   title?: string;
   description?: string;
   noindex?: boolean;
-  ogImage?: string;
+  ogImage?: { path: string; alt: string; width: number; height: number };
+  structuredData?: readonly ('restaurant' | 'menu')[];
   /** Header is transparent over the first section until the page scrolls. */
   overlayHeader?: boolean;
 }
@@ -34,4 +35,5 @@ const { overlayHeader = false, ...meta } = Astro.props;
 
 <script>
   import '@/scripts/shell';
+  import '@/scripts/reveal';
 </script>

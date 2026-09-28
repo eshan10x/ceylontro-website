@@ -1,27 +1,53 @@
 ---
 /**
- * Base document: metadata, fonts, skip link. Every page uses this layout.
+ * Base document: metadata, structured data, fonts, skip link. Every page uses this layout.
+ * Search rules (launch gate, social image) live in `src/lib/seo.ts`.
  */
 import '@/styles/global.css';
+import { getImage } from 'astro:assets';
 import cormorant500 from '@fontsource/cormorant-garamond/files/cormorant-garamond-latin-500-normal.woff2?url';
 import manrope400 from '@fontsource/manrope/files/manrope-latin-400-normal.woff2?url';
 import { site } from '@/config/site';
+import logo from '@/assets/brand/ceylontro-logo.jpg';
+import { DEFAULT_OG_IMAGE, cleanPath, launched } from '@/lib/seo';
+import { menuJsonLd, restaurantJsonLd } from '@/lib/structured-data';
+
+type StructuredData = 'restaurant' | 'menu';
 
 interface Props {
   /** Page title; the brand name is appended automatically. Omit on the home page. */
   title?: string;
   description?: string;
-  /** Keep the page out of search results (style guide, drafts). */
+  /** Keep the page out of search results (style guide, 404, pages without the owner's content). */
   noindex?: boolean;
-  /** Optional social image, absolute or root-relative path. */
-  ogImage?: string;
+  /** Social image (root-relative, 1200 × 630) and its alt text; defaults to the brand card. */
+  ogImage?: { path: string; alt: string; width: number; height: number };
+  /** Schema.org JSON-LD blocks for this page, built from verified data only. */
+  structuredData?: readonly StructuredData[];
 }
 
-const { title, description = site.description, noindex = false, ogImage } = Astro.props;
+const {
+  title,
+  description = site.description,
+  noindex = false,
+  ogImage = DEFAULT_OG_IMAGE,
+  structuredData = [],
+} = Astro.props;
 
 const fullTitle = title ? `${title} — ${site.name}` : `${site.name} — ${site.tagline}`;
-const canonical = Astro.site ? new URL(Astro.url.pathname, Astro.site).href : undefined;
-const ogImageUrl = ogImage && Astro.site ? new URL(ogImage, Astro.site).href : undefined;
+// Launch gate: nothing is indexable until the owner's domain is set.
+const robots = noindex || !launched ? 'noindex, nofollow' : undefined;
+const pageUrl = Astro.site ? new URL(cleanPath(Astro.url.pathname), Astro.site).href : undefined;
+// A canonical link only on indexable pages, so it never contradicts a noindex.
+const canonical = robots ? undefined : pageUrl;
+const ogImageUrl = Astro.site ? new URL(ogImage.path, Astro.site).href : undefined;
+
+const jsonLd: object[] = [];
+if (structuredData.includes('restaurant')) {
+  const logoFile = await getImage({ src: logo, width: 512, height: 512, format: 'png' });
+  jsonLd.push(restaurantJsonLd(Astro.site, { logo: logoFile.src, social: DEFAULT_OG_IMAGE.path }));
+}
+if (structuredData.includes('menu')) jsonLd.push(menuJsonLd(Astro.site));
 ---
 
 <!doctype html>
@@ -31,7 +57,7 @@ const ogImageUrl = ogImage && Astro.site ? new URL(ogImage, Astro.site).href : u
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{fullTitle}</title>
     <meta name="description" content={description} />
-    {noindex && <meta name="robots" content="noindex, nofollow" />}
+    {robots && <meta name="robots" content={robots} />}
     {canonical && <link rel="canonical" href={canonical} />}
 
     <meta property="og:type" content="website" />
@@ -39,9 +65,22 @@ const ogImageUrl = ogImage && Astro.site ? new URL(ogImage, Astro.site).href : u
     <meta property="og:title" content={fullTitle} />
     <meta property="og:description" content={description} />
     <meta property="og:locale" content={site.locale} />
-    {canonical && <meta property="og:url" content={canonical} />}
-    {ogImageUrl && <meta property="og:image" content={ogImageUrl} />}
+    {pageUrl && <meta property="og:url" content={pageUrl} />}
+    {
+      ogImageUrl && (
+        <>
+          <meta property="og:image" content={ogImageUrl} />
+          <meta property="og:image:width" content={String(ogImage.width)} />
+          <meta property="og:image:height" content={String(ogImage.height)} />
+          <meta property="og:image:alt" content={ogImage.alt} />
+        </>
+      )
+    }
     <meta name="twitter:card" content={ogImageUrl ? 'summary_large_image' : 'summary'} />
+    <meta name="twitter:title" content={fullTitle} />
+    <meta name="twitter:description" content={description} />
+    {ogImageUrl && <meta name="twitter:image" content={ogImageUrl} />}
+    {ogImageUrl && <meta name="twitter:image:alt" content={ogImage.alt} />}
 
     <meta name="theme-color" content="#ffffff" />
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
@@ -49,6 +88,7 @@ const ogImageUrl = ogImage && Astro.site ? new URL(ogImage, Astro.site).href : u
 
     <link rel="preload" href={cormorant500} as="font" type="font/woff2" crossorigin />
     <link rel="preload" href={manrope400} as="font" type="font/woff2" crossorigin />
+    {jsonLd.map((data) => <script is:inline type="application/ld+json" set:html={JSON.stringify(data)} />)}
     <slot name="head" />
   </head>
   <body>

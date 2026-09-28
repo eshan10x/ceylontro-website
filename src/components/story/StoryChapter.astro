@@ -39,7 +39,7 @@ const titleId = `chapter-${chapter.id}`;
             caption={`${chapter.title} · 3:2`}
           />
         ) : (
-          <div class="flex justify-center">
+          <div data-reveal class="flex justify-center">
             <LogoArch class="w-[15rem] md:w-[19rem] lg:w-[22rem]" />
           </div>
         )
@@ -47,6 +47,8 @@ const titleId = `chapter-${chapter.id}`;
     </div>
 
     <div
+      data-reveal
+      style="--reveal-i: 1"
       class:list={[
         'flex flex-col gap-4 md:gap-5 lg:col-span-5',
         flip ? 'lg:col-start-1 lg:row-start-1' : 'lg:col-start-8',

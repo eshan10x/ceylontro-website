@@ -43,11 +43,12 @@ const options = item ? optionsFor(item) : [];
             ring
             elevated
             sizes="(min-width: 64rem) 220px, 124px"
+            revealIndex={3}
             class="featured-media__detail"
           />
         </div>
 
-        <div class="flex w-full flex-col items-start gap-4.5 md:mx-auto md:max-w-[34rem] lg:order-1 lg:col-span-5 lg:max-w-none lg:gap-6.5">
+        <div data-reveal class="flex w-full flex-col items-start gap-4.5 md:mx-auto md:max-w-[34rem] lg:order-1 lg:col-span-5 lg:max-w-none lg:gap-6.5">
           <Eyebrow>{item.categoryName} · Featured</Eyebrow>
           <h2 id="featured-title" class="text-h3 text-ink">
             {item.name}

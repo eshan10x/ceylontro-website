@@ -288,3 +288,89 @@
     var(--color-photo-c) 100%
   );
 }
+
+/* ---------- Motion ----------
+ * Slow, soft and short-travel (D4 motion rules). Everything here is opacity, transform or
+ * clip-path, so nothing shifts layout, and all of it is off under prefers-reduced-motion.
+ *
+ * - `.enter`: first-screen entrance on page load (CSS only). Stagger with `--enter-i`.
+ * - `.enter-arch`: the first-screen arch photo rises into its frame.
+ * - `[data-reveal]`: fades up when scrolled into view (`src/scripts/reveal.ts`).
+ *   `data-reveal="photo"` opens the frame from the bottom while the photo settles.
+ *   Stagger with `--reveal-i`.
+ */
+@media (prefers-reduced-motion: no-preference) {
+  .enter {
+    animation: enter-rise 1000ms var(--ease-soft) both;
+    animation-delay: calc(80ms + var(--enter-i, 0) * 110ms);
+  }
+
+  .enter-arch {
+    animation: enter-arch 1300ms var(--ease-soft) backwards;
+    animation-delay: calc(80ms + var(--enter-i, 0) * 110ms);
+  }
+
+  .enter-arch > * {
+    animation: settle 1600ms var(--ease-soft) both;
+    animation-delay: inherit;
+  }
+
+  [data-reveal] {
+    transition:
+      opacity 900ms var(--ease-soft),
+      transform 900ms var(--ease-soft);
+    transition-delay: calc(var(--reveal-i, 0) * 90ms);
+  }
+
+  html[data-motion='ready'] [data-reveal]:not(.is-revealed) {
+    opacity: 0;
+    transform: translateY(1.5rem);
+  }
+
+  /* Open state is a clip far outside the frame, so the soft shadow is never cut off. */
+  [data-reveal='photo'] {
+    clip-path: inset(-8rem);
+    transition:
+      clip-path 1100ms var(--ease-soft),
+      transform 600ms ease;
+    transition-delay: calc(var(--reveal-i, 0) * 90ms), 0ms;
+  }
+
+  [data-reveal='photo'] > * {
+    transition: transform 1400ms var(--ease-soft);
+    transition-delay: calc(var(--reveal-i, 0) * 90ms);
+  }
+
+  html[data-motion='ready'] [data-reveal='photo']:not(.is-revealed) {
+    opacity: 1;
+    transform: none;
+    clip-path: inset(100% 0 0 0);
+  }
+
+  html[data-motion='ready'] [data-reveal='photo']:not(.is-revealed) > * {
+    transform: scale(1.12);
+  }
+}
+
+@keyframes enter-rise {
+  from {
+    opacity: 0;
+    transform: translateY(1.25rem);
+  }
+}
+
+@keyframes enter-arch {
+  from {
+    clip-path: inset(100% 0 0 0);
+  }
+
+  to {
+    clip-path: inset(-8rem);
+  }
+}
+
+@keyframes settle {
+  from {
+    transform: scale(1.12);
+  }
+}

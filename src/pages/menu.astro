@@ -15,7 +15,7 @@ import { copy } from '@/data/copy';
 import { menu } from '@/data/menu';
 ---
 
-<PageLayout title="Menu" description={copy.menuMeta.text} overlayHeader>
+<PageLayout title="Menu" description={copy.menuMeta.text} overlayHeader structuredData={['menu']}>
   <MenuIntro />
 
   <div class="menu-body relative">

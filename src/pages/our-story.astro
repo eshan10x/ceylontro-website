@@ -10,10 +10,11 @@ import StoryChapter from '@/components/story/StoryChapter.astro';
 import StoryCta from '@/components/story/StoryCta.astro';
 import { copy } from '@/data/copy';
 import { story } from '@/data/story';
+import { storyHasContent } from '@/lib/seo';
 
 const dev = import.meta.env.DEV;
 const chapters = story.chapters.filter((chapter) => chapter.body !== null || dev);
-const hasStory = Boolean(story.intro) || story.chapters.some((chapter) => chapter.body !== null);
+const hasStory = storyHasContent();
 const description = story.intro?.[0] ?? copy.storyMeta.text;
 ---
 

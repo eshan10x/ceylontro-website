@@ -18,16 +18,17 @@ const photo = getPhoto('story-hero');
 
 <Section surface="hero" padded={false} labelledby="story-title" class="pt-header">
   <Container class="flex flex-col items-center gap-5 pt-10 pb-14 text-center md:gap-6 md:pt-16 md:pb-20 lg:pt-22 lg:pb-28">
-    <Eyebrow>{site.name}</Eyebrow>
-    <h1 id="story-title" class="text-display-l text-ink">Our <i>Story</i></h1>
-    <p class="max-w-[22ch] font-display text-[1.375rem] leading-[1.15] text-stone italic md:text-[1.75rem]">
+    <Eyebrow class="enter">{site.name}</Eyebrow>
+    <h1 id="story-title" class="enter text-display-l text-ink" style="--enter-i: 1">Our <i>Story</i></h1>
+    <p style="--enter-i: 2" class="enter max-w-[22ch] font-display text-[1.375rem] leading-[1.15] text-stone italic md:text-[1.75rem]">
       {copy.storyHeading.text}
     </p>
 
     <div class="relative mt-4 w-[min(18.125rem,78vw)] md:mt-6 md:w-[22rem] lg:w-[27rem]">
       <div
         aria-hidden="true"
-        class="rounded-arch pointer-events-none absolute -inset-3 bottom-0 border border-b-0 border-gold/55 md:-inset-4 md:bottom-0"
+        style="--enter-i: 4"
+        class="enter rounded-arch pointer-events-none absolute -inset-3 bottom-0 border border-b-0 border-gold/55 md:-inset-4 md:bottom-0"
       >
       </div>
       <Photo
@@ -39,6 +40,8 @@ const photo = getPhoto('story-hero');
         priority
         sizes="(min-width: 64rem) 432px, (min-width: 48rem) 352px, 78vw"
         caption="Interior or kitchen · 4:5"
+        style="--enter-i: 3"
+        class="enter-arch"
       />
     </div>
 

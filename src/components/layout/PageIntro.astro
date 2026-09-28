@@ -30,7 +30,7 @@ const side = sidePhoto ? getPhoto(sidePhoto) : null;
 
 <Section surface="hero" padded={false} labelledby={titleId} class="pt-header">
   <Container class="flex items-end gap-3 pt-9 pb-7 md:gap-8 md:pt-16 md:pb-14 lg:gap-12 lg:pt-22 lg:pb-18">
-    <div class="flex min-w-0 grow flex-col gap-3 md:gap-5">
+    <div class="enter flex min-w-0 grow flex-col gap-3 md:gap-5">
       <Eyebrow>{eyebrow}</Eyebrow>
       <h1 id={titleId} class="text-display-l text-ink">
         {heading.lead && `${heading.lead} `}<i>{heading.accent}</i>
@@ -46,7 +46,8 @@ const side = sidePhoto ? getPhoto(sidePhoto) : null;
       priority
       sizes="(min-width: 64rem) 280px, (min-width: 48rem) 200px, 110px"
       caption="Photo · 4:5"
-      class="w-27.5 shrink-0 md:w-50 lg:w-70"
+      style="--enter-i: 1"
+      class="enter-arch w-27.5 shrink-0 md:w-50 lg:w-70"
     />
     {
       side && (
@@ -58,7 +59,9 @@ const side = sidePhoto ? getPhoto(sidePhoto) : null;
           elevated
           ring
           sizes="190px"
-          class="relative z-10 mb-10 -ml-24 hidden w-47.5 shrink-0 lg:block xl:-ml-20"
+          reveal={false}
+          style="--enter-i: 3"
+          class="enter relative z-10 mb-10 -ml-24 hidden w-47.5 shrink-0 lg:block xl:-ml-20"
         />
       )
     }

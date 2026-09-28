@@ -115,8 +115,13 @@ export interface RestaurantInfo {
   hours: OpeningHours;
   ordering: OrderingInfo;
   social: readonly SocialLink[];
-  /** Production domain, e.g. "https://www.example.ca". */
+  /**
+   * Production URL without a trailing slash, e.g. "https://www.example.ca".
+   * Until it is set the whole site is kept out of search engines (the launch gate).
+   */
   domain: string | null;
+  /** Cuisines for search engines, from the owner's brief. */
+  cuisines: readonly string[];
   /** Only when the owner provides it; used for the map and JSON-LD. */
   geo: { latitude: number; longitude: number } | null;
   /** Only when the owner confirms these are accepted. */

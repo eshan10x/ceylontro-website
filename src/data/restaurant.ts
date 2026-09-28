@@ -32,6 +32,8 @@ export const restaurant: RestaurantInfo = {
   },
   social: [],
   domain: null,
+  // From the owner's brief: a fusion menu with strong Sri Lankan, Asian and Western influences.
+  cuisines: ['Sri Lankan', 'Asian', 'Western'],
   geo: null,
   acceptsReservations: null,
 };

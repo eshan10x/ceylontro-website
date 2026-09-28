@@ -19,11 +19,11 @@ const intro = story.intro?.[0];
 
 <Section surface="linen" labelledby="story-teaser-title">
   <Container class="grid items-center justify-items-center gap-5 text-center lg:grid-cols-12 lg:gap-x-6 lg:justify-items-start lg:text-left">
-    <div class="flex justify-center lg:col-span-4 lg:col-start-2 lg:w-full">
+    <div data-reveal class="flex justify-center lg:col-span-4 lg:col-start-2 lg:w-full">
       <LogoArch class="w-[15.625rem] lg:w-full lg:max-w-[25rem]" />
     </div>
 
-    <div class="flex max-w-xl flex-col items-center gap-5 lg:col-span-5 lg:col-start-7 lg:items-start lg:gap-6">
+    <div data-reveal style="--reveal-i: 1" class="flex max-w-xl flex-col items-center gap-5 lg:col-span-5 lg:col-start-7 lg:items-start lg:gap-6">
       <Eyebrow>Our Story</Eyebrow>
       <h2 id="story-teaser-title" class="text-h2 text-ink lg:text-[clamp(3.5rem,5vw,4.5rem)] lg:leading-[0.98]">
         {heading.lead}{' '}<i>{heading.accent}</i>

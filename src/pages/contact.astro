@@ -12,14 +12,18 @@ import ContactOrder from '@/components/contact/ContactOrder.astro';
 import ContactDetails from '@/components/contact/ContactDetails.astro';
 import ContactMap from '@/components/contact/ContactMap.astro';
 import { copy } from '@/data/copy';
-import { restaurant } from '@/data/restaurant';
-import { hasAnyHours } from '@/lib/format';
+import { contactHasFacts } from '@/lib/seo';
 
-const { address, phone, email, social, ordering } = restaurant;
-const hasFacts = Boolean(address || phone || email || social.length || ordering.url || hasAnyHours(restaurant.hours));
+const hasFacts = contactHasFacts();
 ---
 
-<PageLayout title="Contact" description={copy.contactMeta.text} noindex={!hasFacts} overlayHeader>
+<PageLayout
+  title="Contact"
+  description={copy.contactMeta.text}
+  noindex={!hasFacts}
+  overlayHeader
+  structuredData={hasFacts ? ['restaurant'] : []}
+>
   <PageIntro eyebrow="Visit & Contact" title={copy.contactHeading.text} titleId="contact-title" archPhoto="contact-dining-room" />
 
   <Container class="grid gap-4 pt-6 pb-16 md:gap-8 md:pt-12 md:pb-24 lg:grid-cols-12 lg:gap-x-6 lg:pt-18 lg:pb-32">

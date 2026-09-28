@@ -64,7 +64,7 @@ const pill =
               <ul class="fav-list" role="list">
                 {tab.items.map((item, i) => (
                   <li>
-                    <DishArchCard item={item} raised={i % 2 === 1} />
+                    <DishArchCard item={item} raised={i % 2 === 1} index={i} />
                   </li>
                 ))}
               </ul>
