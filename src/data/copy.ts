@@ -40,6 +40,16 @@ export const copy = {
     source: 'draft',
     usedIn: 'Menu page search and social description',
   },
+  storyMeta: {
+    text: 'The story of Ceylontro Kitchen — Sri Lankan, Asian and Western flavours, made with fresh ingredients in Canada.',
+    source: 'draft',
+    usedIn: 'Our Story search and social description (until the owner writes the introduction)',
+  },
+  contactMeta: {
+    text: 'Find Ceylontro Kitchen: address, opening hours, phone, email and online ordering.',
+    source: 'draft',
+    usedIn: 'Contact page search and social description',
+  },
   metaDescription: {
     text: 'Ceylontro Kitchen — Sri Lankan, Asian and Western flavours, made with fresh ingredients. Flavours Beyond Borders.',
     source: 'draft',

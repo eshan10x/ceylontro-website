@@ -1,0 +1,92 @@
+---
+/**
+ * One Our Story chapter (D3 "StoryMobile"): a 3:2 photo (or, without an image slot, the logo
+ * plaque in an espresso arch), a large outlined chapter number and the title, then the owner's
+ * paragraphs. Mobile stacks; from 1024 px the picture and text sit side by side, alternating.
+ *
+ * Only rendered once the owner has written the chapter; in development an empty chapter
+ * shows its slot with an "awaiting owner" badge so the layout can be reviewed.
+ */
+import Container from '@/components/layout/Container.astro';
+import Photo from '@/components/ui/Photo.astro';
+import LogoArch from '@/components/ui/LogoArch.astro';
+import MissingData from '@/components/ui/MissingData.astro';
+import { getPhoto } from '@/data/images';
+import type { StoryChapter as Chapter } from '@/data/types';
+
+interface Props {
+  chapter: Chapter;
+  /** Picture on the right on desktop. */
+  flip?: boolean;
+}
+
+const { chapter, flip = false } = Astro.props;
+const photo = chapter.image ? getPhoto(chapter.image) : null;
+const titleId = `chapter-${chapter.id}`;
+---
+
+<article id={chapter.id} aria-labelledby={titleId} class="story-chapter">
+  <Container class="grid items-center gap-6 md:gap-8 lg:grid-cols-12 lg:gap-x-6">
+    <div class:list={['lg:col-span-6', flip ? 'lg:col-start-7 lg:row-start-1' : 'lg:col-start-1']}>
+      {
+        photo ? (
+          <Photo
+            image={photo.image}
+            alt={photo.alt}
+            ratio="3 / 2"
+            shape="rounded"
+            sizes="(min-width: 64rem) 46vw, 92vw"
+            caption={`${chapter.title} · 3:2`}
+          />
+        ) : (
+          <div class="flex justify-center">
+            <LogoArch class="w-[15rem] md:w-[19rem] lg:w-[22rem]" />
+          </div>
+        )
+      }
+    </div>
+
+    <div
+      class:list={[
+        'flex flex-col gap-4 md:gap-5 lg:col-span-5',
+        flip ? 'lg:col-start-1 lg:row-start-1' : 'lg:col-start-8',
+      ]}
+    >
+      <div class="flex items-baseline gap-4 md:gap-5">
+        <span aria-hidden="true" class="story-chapter__number font-display text-[4rem] leading-[0.8] md:text-[5.5rem] lg:text-[7rem]">
+          {chapter.number}
+        </span>
+        <h2 id={titleId} class="text-[2.125rem] leading-none text-ink md:text-[2.75rem] lg:text-[3.5rem]">
+          <span class="sr-only">Chapter {chapter.number}: </span>{chapter.title}
+        </h2>
+      </div>
+      {
+        chapter.body ? (
+          <div class="flex flex-col gap-4 text-body text-ink">
+            {chapter.body.map((paragraph) => (
+              <p>{paragraph}</p>
+            ))}
+          </div>
+        ) : (
+          <MissingData label={`Chapter ${chapter.number} text`} />
+        )
+      }
+    </div>
+  </Container>
+</article>
+
+<style>
+  /* Outlined numeral: gold hairline, no fill. Decorative (hidden from screen readers). */
+  .story-chapter__number {
+    color: transparent;
+    -webkit-text-stroke: 1px var(--color-gold);
+    font-weight: 500;
+    letter-spacing: -0.02em;
+  }
+
+  @supports not (-webkit-text-stroke: 1px black) {
+    .story-chapter__number {
+      color: var(--color-gold);
+    }
+  }
+</style>

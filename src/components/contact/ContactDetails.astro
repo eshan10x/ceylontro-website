@@ -1,0 +1,116 @@
+---
+/**
+ * Contact facts (D3 "ContactMobile"): address with directions, phone with a call button,
+ * email, opening hours and social links. Each block appears only once the owner has supplied
+ * it; in development a missing block shows an "awaiting owner" badge instead.
+ */
+import Button from '@/components/ui/Button.astro';
+import MissingData from '@/components/ui/MissingData.astro';
+import OpeningHours from './OpeningHours.astro';
+import { restaurant } from '@/data/restaurant';
+import { addressLines, directionsHref, hasAnyHours, phoneHref } from '@/lib/format';
+
+const { address, phone, email, social } = restaurant;
+const hours = hasAnyHours(restaurant.hours);
+const dev = import.meta.env.DEV;
+
+const block = 'flex flex-col items-start gap-3 border-b border-line-soft py-6 last:border-b-0 md:py-7';
+const label = 'label text-stone';
+const value = 'font-display text-[1.625rem] leading-[1.15] text-ink lining-nums md:text-[1.875rem]';
+const link = 'underline decoration-gold decoration-1 underline-offset-[6px] transition-colors duration-350 hover:text-gold-deep';
+---
+
+<div class="flex flex-col">
+  {
+    (address || dev) && (
+      <section aria-labelledby="contact-address" class={block}>
+        <h2 id="contact-address" class={label}>Address</h2>
+        {address ? (
+          <>
+            <address class:list={[value, 'not-italic']}>
+              {addressLines(address).map((line) => (
+                <span class="block">{line}</span>
+              ))}
+            </address>
+            <Button href={directionsHref(address)} external variant="secondary" size="sm" class="mt-1">
+              Get directions
+            </Button>
+          </>
+        ) : (
+          <MissingData label="Address" />
+        )}
+      </section>
+    )
+  }
+
+  {
+    (phone || dev) && (
+      <section aria-labelledby="contact-phone" class={block}>
+        <h2 id="contact-phone" class={label}>Phone</h2>
+        {phone ? (
+          <>
+            <a href={phoneHref(phone)} class:list={[value, link]}>
+              {phone}
+            </a>
+            <Button href={phoneHref(phone)} variant="secondary" size="sm" class="mt-1 md:hidden">
+              Call now
+            </Button>
+          </>
+        ) : (
+          <MissingData label="Phone" />
+        )}
+      </section>
+    )
+  }
+
+  {
+    (email || dev) && (
+      <section aria-labelledby="contact-email" class={block}>
+        <h2 id="contact-email" class={label}>Email</h2>
+        {email ? (
+          <a href={`mailto:${email}`} class:list={[value, link, 'break-all']}>
+            {email}
+          </a>
+        ) : (
+          <MissingData label="Email" />
+        )}
+      </section>
+    )
+  }
+
+  {
+    (hours || dev) && (
+      <section aria-labelledby="contact-hours" class:list={[block, 'items-stretch']}>
+        <h2 id="contact-hours" class={label}>Opening hours</h2>
+        {hours ? <OpeningHours /> : <MissingData label="Opening hours" />}
+      </section>
+    )
+  }
+
+  {
+    (social.length > 0 || dev) && (
+      <section aria-labelledby="contact-social" class={block}>
+        <h2 id="contact-social" class={label}>Follow us</h2>
+        {social.length ? (
+          <ul class="flex flex-wrap gap-2" role="list">
+            {social.map((item) => (
+              <li>
+                <a
+                  href={item.url}
+                  target="_blank"
+                  rel="noopener me"
+                  class="inline-flex min-h-11 items-center rounded-full border border-line px-[1.125rem] text-[0.875rem] font-medium text-ink no-underline transition-colors duration-350 hover:border-gold"
+                >
+                  {item.label}
+                  <span class="sr-only"> (opens in a new tab)</span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <MissingData label="Social links" />
+        )}
+      </section>
+    )
+  }
+</div>

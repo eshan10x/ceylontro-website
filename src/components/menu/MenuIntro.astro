@@ -1,65 +1,30 @@
 ---
 /**
  * Menu page intro (D3 "MenuMobile" / "MenuDesktop"): the owner's printed line as eyebrow,
- * "The Menu" title, a short line, a key to the dietary markers in use, and an arch photo
- * with a round side dish on desktop.
+ * "The Menu" title, a short line, and a key to the dietary markers in use.
  */
-import Section from '@/components/layout/Section.astro';
-import Container from '@/components/layout/Container.astro';
-import Eyebrow from '@/components/ui/Eyebrow.astro';
-import Photo from '@/components/ui/Photo.astro';
+import PageIntro from '@/components/layout/PageIntro.astro';
 import DietaryMarker from '@/components/ui/DietaryMarker.astro';
 import { copy } from '@/data/copy';
 import { allMenuItems } from '@/data/menu';
-import { getPhoto } from '@/data/images';
 import type { DietaryTag } from '@/data/types';
-
-const arch = getPhoto('menu-intro');
-const side = getPhoto('menu-intro-side');
 
 // Only explain markers that actually appear on the menu.
 const order: readonly DietaryTag[] = ['spicy', 'vegetarian'];
 const tagsInUse = order.filter((tag) => allMenuItems().some((item) => item.tags.includes(tag)));
 ---
 
-<Section surface="hero" padded={false} labelledby="menu-title" class="menu-intro pt-header">
-  <Container class="flex items-end gap-3 pt-9 pb-7 md:gap-8 md:pt-16 md:pb-14 lg:gap-12 lg:pt-22 lg:pb-18">
-    <div class="flex min-w-0 grow flex-col gap-3 md:gap-5">
-      <Eyebrow>{copy.freshBold.text}</Eyebrow>
-      <h1 id="menu-title" class="text-display-l text-ink">The <i>Menu</i></h1>
-      <p class="max-w-[27.5rem] text-[0.875rem] leading-relaxed text-stone md:text-small">{copy.menuIntro.text}</p>
-      {
-        tagsInUse.length > 0 && (
-          <ul class="flex flex-wrap gap-x-5 gap-y-2" role="list" aria-label="Menu markers">
-            {tagsInUse.map((tag) => (
-              <li>
-                <DietaryMarker kind={tag} />
-              </li>
-            ))}
-          </ul>
-        )
-      }
-    </div>
-    <Photo
-      image={arch.image}
-      alt={arch.alt}
-      shape="arch"
-      ratio="7 / 9"
-      elevated
-      priority
-      sizes="(min-width: 64rem) 280px, (min-width: 48rem) 200px, 110px"
-      caption="Dish"
-      class="w-27.5 shrink-0 md:w-50 lg:w-70"
-    />
-    <Photo
-      image={side.image}
-      alt={side.alt}
-      shape="circle"
-      ratio="1 / 1"
-      elevated
-      ring
-      sizes="190px"
-      class="relative z-10 -ml-24 mb-10 hidden w-47.5 shrink-0 lg:block xl:-ml-20"
-    />
-  </Container>
-</Section>
+<PageIntro eyebrow={copy.freshBold.text} title="The Menu" titleId="menu-title" archPhoto="menu-intro" sidePhoto="menu-intro-side">
+  <p class="max-w-[27.5rem] text-[0.875rem] leading-relaxed text-stone md:text-small">{copy.menuIntro.text}</p>
+  {
+    tagsInUse.length > 0 && (
+      <ul class="flex flex-wrap gap-x-5 gap-y-2" role="list" aria-label="Menu markers">
+        {tagsInUse.map((tag) => (
+          <li>
+            <DietaryMarker kind={tag} />
+          </li>
+        ))}
+      </ul>
+    )
+  }
+</PageIntro>

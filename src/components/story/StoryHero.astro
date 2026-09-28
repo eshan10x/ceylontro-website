@@ -1,0 +1,57 @@
+---
+/**
+ * Our Story hero (D3 "StoryMobile"): centred title, the draft brand line, and a large arch
+ * photo inside a fine gold arch outline. The owner's introduction appears once supplied.
+ */
+import Section from '@/components/layout/Section.astro';
+import Container from '@/components/layout/Container.astro';
+import Eyebrow from '@/components/ui/Eyebrow.astro';
+import Photo from '@/components/ui/Photo.astro';
+import MissingData from '@/components/ui/MissingData.astro';
+import { copy } from '@/data/copy';
+import { getPhoto } from '@/data/images';
+import { site } from '@/config/site';
+import { story } from '@/data/story';
+
+const photo = getPhoto('story-hero');
+---
+
+<Section surface="hero" padded={false} labelledby="story-title" class="pt-header">
+  <Container class="flex flex-col items-center gap-5 pt-10 pb-14 text-center md:gap-6 md:pt-16 md:pb-20 lg:pt-22 lg:pb-28">
+    <Eyebrow>{site.name}</Eyebrow>
+    <h1 id="story-title" class="text-display-l text-ink">Our <i>Story</i></h1>
+    <p class="max-w-[22ch] font-display text-[1.375rem] leading-[1.15] text-stone italic md:text-[1.75rem]">
+      {copy.storyHeading.text}
+    </p>
+
+    <div class="relative mt-4 w-[min(18.125rem,78vw)] md:mt-6 md:w-[22rem] lg:w-[27rem]">
+      <div
+        aria-hidden="true"
+        class="rounded-arch pointer-events-none absolute -inset-3 bottom-0 border border-b-0 border-gold/55 md:-inset-4 md:bottom-0"
+      >
+      </div>
+      <Photo
+        image={photo.image}
+        alt={photo.alt}
+        shape="arch"
+        ratio="4 / 5"
+        elevated
+        priority
+        sizes="(min-width: 64rem) 432px, (min-width: 48rem) 352px, 78vw"
+        caption="Interior or kitchen · 4:5"
+      />
+    </div>
+
+    {
+      story.intro ? (
+        <div class="flex max-w-[38rem] flex-col gap-4 pt-6 text-body text-ink md:pt-10">
+          {story.intro.map((paragraph) => (
+            <p>{paragraph}</p>
+          ))}
+        </div>
+      ) : (
+        <MissingData label="Story introduction" class="self-center" />
+      )
+    }
+  </Container>
+</Section>

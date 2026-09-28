@@ -1,0 +1,32 @@
+---
+/**
+ * Our Story (D3 "StoryMobile"). Everything historical comes from the owner (`src/data/story.ts`):
+ * chapters appear only once written, and the page is kept out of search results until the
+ * owner's story exists, so an empty page is never indexed.
+ */
+import PageLayout from '@/layouts/PageLayout.astro';
+import StoryHero from '@/components/story/StoryHero.astro';
+import StoryChapter from '@/components/story/StoryChapter.astro';
+import StoryCta from '@/components/story/StoryCta.astro';
+import { copy } from '@/data/copy';
+import { story } from '@/data/story';
+
+const dev = import.meta.env.DEV;
+const chapters = story.chapters.filter((chapter) => chapter.body !== null || dev);
+const hasStory = Boolean(story.intro) || story.chapters.some((chapter) => chapter.body !== null);
+const description = story.intro?.[0] ?? copy.storyMeta.text;
+---
+
+<PageLayout title="Our Story" description={description} noindex={!hasStory} overlayHeader>
+  <StoryHero />
+  {
+    chapters.length > 0 && (
+      <div class="flex flex-col gap-18 py-16 md:gap-24 md:py-24 lg:gap-32 lg:py-32">
+        {chapters.map((chapter, index) => (
+          <StoryChapter chapter={chapter} flip={index % 2 === 1} />
+        ))}
+      </div>
+    )
+  }
+  <StoryCta />
+</PageLayout>

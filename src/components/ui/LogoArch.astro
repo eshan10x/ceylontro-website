@@ -1,0 +1,22 @@
+---
+/**
+ * The supplied logo plaque set inside an espresso arch — the site's heritage moment
+ * (Home story teaser, Our Story chapter 02). The logo is used exactly as supplied.
+ */
+import Logo from './Logo.astro';
+
+interface Props {
+  class?: string | undefined;
+}
+
+const { class: className } = Astro.props;
+---
+
+<div
+  class:list={[
+    'rounded-arch flex aspect-[4/5] items-end justify-center bg-espresso pb-[16%] shadow-[0_50px_100px_-50px_rgb(43_27_18/0.6)]',
+    className,
+  ]}
+>
+  <Logo size={280} alt="Ceylontro Kitchen carved lion emblem" class="w-[68%]" />
+</div>

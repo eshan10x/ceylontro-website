@@ -133,3 +133,20 @@ export function isCurrent(href: string, pathname: string): boolean {
   const path = normalisePath(pathname);
   return href === '/' ? path === '/' : path === href || path.startsWith(`${href}/`);
 }
+
+/** One-line address for search and map queries. */
+export const addressQuery = (address: Address): string => addressLines(address).join(', ');
+
+/** Directions link: the owner's own link if given, otherwise a Google Maps search for the address. */
+export function directionsHref(address: Address): string {
+  return address.directionsUrl ?? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(addressQuery(address))}`;
+}
+
+/**
+ * Google Maps embed for the click-to-load map (no API key). Uses the owner's coordinates when
+ * supplied, otherwise the address. `null` when neither exists, which hides the map.
+ */
+export function mapEmbedSrc(address: Address | null, geo: { latitude: number; longitude: number } | null): string | null {
+  const query = geo ? `${geo.latitude},${geo.longitude}` : address ? addressQuery(address) : null;
+  return query ? `https://www.google.com/maps?q=${encodeURIComponent(query)}&z=16&output=embed` : null;
+}

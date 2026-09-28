@@ -25,14 +25,16 @@ The site is static, built with **Astro 7**, **TypeScript** (strictest settings) 
 src/
   assets/brand/        Supplied logo (swap in the flat/transparent master when available)
   components/
-    layout/            Section (brand surfaces), Container (widths and gutters)
+    layout/            Section (brand surfaces), Container (widths and gutters), PageIntro (Menu, Contact)
     shell/             SiteHeader, MobileNav (drawer), MenuToggle, HoursToday, SiteFooter
     home/              HomeHero, HouseFavourites, FeaturedDish, StoryTeaser, OrderBand, VisitTeaser
+    story/             StoryHero, StoryChapter, StoryCta
+    contact/           ContactOrder (#order), ContactDetails, OpeningHours, ContactMap
     menu/              DishArchCard (Home), and the Menu page: MenuIntro, MenuCategoryBar (mobile),
                        MenuSideNav (desktop), MenuCategory, MenuFeaturedCard, MenuRow,
                        MenuComboCard, MenuItemOptions, MenuPrice, MobileOrderBar
     ui/                Button, OrderButton, TextLink, Pill, DietaryMarker, Eyebrow,
-                       SectionHeading, Ornament, Photo, Logo, MissingData
+                       SectionHeading, Ornament, Photo, Logo, LogoArch, MissingData
   assets/photos/       The owner's photographs (empty until supplied)
   config/site.ts       Navigation, metadata and the Order Online destination
   data/                All content, as typed data:
@@ -49,11 +51,12 @@ src/
     PageLayout         BaseLayout + header, drawer, <main>, footer (use this for pages)
   lib/format.ts        Hours, address, phone and current-page helpers
   lib/text.ts          Italic-accent headings, menu description spacing
-  pages/               index (Home), menu, 404, styleguide (internal, noindex)
+  pages/               index (Home), menu, our-story, contact, 404, styleguide (internal, noindex)
   scripts/
     shell.ts           Header scroll state, drawer fallback, today's hours
     favourites-tabs.ts Home "House favourites" category tabs
     menu-nav.ts        Menu scroll-spy: marks the category in view in both category navigations
+    contact-map.ts     Contact: loads the Google map only when the visitor asks
   styles/global.css    Design tokens (@theme) and base styles
 scripts/
   missing-facts.ts     Runs the report (used by `npm run build`)
@@ -89,6 +92,13 @@ The owner's facts all go in `src/data/`, and none of it requires touching compon
 - A category's rows switch to a compact name-and-price list when none of its dishes has a description, options or photo (for example Wings Special).
 - Choices shared by a whole category (for example the Handhelds side) are shown once in the category header.
 - Every dish has an anchor (`/menu#honey-garlic-wings`), used by the Home cards; the dish is briefly highlighted on arrival.
+
+## Our Story and Contact
+
+- **Our Story:** the introduction and each chapter appear only once the owner's text is in `story.ts`. Chapter 02 shows the logo plaque in an espresso arch; the others use a 3:2 photo slot.
+- **Contact:** address (with Get directions), phone (with Call now on phones), email, opening hours (today highlighted) and social links each appear once supplied. The map appears once the address exists, and nothing is loaded from Google until the visitor presses Load map.
+- **Ordering card (`/contact#order`):** every Order Online button lands here until `ordering.url` is set. Without a URL the card offers View Menu, so it never links back to itself; with one it shows Order Online, the platform name and any delivery partners.
+- Both pages are kept out of search results (`noindex`) while they have none of the owner's content, and become indexable automatically once it is added.
 
 ## Content rules
 

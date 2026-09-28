@@ -1,0 +1,45 @@
+---
+/**
+ * Opening hours, one row per day the owner has supplied (D4 "Hours list"). Days not supplied
+ * yet are left out, never guessed. `shell.ts` highlights the visitor's weekday on a linen row
+ * and marks it `aria-current="date"`; without JavaScript every row looks the same.
+ */
+import { restaurant } from '@/data/restaurant';
+import { JS_DAY, WEEKDAYS, dayName, formatPeriods } from '@/lib/format';
+
+const rows = WEEKDAYS.flatMap((day) => {
+  const periods = restaurant.hours[day];
+  return periods === null ? [] : [{ day, jsDay: JS_DAY[day], text: formatPeriods(periods) }];
+});
+---
+
+{
+  rows.length > 0 && (
+    <ul class="flex flex-col" role="list">
+      {rows.map((row) => (
+        <li data-hours-day={row.jsDay} class="hours-row flex items-baseline justify-between gap-4 rounded-[0.875rem] px-3.5 py-2.5">
+          <span class="text-ink">
+            {dayName(row.day)}
+            <span class="hours-row__today label ml-2 text-gold-deep">Today</span>
+          </span>
+          <span class="text-right text-stone">{row.text}</span>
+        </li>
+      ))}
+    </ul>
+  )
+}
+
+<style>
+  .hours-row__today {
+    display: none;
+  }
+
+  .hours-row[aria-current='date'] {
+    background: var(--color-linen);
+    font-weight: 600;
+  }
+
+  .hours-row[aria-current='date'] .hours-row__today {
+    display: inline;
+  }
+</style>

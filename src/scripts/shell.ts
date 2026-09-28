@@ -4,7 +4,8 @@
  * 1. Header: marks it as scrolled once a sentinel 40 px down the page leaves the viewport.
  * 2. Drawer: fallback for browsers without the HTML `command` attribute; closes the drawer
  *    when a link inside it is used or when the window grows to desktop width.
- * 3. Hours: reveals today's opening hours for the visitor's weekday.
+ * 3. Hours: reveals today's opening hours for the visitor's weekday, and marks today's row
+ *    in the full opening-hours list (Contact).
  */
 
 const header = document.getElementById('site-header');
@@ -41,4 +42,7 @@ if (drawer instanceof HTMLDialogElement) {
 const today = String(new Date().getDay());
 for (const line of document.querySelectorAll<HTMLElement>('[data-weekday]')) {
   line.hidden = line.dataset['weekday'] !== today;
+}
+for (const row of document.querySelectorAll<HTMLElement>('[data-hours-day]')) {
+  if (row.dataset['hoursDay'] === today) row.setAttribute('aria-current', 'date');
 }

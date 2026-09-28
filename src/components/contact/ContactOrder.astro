@@ -1,0 +1,67 @@
+---
+/**
+ * Contact ordering card (`#order`, D3 "ContactMobile"): the espresso card every Order Online
+ * button lands on until the real ordering URL exists.
+ * - With `ordering.url`: Order Online (opens the ordering site), the platform name if given,
+ *   and any delivery partners the owner confirms.
+ * - Without it: View Menu instead, so the card never links back to itself.
+ */
+import Button from '@/components/ui/Button.astro';
+import Eyebrow from '@/components/ui/Eyebrow.astro';
+import MissingData from '@/components/ui/MissingData.astro';
+import OrderButton from '@/components/ui/OrderButton.astro';
+import { copy } from '@/data/copy';
+import { restaurant } from '@/data/restaurant';
+
+interface Props {
+  class?: string | undefined;
+}
+
+const { class: className } = Astro.props;
+const { url, platformName, deliveryPartners } = restaurant.ordering;
+---
+
+<section
+  id="order"
+  aria-labelledby="order-title"
+  class:list={[
+    'surface-dark grain on-dark scroll-mt-24 rounded-card p-6 md:p-9 lg:scroll-mt-28 lg:p-11',
+    className,
+  ]}
+>
+  <div class="relative z-10 flex flex-col gap-4 md:gap-5">
+    <Eyebrow onDark>Order online</Eyebrow>
+    <h2 id="order-title" class="text-[2rem] leading-none text-cream italic md:text-[2.75rem] lg:text-[3.25rem]">
+      {copy.contactOrder.text}
+    </h2>
+    {platformName && <p class="text-small text-cream-muted">Order through {platformName}.</p>}
+
+    <div class="flex flex-col gap-3 pt-2">
+      {url ? <OrderButton onDark fullWidth /> : <Button href="/menu" variant="cream" fullWidth>View Menu</Button>}
+      {!url && <MissingData label="Ordering link" onDark />}
+    </div>
+
+    {
+      deliveryPartners.length > 0 && (
+        <div class="flex flex-col gap-2 border-t border-cream/15 pt-5">
+          <p class="label text-cream-muted">Also on</p>
+          <ul class="flex flex-wrap gap-x-5" role="list">
+            {deliveryPartners.map((partner) => (
+              <li>
+                <a
+                  href={partner.url}
+                  target="_blank"
+                  rel="noopener"
+                  class="inline-flex min-h-11 items-center text-cream underline decoration-gold-light/60 underline-offset-4 hover:text-white"
+                >
+                  {partner.name}
+                  <span class="sr-only"> (opens in a new tab)</span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )
+    }
+  </div>
+</section>

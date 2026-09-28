@@ -6,7 +6,7 @@
 import Section from '@/components/layout/Section.astro';
 import Container from '@/components/layout/Container.astro';
 import Eyebrow from '@/components/ui/Eyebrow.astro';
-import Logo from '@/components/ui/Logo.astro';
+import LogoArch from '@/components/ui/LogoArch.astro';
 import MissingData from '@/components/ui/MissingData.astro';
 import TextLink from '@/components/ui/TextLink.astro';
 import { copy } from '@/data/copy';
@@ -20,11 +20,7 @@ const intro = story.intro?.[0];
 <Section surface="linen" labelledby="story-teaser-title">
   <Container class="grid items-center justify-items-center gap-5 text-center lg:grid-cols-12 lg:gap-x-6 lg:justify-items-start lg:text-left">
     <div class="flex justify-center lg:col-span-4 lg:col-start-2 lg:w-full">
-      <div
-        class="rounded-arch flex aspect-[4/5] w-[15.625rem] items-end justify-center bg-espresso pb-10 shadow-[0_50px_100px_-50px_rgb(43_27_18/0.6)] lg:w-full lg:max-w-[25rem] lg:pb-[15%]"
-      >
-        <Logo size={280} alt="Ceylontro Kitchen carved lion emblem" class="w-[68%]" />
-      </div>
+      <LogoArch class="w-[15.625rem] lg:w-full lg:max-w-[25rem]" />
     </div>
 
     <div class="flex max-w-xl flex-col items-center gap-5 lg:col-span-5 lg:col-start-7 lg:items-start lg:gap-6">

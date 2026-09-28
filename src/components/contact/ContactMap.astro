@@ -1,0 +1,54 @@
+---
+/**
+ * Click-to-load map (D4 "Map": idle → loaded). Nothing is fetched from Google until the
+ * visitor asks: `contact-map.ts` swaps the placeholder for the embed on click. Without
+ * JavaScript the button is a plain link to directions. Hidden until the address exists.
+ */
+import { restaurant } from '@/data/restaurant';
+import { directionsHref, mapEmbedSrc } from '@/lib/format';
+
+const { address, geo, name } = restaurant;
+const src = mapEmbedSrc(address, geo);
+const fallback = address ? directionsHref(address) : src;
+---
+
+{
+  src && fallback && (
+    <section aria-label="Map" data-map={src} class="contact-map relative aspect-[3/2] overflow-hidden rounded-card bg-linen md:aspect-[21/9]">
+      <div data-map-idle class="absolute inset-0 flex flex-col items-center justify-center gap-3 p-6 text-center">
+        <span aria-hidden="true" class="flex size-10 items-center justify-center rounded-full bg-espresso">
+          <span class="block size-2.5 rounded-full bg-gold-light" />
+        </span>
+        <a
+          href={fallback}
+          target="_blank"
+          rel="noopener"
+          data-map-load
+          class="inline-flex min-h-11 items-center rounded-full bg-white px-6 text-button font-semibold tracking-[0.12em] text-espresso uppercase no-underline shadow-[0_10px_24px_-14px_rgb(43_27_18/0.5)] transition-shadow duration-350 hover:shadow-button"
+        >
+          Load map
+        </a>
+        <p class="text-[0.8125rem] text-stone">The map loads from Google only when you ask for it.</p>
+      </div>
+      <template data-map-template>
+        <iframe
+          title={`Map showing ${name}`}
+          src={src}
+          loading="lazy"
+          referrerpolicy="no-referrer-when-downgrade"
+          class="absolute inset-0 size-full border-0"
+        ></iframe>
+      </template>
+    </section>
+  )
+}
+
+<style>
+  /* Fine gold grid, echoing the idle state in the mockup. */
+  .contact-map {
+    background-image:
+      linear-gradient(rgb(184 137 47 / 0.1) 1px, transparent 1px),
+      linear-gradient(90deg, rgb(184 137 47 / 0.1) 1px, transparent 1px);
+    background-size: 28px 28px;
+  }
+</style>

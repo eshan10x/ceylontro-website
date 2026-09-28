@@ -1,0 +1,40 @@
+---
+/**
+ * Contact (D3 "ContactMobile"): intro, the ordering card (`#order`, where Order Online lands
+ * until the real ordering URL exists), the owner's contact facts and the click-to-load map.
+ * Mobile stacks; from 1024 px the ordering card sits beside the facts.
+ * Kept out of search results until at least one contact fact exists.
+ */
+import PageLayout from '@/layouts/PageLayout.astro';
+import Container from '@/components/layout/Container.astro';
+import PageIntro from '@/components/layout/PageIntro.astro';
+import ContactOrder from '@/components/contact/ContactOrder.astro';
+import ContactDetails from '@/components/contact/ContactDetails.astro';
+import ContactMap from '@/components/contact/ContactMap.astro';
+import { copy } from '@/data/copy';
+import { restaurant } from '@/data/restaurant';
+import { hasAnyHours } from '@/lib/format';
+
+const { address, phone, email, social, ordering } = restaurant;
+const hasFacts = Boolean(address || phone || email || social.length || ordering.url || hasAnyHours(restaurant.hours));
+---
+
+<PageLayout title="Contact" description={copy.contactMeta.text} noindex={!hasFacts} overlayHeader>
+  <PageIntro eyebrow="Visit & Contact" title={copy.contactHeading.text} titleId="contact-title" archPhoto="contact-dining-room" />
+
+  <Container class="grid gap-4 pt-6 pb-16 md:gap-8 md:pt-12 md:pb-24 lg:grid-cols-12 lg:gap-x-6 lg:pt-18 lg:pb-32">
+    <div class="lg:col-span-5">
+      <ContactOrder class="lg:sticky lg:top-28" />
+    </div>
+    <div class="lg:col-span-6 lg:col-start-7">
+      <ContactDetails />
+    </div>
+    <div class="pt-4 md:pt-4 lg:col-span-12 lg:pt-10">
+      <ContactMap />
+    </div>
+  </Container>
+</PageLayout>
+
+<script>
+  import '@/scripts/contact-map';
+</script>
