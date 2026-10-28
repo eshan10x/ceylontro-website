@@ -7,11 +7,11 @@
 import Container from '@/components/layout/Container.astro';
 import Eyebrow from '@/components/ui/Eyebrow.astro';
 import Photo from '@/components/ui/Photo.astro';
-import Pill from '@/components/ui/Pill.astro';
 import DietaryMarker from '@/components/ui/DietaryMarker.astro';
 import MissingData from '@/components/ui/MissingData.astro';
 import OrderButton from '@/components/ui/OrderButton.astro';
-import { findMenuItem, homeFeaturedItem, optionsFor } from '@/data/menu';
+import MenuItemOptions from '@/components/menu/MenuItemOptions.astro';
+import { extrasFor, findMenuItem, homeFeaturedItem, optionsFor } from '@/data/menu';
 import { getPhoto } from '@/data/images';
 import { spaceSlashes } from '@/lib/text';
 
@@ -19,6 +19,7 @@ const item = findMenuItem(homeFeaturedItem);
 const overhead = getPhoto('featured-overhead');
 const detail = getPhoto('featured-detail');
 const options = item ? optionsFor(item) : [];
+const extras = item ? extrasFor(item) : [];
 ---
 
 {
@@ -61,18 +62,7 @@ const options = item ? optionsFor(item) : [];
               ))}
             </div>
           )}
-          {options.map((group) => (
-            <div class="flex flex-col gap-2.5">
-              <p class="label text-stone">{group.label}</p>
-              <ul class="flex flex-wrap gap-2" role="list">
-                {group.values.map((value) => (
-                  <li>
-                    <Pill size="sm">{value}</Pill>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
+          <MenuItemOptions groups={options} extras={extras} variant="pills" />
           <div class="flex flex-wrap items-center gap-x-6 gap-y-4 pt-1">
             <OrderButton />
             {item.price ? <p class="font-display text-dish text-ink">{item.price}</p> : <MissingData label="Price" />}

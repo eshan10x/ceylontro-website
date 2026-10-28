@@ -1,27 +1,35 @@
 ---
 /**
- * An item's choices (protein, sauce, filling, side) and add-ons, as printed on the menu.
- * - `pills`: static pills, for the featured card.
- * - `text`: one compact line per group, for menu rows.
+ * An item's choices (sauce, side, flavour) and paid extras, as printed on the menu.
+ * - `pills`: static pills, for featured cards.
+ * - `text`: one compact line per group, for menu rows and category headers.
  * Information only: nothing here is selectable until online ordering exists.
  */
 import Pill from '@/components/ui/Pill.astro';
-import type { MenuOptionGroup } from '@/data/types';
+import type { MenuExtraGroup, MenuOptionGroup } from '@/data/types';
 
 interface Props {
-  groups: readonly MenuOptionGroup[];
-  addOns?: readonly string[] | undefined;
+  groups?: readonly MenuOptionGroup[] | undefined;
+  extras?: readonly MenuExtraGroup[] | undefined;
   variant?: 'pills' | 'text';
+  /** Right-aligned lines, for the category header on wide screens. */
+  alignEnd?: boolean;
   class?: string | undefined;
 }
 
-const { groups, addOns = [], variant = 'text', class: className } = Astro.props;
+const { groups = [], extras = [], variant = 'text', alignEnd = false, class: className } = Astro.props;
+
+const lines = [
+  ...groups.map((group) => ({ label: group.label, values: group.values.map((value) => ({ name: value, price: '' })) })),
+  ...extras,
+];
+const line = ['flex flex-wrap items-baseline gap-x-2 text-[0.8125rem] leading-normal', alignEnd && 'md:justify-end'];
 ---
 
 {
-  (groups.length > 0 || addOns.length > 0) && (
+  lines.length > 0 && (
     <dl class:list={['flex flex-col', variant === 'pills' ? 'gap-3' : 'gap-1', className]}>
-      {groups.map((group) =>
+      {lines.map((group) =>
         variant === 'pills' ? (
           <div class="flex flex-col gap-2">
             <dt class="label text-stone">{group.label}</dt>
@@ -29,24 +37,31 @@ const { groups, addOns = [], variant = 'text', class: className } = Astro.props;
               <ul class="flex flex-wrap gap-1.5" role="list">
                 {group.values.map((value) => (
                   <li>
-                    <Pill size="sm">{value}</Pill>
+                    <Pill size="sm">
+                      {value.name}
+                      {value.price && <span class="pl-1.5 font-semibold tabular-nums">{value.price}</span>}
+                    </Pill>
                   </li>
                 ))}
               </ul>
             </dd>
           </div>
         ) : (
-          <div class="flex flex-wrap items-baseline gap-x-2 text-[0.8125rem] leading-normal">
+          <div class:list={line}>
             <dt class="text-stone">{group.label}</dt>
-            <dd class="font-medium text-ink">{group.values.join(' · ')}</dd>
+            <dd class="font-medium text-ink">
+              {group.values.map((value, i) => (
+                <>
+                  {i > 0 && <span aria-hidden="true" class="text-stone"> · </span>}
+                  <span class="whitespace-nowrap">
+                    {value.name}
+                    {value.price && <span class="tabular-nums"> {value.price}</span>}
+                  </span>
+                </>
+              ))}
+            </dd>
           </div>
         ),
-      )}
-      {addOns.length > 0 && (
-        <div class="flex flex-wrap items-baseline gap-x-2 text-[0.8125rem] leading-normal">
-          <dt class="text-stone">Extras</dt>
-          <dd class="font-medium text-ink">{addOns.join(' · ')}</dd>
-        </div>
       )}
     </dl>
   )

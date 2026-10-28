@@ -1,124 +1,357 @@
 /**
- * The Ceylontro Kitchen menu, transcribed from the owner's printed menu.
+ * The Ceylontro Kitchen menu, transcribed from the owner's menu V1.2 (October 2026).
  *
- * - Wording is kept exactly as printed (only letter case is normalised for display).
- *   Suspected typos are NOT corrected: they carry a `confirm` note instead.
- * - `spicy` is set only where the printed menu shows a chilli icon.
- * - `vegetarian` is set only when the owner confirms it (the printed leaf icon is still unconfirmed).
- * - Prices are `null` until the owner supplies them.
+ * - Names, descriptions, prices and extras are exactly as printed.
+ * - Questions about the printed menu carry a `confirm` note; the missing-facts report lists them.
+ * - V1.2 prints no chilli or leaf icons, so no dish carries a `spicy` or `vegetarian` marker.
+ *   Add one only when the owner confirms it.
  */
-import type { MenuCategory, MenuItemWithCategory, MenuOptionGroup } from './types.ts';
+import type { MenuCategory, MenuExtraGroup, MenuItemWithCategory, MenuOptionGroup } from './types.ts';
 
-const PROTEIN = { label: 'Protein', values: ['Chicken', 'Beef', 'Seafood', 'Mix or Seafood'] } as const;
-const PROTEIN_NOTE = '"Mix or Seafood" protein option: what does it mean?';
+/** "Add: chicken $2 · beef $3 · seafood $5 · mix $5", printed under Fried Rice and Stir-Fried Noodles. */
+const ADD_RICE_NOODLES: MenuExtraGroup = {
+  label: 'Add',
+  values: [
+    { name: 'Chicken', price: '$2' },
+    { name: 'Beef', price: '$3' },
+    { name: 'Seafood', price: '$5' },
+    { name: 'Mix', price: '$5' },
+  ],
+};
+
+/** "Add: chicken $3 · seafood $5", printed under Quesadillas and Pasta. */
+const ADD_CHICKEN_SEAFOOD: MenuExtraGroup = {
+  label: 'Add',
+  values: [
+    { name: 'Chicken', price: '$3' },
+    { name: 'Seafood', price: '$5' },
+  ],
+};
+
+/** "Choose your flavour", printed under the Best Wings heading. */
+const WING_FLAVOUR: MenuOptionGroup = {
+  label: 'Choose your flavour',
+  values: ['Honey garlic', 'Parmesan Caesar', 'Hot sauce', 'Honey-hot', 'Thai sweet chilli', 'Cajun dry rub'],
+};
 
 export const menu: readonly MenuCategory[] = [
   {
     id: 'appetizers',
     name: 'Appetizers',
+    intro: 'Freshly fried to golden perfection & served hot and crispy.',
     image: 'category-appetizers',
     items: [
       {
-        id: 'vegetable-spring-rolls',
-        name: 'Vegetable Spring Rolls',
-        description: 'Spring roll sheet, carrots, cabbage, onion, mushroom',
-        price: null,
-        image: 'vegetable-spring-rolls',
-        tags: [],
-        confirm: ['Printed menu shows a leaf icon: does it mean vegetarian?'],
-      },
-      {
-        id: 'chinese-rolls',
-        name: 'Chinese Rolls',
-        description: 'Potato with onion and spicy mix with roll on pancake',
-        price: null,
-        image: 'chinese-rolls',
-        options: [{ label: 'Filling', values: ['Chicken', 'Fish'] }],
+        id: 'spring-rolls',
+        name: 'Spring Rolls',
+        description: 'Cabbage, carrot & mushroom wrapped in a crispy sheet, served with sweet chilli sauce.',
+        price: '$9.99',
+        image: 'spring-rolls',
         tags: [],
       },
       {
-        id: 'prawn-toast',
-        name: 'Prawn Toast',
-        description: 'White bread and chopped shrimps with egg whites and sesame seed',
-        price: null,
-        image: 'prawn-toast',
+        id: 'chicken-chinese-roll',
+        name: 'Chicken Chinese Roll',
+        description:
+          'A savoury blend of seasoned potatoes and minced chicken, wrapped in a delicate pancake, coated in golden breadcrumbs. Served with house sauce.',
+        price: '$9.99',
+        image: 'chicken-chinese-roll',
         tags: [],
       },
       {
-        id: 'french-fries',
-        name: 'French Fries',
-        price: null,
-        image: 'french-fries',
+        id: 'shrimp-toast',
+        name: 'Shrimp Toast',
+        description:
+          'Succulent prawns, aromatic garlic and savoury seasonings spread over crispy bread, topped with sesame seeds. Served with Thai sweet chilli.',
+        price: '$11.99',
+        image: 'shrimp-toast',
         tags: [],
-        confirm: ['Printed menu shows a leaf icon: does it mean vegetarian?'],
+      },
+      {
+        id: 'golden-crispy-mozzarella-planks',
+        name: 'Golden Crispy Mozzarella Planks',
+        description:
+          'Crispy-coated planks with a gooey, cheesy centre, finished with Parmesan and fresh parsley. Served with rich marinara.',
+        price: '$11.99',
+        image: 'golden-crispy-mozzarella-planks',
+        tags: [],
+      },
+      {
+        id: 'poutine',
+        name: 'Poutine',
+        price: '$9.99',
+        image: 'poutine',
+        tags: [],
+        confirm: ['No description is printed: add one (e.g. what the gravy and curds are)?'],
       },
     ],
   },
   {
-    id: 'rice-noodles',
-    name: 'Rice & Noodles',
-    image: 'category-rice-noodles',
-    confirm: [PROTEIN_NOTE],
+    id: 'salads',
+    name: 'Salads',
+    image: 'category-salads',
+    items: [
+      {
+        id: 'caesar-salad',
+        name: 'Caesar Salad',
+        description: 'Romaine, Parmesan, garlic croutons and creamy Caesar dressing.',
+        price: '$12.99',
+        image: 'caesar-salad',
+        tags: [],
+      },
+      {
+        id: 'house-salad',
+        name: 'House Salad',
+        description: 'Mixed greens, cherry tomatoes, cucumber, red onion & carrot with balsamic dressing.',
+        price: '$10.99',
+        image: 'house-salad',
+        tags: [],
+      },
+      {
+        id: 'greek-salad',
+        name: 'Greek Salad',
+        description: 'Romaine & iceberg, grape tomatoes, cucumber, Kalamata olives, onion, feta & mixed peppers.',
+        price: '$14.99',
+        image: 'greek-salad',
+        tags: [],
+      },
+    ],
+  },
+  {
+    id: 'devilled',
+    name: 'Devilled',
+    intro: 'Tossed with onion, peppers, tomato & green onion.',
+    image: 'category-devilled',
+    items: [
+      { id: 'chicken-devilled', name: 'Chicken Devilled', price: '$17.99', image: 'chicken-devilled', tags: [] },
+      { id: 'fish-devilled', name: 'Fish Devilled', price: '$18.99', image: 'fish-devilled', tags: [] },
+      { id: 'shrimp-devilled', name: 'Shrimp Devilled', price: '$18.99', image: 'shrimp-devilled', tags: [] },
+      { id: 'beef-devilled', name: 'Beef Devilled', price: '$20.99', image: 'beef-devilled', tags: [] },
+    ],
+  },
+  {
+    id: 'rice-noodles-kottu',
+    name: 'Rice, Noodles & Kottu',
+    image: 'category-rice-noodles-kottu',
     items: [
       {
         id: 'ceylontro-kottu-special',
-        name: 'Sri Lankan Style Ceylontro Kottu Special',
-        printedName: 'SRILANKAN STYLE CEYLONTRO KOTTU SPECIAL',
-        description: 'Carrots/leeks/onions/chillis/tomatos/Srilankanju herbs/shredded cabbage',
-        price: null,
+        name: 'Ceylontro Kottu Special',
+        description:
+          'Sri Lankan style. Carrot, leeks, onion, chilli, tomato, Sri Lankan herbs & shredded cabbage, mixed with Sri Lankan gravy.',
+        price: '$13.99',
         image: 'ceylontro-kottu-special',
+        extras: [
+          {
+            label: 'Add fried',
+            values: [
+              { name: 'Chicken', price: '$2' },
+              { name: 'Beef', price: '$3' },
+              { name: 'Mutton', price: '$3' },
+              { name: 'Seafood', price: '$5' },
+              { name: 'Mix', price: '$5' },
+            ],
+          },
+        ],
         tags: [],
         featured: true,
-        confirm: [
-          '"Srilankanju herbs": typo for "Sri Lankan herbs"?',
-          'No protein choice is printed under the Kottu dishes: do they come with one?',
-        ],
       },
       {
         id: 'fried-rice',
         name: 'Fried Rice',
-        description: 'Basmati rice/eggs/dice carrot/green onion/leeks',
-        price: null,
+        description: 'Basmati rice, eggs, diced carrot, green onion & leeks.',
+        price: '$15.99',
         image: 'fried-rice',
-        options: [PROTEIN],
+        extras: [ADD_RICE_NOODLES],
         tags: [],
       },
       {
         id: 'special-nasi-goreng',
-        name: 'Special Nasi Goreng',
+        name: 'Special Nasi Goreng with Fried Egg',
         description:
-          'With fried egg. Basmati rice/eggs/dice carrot/green onion/thai chilli/tossed in flavour full sauce and chilli sauce',
-        price: null,
+          'Basmati rice, eggs, diced carrot, green onion & Thai chilli, tossed in a flavourful sauce and chilli sauce. Comes with chicken or vegetable satay.',
+        price: '$18.99',
         image: 'special-nasi-goreng',
-        options: [PROTEIN],
-        tags: ['spicy'],
-      },
-      {
-        id: 'chopsay-rice',
-        name: 'Chopsay Rice',
-        description: 'Basmati garlic rice/eggs/green onion/carrot/beans/cabbage/broccoli/cauliflower',
-        price: null,
-        image: 'chopsay-rice',
-        options: [PROTEIN],
+        options: [{ label: 'Choice', values: ['Chicken & shrimp', 'Vegetable'] }],
         tags: [],
-        confirm: ['Spelling: "Chopsay" (as printed), "Chopsuey" or "Chop Suey"?'],
+        confirm: [
+          'The description says "comes with chicken or vegetable satay" but the choice reads "chicken & shrimp · vegetable": which is right?',
+        ],
       },
       {
-        id: 'chinese-style-fried-noodles',
-        name: 'Stir Fried Chinese Style Fried Noodles',
-        description: '(Eggs/julienne carrot/green onion/shredded cabbage) tossed chilli paste and ketchup',
-        price: null,
-        image: 'chinese-style-fried-noodles',
-        options: [PROTEIN],
+        id: 'chop-suey-rice',
+        name: 'Chop Suey Rice',
+        description: 'Basmati garlic rice, eggs, green onion, carrot, beans, cabbage & broccoli.',
+        price: '$16.99',
+        image: 'chop-suey-rice',
+        extras: [
+          {
+            label: 'Add',
+            values: [
+              { name: 'Chicken', price: '$2' },
+              { name: 'Beef', price: '$3' },
+              { name: 'Seafood', price: '$4' },
+            ],
+          },
+        ],
+        tags: [],
+        confirm: ['Seafood add-on is $4 here but $5 on the other rice and noodle dishes: correct?'],
+      },
+      {
+        id: 'stir-fried-noodles',
+        name: 'Stir-Fried Noodles',
+        description: 'Eggs, julienne carrot, green onion & shredded cabbage.',
+        price: '$14.99',
+        image: 'stir-fried-noodles',
+        extras: [ADD_RICE_NOODLES],
         tags: [],
       },
       {
         id: 'pilawoos-cheese-kottu',
-        name: 'Special Pilawoos Style Cheese Kottu',
-        description: 'Carrots/leeks/onions/chillis/tomatos/srilankan herbs/shredded cabbage',
-        price: null,
+        name: 'Pilawoos Cheese Kottu',
+        description:
+          'Ceylontro style. Carrot, leeks, onion, chilli, tomato, Sri Lankan herbs & shredded cabbage in Alfredo sauce with cheese.',
+        price: '$15.99',
         image: 'pilawoos-cheese-kottu',
+        extras: [
+          {
+            label: 'Add fried',
+            values: [
+              { name: 'Chicken', price: '$2' },
+              { name: 'Beef', price: '$3' },
+              { name: 'Seafood', price: '$5' },
+              { name: 'Mix', price: '$5' },
+            ],
+          },
+        ],
         tags: [],
+      },
+    ],
+  },
+  {
+    id: 'chefs-signatures',
+    name: 'Chef’s Signatures',
+    image: 'category-chefs-signatures',
+    items: [
+      {
+        id: 'chilli-chicken',
+        name: 'Chilli Chicken',
+        description: 'Tossed in our special sauce with dry chilli & green onion.',
+        price: '$17.99',
+        image: 'chilli-chicken',
+        tags: [],
+        featured: true,
+      },
+      {
+        id: 'hot-butter-cuttlefish',
+        name: 'Hot Butter Cuttlefish',
+        description: 'Dry chilli & green onion.',
+        price: '$18.99',
+        image: 'hot-butter-cuttlefish',
+        tags: [],
+      },
+      {
+        id: 'stir-fried-cuttlefish',
+        name: 'Stir-Fried Cuttlefish',
+        description: 'Ginger & garlic tossed in oil with dry chilli & green onion.',
+        price: '$18.99',
+        image: 'stir-fried-cuttlefish',
+        tags: [],
+      },
+    ],
+  },
+  {
+    id: 'set-menus',
+    name: 'Set Menus',
+    intro: 'Served with our famous rice or noodles, chilli chicken & stir-fried vegetable chop suey.',
+    image: 'category-set-menus',
+    items: [
+      {
+        id: 'fried-rice-set-menu',
+        name: 'Fried Rice Set Menu',
+        price: '$19.99',
+        image: 'fried-rice-set-menu',
+        tags: [],
+        featured: true,
+      },
+      {
+        id: 'stir-fried-noodle-set-menu',
+        name: 'Stir-Fried Noodle Set Menu',
+        price: '$18.99',
+        image: 'stir-fried-noodle-set-menu',
+        tags: [],
+      },
+    ],
+  },
+  {
+    id: 'best-wings',
+    name: 'Best Wings',
+    intro: 'Served with garden crunch sticks.',
+    image: 'category-best-wings',
+    sharedOptions: [WING_FLAVOUR],
+    items: [
+      {
+        id: 'wings',
+        name: 'Wings (1 lb)',
+        price: '$16.99',
+        image: 'wings',
+        tags: [],
+      },
+      {
+        id: 'chefs-chilli-chicken-wings',
+        name: 'Chef’s Chilli Chicken Wings',
+        description: 'Battered fried wings tossed in ginger, garlic, dry chilli & chilli sauce with spring onion.',
+        price: '$17.99',
+        image: 'chefs-chilli-chicken-wings',
+        tags: [],
+      },
+      {
+        id: 'wings-and-fries-combo',
+        name: 'Wings & Fries Combo (1 lb)',
+        price: '$19.99',
+        image: 'wings-and-fries-combo',
+        tags: [],
+        combo: true,
+      },
+    ],
+  },
+  {
+    id: 'handhelds',
+    name: 'Handhelds',
+    intro: 'Island special burgers with your choice of fresh-cut fries or salad.',
+    image: 'category-handhelds',
+    sharedOptions: [{ label: 'Side', values: ['Fresh-cut fries', 'Salad'] }],
+    sharedExtras: [{ label: 'Upgrade', values: [{ name: 'Poutine', price: '+$2' }] }],
+    items: [
+      {
+        id: 'ceylontro-classic-beef-burger',
+        name: 'Ceylontro Classic Beef Burger',
+        description: 'Brioche bun, beef patty, lettuce, tomato, onion & 66 sauce.',
+        price: '$15.99',
+        image: 'ceylontro-classic-beef-burger',
+        extras: [{ label: 'Add', values: [{ name: 'Cheese slice', price: '$1' }] }],
+        tags: [],
+        featured: true,
+        confirm: ['"66 sauce": is that the house sauce\'s name, written exactly like that?'],
+      },
+      {
+        id: 'nashville-hot-chicken-burger',
+        name: 'Nashville Hot Chicken Burger',
+        description:
+          'Crispy marinated chicken breast tossed in our Nashville hot sauce, with pickles & creamy coleslaw on a brioche bun.',
+        price: '$14.99',
+        image: 'nashville-hot-chicken-burger',
+        tags: [],
+      },
+      {
+        id: 'quesadillas',
+        name: 'Quesadillas',
+        description: 'Corn, black beans, veggies & cheese, with house-made salsa & sour cream.',
+        price: '$12.99',
+        image: 'quesadillas',
+        extras: [ADD_CHICKEN_SEAFOOD],
+        tags: [],
+        confirm: ['Quesadillas sit under Handhelds: do they also come with the fries-or-salad side?'],
       },
     ],
   },
@@ -128,174 +361,29 @@ export const menu: readonly MenuCategory[] = [
     image: 'category-pasta',
     items: [
       {
-        id: 'penne-pasta-special',
-        name: 'Penne Pasta Special',
-        price: null,
-        image: 'penne-pasta-special',
-        options: [{ label: 'Sauce', values: ['Alfredo', 'Rose'] }, PROTEIN],
-        tags: [],
-        featured: true,
-        confirm: [PROTEIN_NOTE],
-      },
-    ],
-  },
-  {
-    id: 'devilled-items',
-    name: 'Devilled Items',
-    intro: 'Onion/peppers/tomato/green onions',
-    image: 'category-devilled-items',
-    items: [
-      { id: 'chicken-devilled', name: 'Chicken Devilled', price: null, image: 'chicken-devilled', tags: [], featured: true },
-      { id: 'chilli-chicken', name: 'Chilli Chicken', price: null, image: 'chilli-chicken', tags: ['spicy'] },
-      { id: 'fish-devilled', name: 'Fish Devilled', price: null, image: 'fish-devilled', tags: [] },
-      { id: 'fish-sweet-and-sour', name: 'Fish Sweet and Sour', price: null, image: 'fish-sweet-and-sour', tags: ['spicy'] },
-      { id: 'hot-buttered-cuttlefish', name: 'Hot Buttered Cuttlefish', price: null, image: 'hot-buttered-cuttlefish', tags: [] },
-      { id: 'devilled-pork', name: 'Devilled Pork', price: null, image: 'devilled-pork', tags: [] },
-      {
-        id: 'chef-specials-stir-fried-cuttlefish',
-        name: 'Chef Specials Stir Fried Cuttlefish',
-        price: null,
-        image: 'chef-specials-stir-fried-cuttlefish',
-        tags: [],
-      },
-    ],
-  },
-  {
-    id: 'wings-special',
-    name: 'Wings Special',
-    sizes: ['1 LB', '2 LB'],
-    image: 'category-wings-special',
-    items: [
-      { id: 'ceylontro-chef-specials-wings', name: 'Ceylontro Chef Specials', price: null, image: 'ceylontro-chef-specials-wings', tags: [] },
-      { id: 'chicken-chilli-wings', name: 'Chicken Chilli Wings', price: null, image: 'chicken-chilli-wings', tags: ['spicy'] },
-      { id: 'honey-garlic-wings', name: 'Honey Garlic Wings', price: null, image: 'honey-garlic-wings', tags: [], featured: true },
-      { id: 'parmesan-caesar-wings', name: 'Parmesan Caesar Wings', price: null, image: 'parmesan-caesar-wings', tags: [] },
-      { id: 'hot-sauce-wings', name: 'Hot Sauce Wings', price: null, image: 'hot-sauce-wings', tags: ['spicy'] },
-      {
-        id: 'cajun-dry-rub-wings',
-        name: 'Cajun Dry Rub Wings',
-        printedName: 'Cajun DRY RUB Wings',
-        price: null,
-        image: 'cajun-dry-rub-wings',
-        tags: [],
-      },
-      {
-        id: 'wings-and-fries-combo',
-        name: 'Wings & Fries Combo (1 LB)',
-        printedName: 'WINGS & FRIES COMBO (1 LBS)',
-        description: 'A single order of our wings tossed in your choice of sauce with a side of fresh cut fries.',
-        price: null,
-        image: 'wings-and-fries-combo',
-        tags: [],
-        combo: true,
-      },
-    ],
-  },
-  {
-    id: 'vegetarian-dishes',
-    name: 'Vegetarian Dishes',
-    image: 'category-vegetarian-dishes',
-    items: [
-      { id: 'stir-fried-vegetables', name: 'Stir Fried Vegetables', price: null, image: 'stir-fried-vegetables', tags: [] },
-      {
-        id: 'chilli-garlic-eggplant',
-        name: 'Chilli Garlic Eggplant',
-        printedName: 'Chili Garlic Egg Plant',
-        price: null,
-        image: 'chilli-garlic-eggplant',
-        tags: ['spicy'],
-        featured: true,
-        confirm: ['Standardise "Chili" or "Chilli" across the menu.'],
-      },
-      {
-        id: 'caesar-salad',
-        name: 'Caesar Salad',
-        price: null,
-        image: 'caesar-salad',
-        tags: [],
-        confirm: ['Listed under Vegetarian Dishes: is the dressing anchovy-free?'],
-      },
-      { id: 'greek-salad', name: 'Greek Salad', price: null, image: 'greek-salad', tags: [] },
-    ],
-  },
-  {
-    id: 'handhelds',
-    name: 'Handhelds',
-    intro: 'Island special burgers with choice of side',
-    image: 'category-handhelds',
-    sharedOptions: [{ label: 'Side', values: ['French fries', 'Salad', 'Poutine'] }],
-    items: [
-      {
-        id: 'ceylontro-classic-beef-burger',
-        name: 'Ceylontro Classic Beef Burger',
-        description: 'Brioche bun/beef patty/lettuce/tomato/onion/86sauce',
-        price: null,
-        image: 'ceylontro-classic-beef-burger',
-        addOns: ['Add on cheese slice'],
-        tags: [],
-        featured: true,
-        confirm: ['"86sauce": house sauce name (how should it be written?) or typo?'],
-      },
-      {
-        id: 'crispy-chicken-burger',
-        name: 'Crispy Chicken Burger',
-        description: 'Brioche bun/crispy chicken/lettuce/tomato/onion/86sauce',
-        price: null,
-        image: 'crispy-chicken-burger',
-        tags: [],
-        confirm: ['"86sauce": house sauce name (how should it be written?) or typo?'],
-      },
-      {
-        id: 'nashville-hot-chicken',
-        name: 'Nashville Hot Chicken',
-        description:
-          'Crispy marinated chicken breast tossed in our Nashville HOT sauce, pickles & creamy coleslaw, served on a brioche bun.',
-        price: null,
-        image: 'nashville-hot-chicken',
-        tags: [],
-        confirm: ['No chilli icon is printed: should Nashville Hot Chicken be marked spicy?'],
-      },
-    ],
-  },
-  {
-    id: 'quesadillas',
-    name: 'Quesadillas',
-    image: 'category-quesadillas',
-    items: [
-      {
-        id: 'quesadilla',
-        name: 'Quesadilla',
-        description:
-          'Blend of corn, black beans, veggies, & tex mex cheese. With house-made salsa & sour cream.',
-        price: null,
-        image: 'quesadilla',
-        options: [{ label: 'Filling', values: ['Chicken', 'Vege', 'Seafood'] }],
-        tags: [],
-        featured: true,
-        confirm: ['Item name: the printed menu shows only the category "Quesadillas". Is "Quesadilla" right?'],
-      },
-    ],
-  },
-  {
-    id: 'set-menus-special',
-    name: 'Set Menus Special',
-    image: 'category-set-menus-special',
-    items: [
-      {
-        id: 'fried-rice-set-menu',
-        name: 'Fried Rice Set Menu',
-        description: 'With chicken and veggies',
-        price: null,
-        image: 'fried-rice-set-menu',
+        id: 'penne-or-italian-fettuccine',
+        name: 'Penne or Italian Fettuccine',
+        description: 'Sautéed onions & garlic, served with garlic cheese fingers.',
+        price: '$14.99',
+        image: 'penne-or-italian-fettuccine',
+        options: [{ label: 'Sauce', values: ['Creamy Alfredo', 'Marinara', 'Rosé'] }],
+        extras: [ADD_CHICKEN_SEAFOOD],
         tags: [],
         featured: true,
       },
+    ],
+  },
+  {
+    id: 'desserts',
+    name: 'Desserts',
+    image: 'category-desserts',
+    items: [
+      { id: 'mango-mousse', name: 'Mango Mousse', price: '$7.99', image: 'mango-mousse', tags: [] },
       {
-        id: 'noodles-set-menu',
-        name: 'Noodles Set Menu',
-        description: 'With chicken and veggies',
-        price: null,
-        image: 'noodles-set-menu',
+        id: 'watalappan-cheesecake',
+        name: 'Watalappan Cheesecake',
+        price: '$8.99',
+        image: 'watalappan-cheesecake',
         tags: [],
       },
     ],
@@ -315,20 +403,20 @@ export function allMenuItems(): MenuItemWithCategory[] {
  */
 export const homeFavourites: readonly { category: string; items: readonly string[] }[] = [
   {
-    category: 'rice-noodles',
-    items: ['ceylontro-kottu-special', 'special-nasi-goreng', 'fried-rice', 'pilawoos-cheese-kottu'],
+    category: 'rice-noodles-kottu',
+    items: ['ceylontro-kottu-special', 'pilawoos-cheese-kottu', 'special-nasi-goreng', 'fried-rice'],
   },
   {
-    category: 'devilled-items',
-    items: ['chicken-devilled', 'chilli-chicken', 'hot-buttered-cuttlefish', 'devilled-pork'],
+    category: 'chefs-signatures',
+    items: ['chilli-chicken', 'hot-butter-cuttlefish', 'stir-fried-cuttlefish'],
   },
   {
-    category: 'wings-special',
-    items: ['ceylontro-chef-specials-wings', 'honey-garlic-wings', 'chicken-chilli-wings', 'parmesan-caesar-wings'],
+    category: 'best-wings',
+    items: ['chefs-chilli-chicken-wings', 'wings', 'wings-and-fries-combo'],
   },
   {
     category: 'handhelds',
-    items: ['ceylontro-classic-beef-burger', 'crispy-chicken-burger', 'nashville-hot-chicken'],
+    items: ['ceylontro-classic-beef-burger', 'nashville-hot-chicken-burger', 'quesadillas'],
   },
 ];
 export const homeFavouritesConfirmed = false;
@@ -344,7 +432,12 @@ export function findCategory(id: string): MenuCategory | undefined {
   return menu.find((category) => category.id === id);
 }
 
-/** An item's own option groups, or the ones its category shares. */
+/** An item's own choices, or the ones its category shares. */
 export function optionsFor(item: MenuItemWithCategory): readonly MenuOptionGroup[] {
   return item.options ?? findCategory(item.category)?.sharedOptions ?? [];
+}
+
+/** An item's own paid extras, followed by the ones its category shares. */
+export function extrasFor(item: MenuItemWithCategory): readonly MenuExtraGroup[] {
+  return [...(item.extras ?? []), ...(findCategory(item.category)?.sharedExtras ?? [])];
 }

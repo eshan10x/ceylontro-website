@@ -6,6 +6,7 @@
  *
  * Pure TypeScript with no Astro imports, so `scripts/missing-facts.ts` can run it with Node.
  */
+import { LAUNCHED } from '../config/launch.ts';
 import { copy } from './copy.ts';
 import { homeFavourites, homeFavouritesConfirmed, homeFeaturedItem, menu } from './menu.ts';
 import { photos } from './photos.ts';
@@ -26,6 +27,8 @@ export interface DataReport {
 
 const WEEKDAYS: readonly Weekday[] = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
 const TIME = /^([01]\d|2[0-3]):[0-5]\d$/;
+const PRICE = /^\$\d+(\.\d{2})?$/;
+const EXTRA_PRICE = /^\+?\$\d+(\.\d{2})?$/;
 
 export function buildReport(options: { photoFileExists?: (file: string) => boolean } = {}): DataReport {
   const errors: string[] = [];
@@ -33,6 +36,7 @@ export function buildReport(options: { photoFileExists?: (file: string) => boole
   // --- Business facts ---
   const facts: string[] = [];
   if (!restaurant.address) facts.push('Address');
+  else if (!restaurant.address.postalCode) facts.push('Postal code');
   if (!restaurant.phone) facts.push('Phone number');
   if (!restaurant.email) facts.push('Email address');
   const missingDays = WEEKDAYS.filter((day) => restaurant.hours[day] === null);
@@ -41,7 +45,7 @@ export function buildReport(options: { photoFileExists?: (file: string) => boole
   if (!restaurant.ordering.url) facts.push('Online ordering URL');
   if (!restaurant.ordering.platformName) facts.push('Ordering platform name');
   if (!restaurant.social.length) facts.push('Social media links');
-  if (!restaurant.domain) facts.push('Website domain (until it is set, search engines are asked not to index the site)');
+  if (!restaurant.domain) facts.push('Website domain');
   if (restaurant.acceptsReservations === null) facts.push('Whether reservations are accepted');
 
   for (const day of WEEKDAYS) {
@@ -85,6 +89,14 @@ export function buildReport(options: { photoFileExists?: (file: string) => boole
       if (item.image && !photos[item.image]) errors.push(`Menu item "${item.id}" uses unknown photo "${item.image}".`);
       if (item.featured && item.combo) errors.push(`Menu item "${item.id}" cannot be both featured and a combo.`);
       if (item.price === null) unpriced += 1;
+      else if (!PRICE.test(item.price)) errors.push(`Menu item "${item.id}" price must look like "$14.99" (got "${item.price}").`);
+      for (const group of [...(item.extras ?? []), ...(category.sharedExtras ?? [])]) {
+        for (const extra of group.values) {
+          if (!EXTRA_PRICE.test(extra.price)) {
+            errors.push(`Extra "${extra.name}" on "${item.id}" must be priced like "$2" or "+$2" (got "${extra.price}").`);
+          }
+        }
+      }
       for (const note of item.confirm ?? []) {
         const line = `${item.name}: ${note}`;
         if (!questions.includes(line)) questions.push(line);
@@ -135,6 +147,10 @@ export function buildReport(options: { photoFileExists?: (file: string) => boole
     { title: 'Business facts to supply', lines: facts },
     { title: 'Questions for the owner', lines: questions },
     { title: 'Draft copy awaiting approval', lines: drafts },
+    {
+      title: 'Launch',
+      lines: LAUNCHED ? [] : ['Launch switch is off (src/config/launch.ts): every page is kept out of search engines.'],
+    },
     {
       title: 'Photography',
       lines: needed.length ? [`${needed.length} of ${photoEntries.length} photo slots still use the placeholder.`] : [],

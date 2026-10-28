@@ -117,7 +117,7 @@ The owner's facts all go in `src/data/`, and none of it requires touching compon
 
 ## Search and sharing
 
-- **Launch gate.** Until `domain` is set in `src/data/restaurant.ts`, every page is `noindex`, `robots.txt` disallows everything and the sitemap is empty, so test and preview deployments never reach Google. Setting the domain (e.g. `'https://www.example.ca'`, no trailing slash) turns on canonical URLs, absolute Open Graph URLs, the sitemap and indexing in one step.
+- **Launch gate.** Until `LAUNCHED` is `true` in `src/config/launch.ts` (and `domain` is set in `src/data/restaurant.ts`), every page is `noindex`, `robots.txt` disallows everything and the sitemap is empty, so previews never reach Google. The domain alone already gives absolute Open Graph URLs for link previews. Flipping `LAUNCHED` turns on canonical URLs, the sitemap and indexing in one step.
 - Our Story and Contact stay `noindex` (and out of the sitemap) until they hold some of the owner's content. `src/lib/seo.ts` decides this for the pages, the sitemap and robots.txt together.
 - Every page has a title, description, Open Graph and Twitter tags. The sharing image is `public/og/ceylontro-kitchen.jpg`: the supplied logo, unaltered, on linen with the name and tagline. Replace it with a food photograph after the shoot.
 - **Structured data:** Home (and Contact, once it has facts) carries a `Restaurant` node; Menu carries a `Menu` with every section and dish. Each property appears only when its data exists — address, phone, hours, prices (`CAD`), vegetarian markers, ordering link, social profiles. Check with Google's Rich Results Test after launch.
@@ -148,5 +148,5 @@ The build output in `dist/` is static. Recommended host: **Cloudflare Pages** (f
 2. Draft copy approved by the owner (listed in the report), and the house-favourite picks confirmed.
 3. Real photography added (at least the hero, the featured dish and the house favourites).
 4. The flat/transparent logo swapped in, if the owner's designer supplies it.
-5. `domain` set in `restaurant.ts`, then deploy.
+5. `domain` confirmed in `restaurant.ts`, `LAUNCHED = true` in `src/config/launch.ts`, then deploy.
 6. After launch: submit `/sitemap.xml` in Google Search Console, run the Rich Results Test on `/` and `/menu`, and claim the Google Business Profile with the same name, address and phone.

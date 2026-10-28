@@ -1,16 +1,18 @@
 /**
  * Search-engine rules shared by the pages, the sitemap and robots.txt, so they always agree.
  *
- * - Launch gate: until the owner's domain is set in `restaurant.ts`, every page is `noindex`
- *   and robots.txt disallows everything, so test and preview deployments are never indexed.
+ * - Launch gate: until `LAUNCHED` is true (`src/config/launch.ts`) and the owner's domain is set
+ *   in `restaurant.ts`, every page is `noindex` and robots.txt disallows everything, so previews
+ *   are never indexed.
  * - A page with none of the owner's content yet (Our Story, Contact) stays `noindex`, and out
  *   of the sitemap, until that content exists.
  */
+import { LAUNCHED } from '@/config/launch';
 import { restaurant } from '@/data/restaurant';
 import { story } from '@/data/story';
 import { hasAnyHours } from '@/lib/format';
 
-export const launched = restaurant.domain !== null;
+export const launched = LAUNCHED && restaurant.domain !== null;
 
 /** Our Story has the owner's introduction or at least one written chapter. */
 export const storyHasContent = (): boolean =>

@@ -31,12 +31,12 @@ export const copy = {
   contactHeading: { text: 'Say hello', source: 'draft', usedIn: 'Contact page title' },
   contactOrder: { text: 'Hungry already?', source: 'draft', usedIn: 'Contact ordering card' },
   menuIntro: {
-    text: 'Nine categories — Sri Lankan, Asian and Western.',
+    text: 'Sri Lankan, Asian and Western favourites, from kottu to wings.',
     source: 'draft',
     usedIn: 'Menu intro',
   },
   menuMeta: {
-    text: 'The Ceylontro Kitchen menu: appetizers, rice and noodles, devilled dishes, wings, handhelds and more, with Sri Lankan, Asian and Western flavours.',
+    text: 'The Ceylontro Kitchen menu: kottu, rice and noodles, devilled dishes, chef’s signatures, wings, burgers, pasta and desserts, with Sri Lankan, Asian and Western flavours.',
     source: 'draft',
     usedIn: 'Menu page search and social description',
   },

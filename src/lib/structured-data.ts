@@ -8,7 +8,7 @@
 import { menu } from '@/data/menu';
 import { restaurant } from '@/data/restaurant';
 import type { DietaryTag, MenuItem, OpeningHours, Weekday } from '@/data/types';
-import { WEEKDAYS, dayName } from '@/lib/format';
+import { WEEKDAYS, dayName, phoneE164 } from '@/lib/format';
 
 type Json = Record<string, unknown>;
 
@@ -58,16 +58,16 @@ export function restaurantJsonLd(site: URL | undefined, images: { logo: string; 
     image: absolute(images.social, site),
     servesCuisine: restaurant.cuisines,
     hasMenu: absolute('/menu', site),
-    telephone: restaurant.phone,
+    telephone: restaurant.phone && phoneE164(restaurant.phone),
     email: restaurant.email,
-    address: address && {
+    address: address && compact({
       '@type': 'PostalAddress',
       streetAddress: [address.street, address.unit].filter(Boolean).join(', '),
       addressLocality: address.city,
       addressRegion: address.province,
       postalCode: address.postalCode,
       addressCountry: address.country,
-    },
+    }),
     geo: geo && { '@type': 'GeoCoordinates', latitude: geo.latitude, longitude: geo.longitude },
     openingHoursSpecification: openingHours(restaurant.hours),
     acceptsReservations: restaurant.acceptsReservations,

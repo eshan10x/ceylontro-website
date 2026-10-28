@@ -40,7 +40,7 @@ const groups = item.options ?? [];
     <Eyebrow class="text-[0.6875rem]">Featured</Eyebrow>
     <h3 class="menu-item__name text-feature text-ink">{item.name}</h3>
     {item.description && <p class="text-small text-stone">{spaceSlashes(item.description)}</p>}
-    <MenuItemOptions groups={groups} addOns={item.addOns} variant="pills" class="pt-1" />
+    <MenuItemOptions groups={groups} extras={item.extras} variant="pills" class="pt-1" />
     {(item.tags.length > 0 || item.price || import.meta.env.DEV) && (
       <div class="flex flex-wrap items-center gap-x-4 gap-y-2 pt-1">
         {item.tags.map((tag) => <DietaryMarker kind={tag} />)}

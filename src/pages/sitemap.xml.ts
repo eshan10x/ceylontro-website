@@ -1,6 +1,5 @@
 /**
- * /sitemap.xml — the indexable public pages. Empty until the owner's domain is set, because
- * sitemap URLs must be absolute and nothing is indexed before launch.
+ * /sitemap.xml — the indexable public pages. Empty until launch (`src/config/launch.ts`).
  */
 import type { APIRoute } from 'astro';
 import { launched, publicPages } from '@/lib/seo';

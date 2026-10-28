@@ -117,11 +117,19 @@ export function groupHours(hours: OpeningHours): HoursRow[] {
 /** Postal address as display lines. */
 export function addressLines(address: Address): string[] {
   const street = address.unit ? `${address.unit} – ${address.street}` : address.street;
-  return [street, `${address.city}, ${address.province} ${address.postalCode}`];
+  return [street, [`${address.city}, ${address.province}`, address.postalCode].filter(Boolean).join(' ')];
 }
 
-/** "+1 (416) 555-0123" → "tel:+14165550123" */
-export const phoneHref = (phone: string): string => `tel:${phone.replace(/[^\d+]/g, '')}`;
+/** International form for links and structured data: "(416) 783-8872" → "+14167838872". */
+export function phoneE164(phone: string): string {
+  const digits = phone.replace(/[^\d+]/g, '');
+  if (digits.startsWith('+')) return digits;
+  // Canadian numbers: 10 digits, or 11 starting with the country code 1.
+  return digits.length === 10 ? `+1${digits}` : digits.length === 11 && digits.startsWith('1') ? `+${digits}` : digits;
+}
+
+/** "(416) 783-8872" → "tel:+14167838872" */
+export const phoneHref = (phone: string): string => `tel:${phoneE164(phone)}`;
 
 /** Normalises a path for "current page" checks: no ".html", no trailing slash. */
 export function normalisePath(path: string): string {

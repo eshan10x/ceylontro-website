@@ -17,20 +17,18 @@ export type CopySource = 'owner-menu' | 'owner' | 'draft';
 export interface MenuItem {
   /** Stable, URL-safe id. Never change it once published (used for anchors and images). */
   id: string;
-  /** Display name, in title case. */
+  /** Name as printed on the owner's menu. */
   name: string;
-  /** The name exactly as printed, when the display name differs only in letter case or spacing. */
-  printedName?: string;
   /** Description exactly as printed on the owner's menu. */
   description?: string;
-  /** Price as it should appear, e.g. "$14.99". `null` until the owner supplies it. */
+  /** Price as printed, e.g. "$14.99". `null` until the owner supplies it. */
   price: string | null;
   /** Key into the photo registry (`photos.ts`). */
   image?: string;
-  /** Choices the guest picks from (e.g. proteins, sauces). */
+  /** Choices the guest picks from, included in the price (e.g. sauce, flavour). */
   options?: readonly MenuOptionGroup[];
-  /** Optional extras, e.g. "Add on cheese slice". */
-  addOns?: readonly string[];
+  /** Paid extras as printed, e.g. "Add: chicken $2 · beef $3". */
+  extras?: readonly MenuExtraGroup[];
   tags: readonly DietaryTag[];
   /** Shown as the category's large featured card. At most one per category. */
   featured?: boolean;
@@ -46,15 +44,27 @@ export interface MenuOptionGroup {
   values: readonly string[];
 }
 
+export interface MenuExtra {
+  name: string;
+  /** As printed: "$2", or "+$2" for an upgrade. */
+  price: string;
+}
+
+export interface MenuExtraGroup {
+  /** As printed: "Add", "Add fried", "Upgrade". */
+  label: string;
+  values: readonly MenuExtra[];
+}
+
 export interface MenuCategory {
   id: string;
   name: string;
   /** Short line shown under the category heading, as printed. */
   intro?: string;
-  /** Options shared by every item in the category (e.g. the protein choice for Rice & Noodles). */
+  /** Choices shared by every item in the category (e.g. the Handhelds side). */
   sharedOptions?: readonly MenuOptionGroup[];
-  /** Portion sizes that apply to the whole category (e.g. wings by the pound). */
-  sizes?: readonly string[];
+  /** Paid extras shared by every item in the category (e.g. "Poutine +$2"). */
+  sharedExtras?: readonly MenuExtraGroup[];
   /** Key into the photo registry for the category banner/arch. */
   image?: string;
   items: readonly MenuItem[];
@@ -72,7 +82,8 @@ export interface Address {
   unit?: string;
   city: string;
   province: string;
-  postalCode: string;
+  /** `null` until the owner supplies it (the address still shows without it). */
+  postalCode: string | null;
   country: 'CA';
   /** Link that opens directions (e.g. a Google Maps place URL). */
   directionsUrl?: string;

@@ -21,8 +21,15 @@ const hours: OpeningHours = {
 export const restaurant: RestaurantInfo = {
   name: 'Ceylontro Kitchen',
   tagline: 'Flavours Beyond Borders',
-  address: null,
-  phone: null,
+  // From the owner's menu V1.2. The postal code is not printed yet.
+  address: {
+    street: '1708 Eglinton Avenue West',
+    city: 'York',
+    province: 'ON',
+    postalCode: null,
+    country: 'CA',
+  },
+  phone: '(416) 783-8872',
   email: null,
   hours,
   ordering: {
@@ -31,7 +38,8 @@ export const restaurant: RestaurantInfo = {
     deliveryPartners: [],
   },
   social: [],
-  domain: null,
+  // Printed on the menu V1.2 as "ceylontrokitchen.com".
+  domain: 'https://ceylontrokitchen.com',
   // From the owner's brief: a fusion menu with strong Sri Lankan, Asian and Western influences.
   cuisines: ['Sri Lankan', 'Asian', 'Western'],
   geo: null,

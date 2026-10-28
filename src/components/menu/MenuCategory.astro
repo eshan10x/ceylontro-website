@@ -1,11 +1,11 @@
 ---
 /**
- * One menu category: numbered heading, printed intro and shared choices, sizes, then the
+ * One menu category: numbered heading, printed intro, shared choices and extras, then the
  * featured card, the rows and the combo card. Rows switch to the compact layout when none
  * of the category's dishes has a description, options or photo.
  */
 import Photo from '@/components/ui/Photo.astro';
-import Pill from '@/components/ui/Pill.astro';
+import MenuItemOptions from './MenuItemOptions.astro';
 import MenuFeaturedCard from './MenuFeaturedCard.astro';
 import MenuComboCard from './MenuComboCard.astro';
 import MenuRow from './MenuRow.astro';
@@ -31,13 +31,13 @@ const featured = items.find((item) => item.featured);
 const combo = items.find((item) => item.combo);
 const rows = items.filter((item) => item !== featured && item !== combo);
 const compact = rows.every(
-  (item) => !item.description && !item.options?.length && !item.addOns?.length && !getPhoto(item.image).image,
+  (item) => !item.description && !item.options?.length && !item.extras?.length && !getPhoto(item.image).image,
 );
 
 const heading = splitAccent(category.name);
 const headingId = `${category.id}-title`;
 const banner = getPhoto(category.image);
-const hasAside = Boolean(category.intro || category.sharedOptions?.length || category.sizes?.length);
+const hasAside = Boolean(category.intro || category.sharedOptions?.length || category.sharedExtras?.length);
 ---
 
 <section id={category.id} data-menu-section aria-labelledby={headingId} class="menu-category flex flex-col gap-6 lg:gap-8">
@@ -67,24 +67,7 @@ const hasAside = Boolean(category.intro || category.sharedOptions?.length || cat
       hasAside && (
         <div class="flex flex-col gap-3 md:max-w-[22rem] md:items-end md:pb-2 md:text-right">
           {category.intro && <p class="text-small text-stone">{spaceSlashes(category.intro)}</p>}
-          {category.sharedOptions?.map((group) => (
-            <p class="text-[0.8125rem] leading-normal">
-              <span class="text-stone">{group.label}: </span>
-              <span class="font-medium text-ink">{group.values.join(' · ')}</span>
-            </p>
-          ))}
-          {category.sizes && category.sizes.length > 0 && (
-            <div class="flex items-center gap-3">
-              <span class="label text-stone">Sizes</span>
-              <ul class="flex gap-1.5" role="list">
-                {category.sizes.map((size) => (
-                  <li>
-                    <Pill size="sm">{size}</Pill>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
+          <MenuItemOptions groups={category.sharedOptions} extras={category.sharedExtras} alignEnd />
         </div>
       )
     }
