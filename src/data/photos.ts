@@ -28,7 +28,7 @@ const sitePhotos: Record<string, PhotoEntry> = {
   'featured-detail': { alt: 'Close-up detail of Ceylontro Kottu Special', file: null, ratio: '3:4 (arch crop)' },
   'menu-intro': {
     alt: 'Whole spices: dried red chillies, curry leaves, cinnamon and cardamom',
-    file: null, // mood image generated, awaiting download
+    file: 'mood-spices.jpg',
     ratio: '4:5 (arch crop)',
     source: 'generated',
   },
@@ -40,7 +40,7 @@ const sitePhotos: Record<string, PhotoEntry> = {
   },
   'story-hero': {
     alt: 'Fresh leeks, carrots, chillies, tomatoes and cabbage on a chopping board',
-    file: null, // mood image generated, awaiting download
+    file: 'mood-ingredients.jpg',
     ratio: '4:5 (arch crop)',
     source: 'generated',
   },
@@ -49,7 +49,7 @@ const sitePhotos: Record<string, PhotoEntry> = {
   'story-canadian-journey': { alt: 'Ceylontro Kitchen in Canada', file: null, ratio: '3:2' },
   'contact-arch': {
     alt: 'Fresh limes, curry leaves and green chillies in a woven basket',
-    file: null, // mood image generated, awaiting download
+    file: 'mood-limes.jpg',
     ratio: '4:5 (arch crop)',
     source: 'generated',
   },
