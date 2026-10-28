@@ -2,7 +2,9 @@
 /**
  * Food and interior photography with a fixed shape and aspect ratio.
  *
- * - With `image`: an optimised, responsive <picture> (AVIF + WebP) from astro:assets.
+ * - With `image`: an optimised, responsive <picture> (AVIF + WebP) from astro:assets. It opts
+ *   out of Astro's responsive image styles (`layout="none"`), whose unlayered `height: auto`
+ *   would beat the cover fit below and leave the frame partly empty.
  * - Without: the sand placeholder at the same size, so layouts never shift when real
  *   photos are added. The placeholder is decorative and hidden from screen readers.
  *
@@ -90,9 +92,10 @@ const frame = [
         formats={['avif', 'webp']}
         sizes={sizes}
         widths={[320, 480, 640, 800, 1024, 1280, 1600]}
+        layout="none"
         loading={priority ? 'eager' : 'lazy'}
         fetchpriority={priority ? 'high' : 'auto'}
-        decoding={priority ? 'sync' : 'async'}
+        decoding="async"
         class="absolute inset-0 size-full object-cover"
       />
     </div>

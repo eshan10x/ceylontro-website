@@ -172,4 +172,10 @@ export interface PhotoEntry {
   file: string | null;
   /** Crop guidance for the photographer and for art direction. */
   ratio: string;
+  /**
+   * `owner`: the restaurant's own photograph. `generated`: an AI-generated atmosphere image
+   * (ingredients, spices, surfaces), never a dish or the restaurant itself. Dish slots and
+   * anything showing the venue take `owner` photos only.
+   */
+  source?: 'owner' | 'generated';
 }
