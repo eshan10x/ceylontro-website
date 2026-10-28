@@ -1,7 +1,7 @@
 ---
 /**
- * Home (D3 "Main" and "HomeDesktop"): hero, house favourites, featured dish, story teaser,
- * the espresso order band, and the visit teaser (shown once the owner's facts exist).
+ * Home: the espresso "After dark" hero, house favourites, featured dish, story teaser, the
+ * order band, and the visit teaser (shown once the owner's facts exist).
  */
 import PageLayout from '@/layouts/PageLayout.astro';
 import HomeHero from '@/components/home/HomeHero.astro';
@@ -12,7 +12,7 @@ import OrderBand from '@/components/home/OrderBand.astro';
 import VisitTeaser from '@/components/home/VisitTeaser.astro';
 ---
 
-<PageLayout overlayHeader structuredData={['restaurant']}>
+<PageLayout overlayHeader heroTone="dark" structuredData={['restaurant']}>
   <HomeHero />
   <HouseFavourites />
   <FeaturedDish />

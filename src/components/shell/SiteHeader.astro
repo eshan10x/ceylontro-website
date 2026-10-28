@@ -6,6 +6,8 @@
  * - Desktop: nav left · logo centred · Order Online right; 104 px at the top of the
  *   page, 72 px once the page has scrolled 40 px.
  * - `overlay`: transparent over the page's hero until scrolled, then solid.
+ * - `tone="dark"`: while transparent, nav, Order Online and the menu button turn cream for a
+ *   dark hero; once solid the header is the usual ink-on-white.
  *   Without `overlay` (or without JavaScript) the header is always solid.
  *
  * The scroll state is set by `src/scripts/shell.ts` from a sentinel 40 px down the page.
@@ -18,15 +20,17 @@ import { isCurrent } from '@/lib/format';
 
 interface Props {
   overlay?: boolean;
+  /** The hero's tone under a transparent header. */
+  tone?: 'light' | 'dark';
 }
 
-const { overlay = false } = Astro.props;
+const { overlay = false, tone = 'light' } = Astro.props;
 const pathname = Astro.url.pathname;
 ---
 
 <div data-header-sentinel aria-hidden="true" class="pointer-events-none absolute top-10 left-0 h-px w-px"></div>
 
-<header id="site-header" class="site-header fixed inset-x-0 top-0 z-40" data-overlay={overlay ? 'true' : 'false'}>
+<header id="site-header" class="site-header fixed inset-x-0 top-0 z-40" data-overlay={overlay ? 'true' : 'false'} data-tone={tone} data-scrolled="false">
   <div
     class="site-header__bar mx-auto flex max-w-[calc(var(--container-content)+9rem)] items-center gap-2.5 px-4 md:px-10 lg:grid lg:grid-cols-[1fr_auto_1fr] lg:gap-6 lg:px-18"
   >
@@ -56,7 +60,7 @@ const pathname = Astro.url.pathname;
     </a>
 
     <div class="flex flex-1 items-center justify-end gap-2.5 lg:gap-0">
-      <OrderButton size="sm" class="lg:min-h-12 lg:px-6.5 lg:text-button" />
+      <OrderButton size="sm" class="site-header__order lg:min-h-12 lg:px-6.5 lg:text-button" />
       <MenuToggle mode="open" class="lg:hidden" />
     </div>
   </div>
@@ -67,6 +71,21 @@ const pathname = Astro.url.pathname;
     /* Without JavaScript the scroll state never updates, so keep the header solid. */
     .site-header::before {
       opacity: 1 !important;
+    }
+
+    /* …and undo the cream dark-hero state, which assumes a transparent header. */
+    .site-header[data-tone='dark'] .nav-link:not([aria-current='page']) {
+      color: var(--color-ink) !important;
+    }
+
+    .site-header[data-tone='dark'] .site-header__order {
+      background: var(--color-espresso) !important;
+      color: #fff !important;
+    }
+
+    .site-header[data-tone='dark'] .menu-toggle {
+      background: var(--color-sand) !important;
+      color: var(--color-ink) !important;
     }
   </style>
 </noscript>
@@ -153,5 +172,37 @@ const pathname = Astro.url.pathname;
 
   .nav-link:hover {
     color: var(--color-gold-deep);
+  }
+
+  /* Dark hero under a transparent header (JS on; without JS the header stays solid). */
+  .site-header[data-tone='dark'][data-overlay='true'][data-scrolled='false'] .nav-link {
+    color: var(--color-cream);
+  }
+
+  .site-header[data-tone='dark'][data-overlay='true'][data-scrolled='false'] .nav-link[aria-current='page'],
+  .site-header[data-tone='dark'][data-overlay='true'][data-scrolled='false'] .nav-link:hover {
+    color: var(--color-gold-light);
+  }
+
+  .site-header[data-tone='dark'][data-overlay='true'][data-scrolled='false'] :global(.site-header__order) {
+    background: var(--color-cream);
+    color: var(--color-espresso);
+    box-shadow: none;
+  }
+
+  /* A fine gold edge keeps the dark plaque from sinking into a dark hero. */
+  .site-header[data-tone='dark'][data-overlay='true'][data-scrolled='false'] .site-header__logo :global(img) {
+    box-shadow: 0 0 0 1px rgb(224 188 99 / 0.4);
+  }
+
+  .site-header[data-tone='dark'][data-overlay='true'][data-scrolled='false'] :global(.menu-toggle) {
+    background: rgb(245 239 228 / 0.14);
+    color: var(--color-cream);
+  }
+
+  .site-header[data-tone='dark'][data-overlay='true'][data-scrolled='false'] :global(.site-header__order:focus-visible),
+  .site-header[data-tone='dark'][data-overlay='true'][data-scrolled='false'] :global(.menu-toggle:focus-visible),
+  .site-header[data-tone='dark'][data-overlay='true'][data-scrolled='false'] .nav-link:focus-visible {
+    outline-color: var(--color-cream);
   }
 </style>

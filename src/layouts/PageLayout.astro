@@ -17,14 +17,16 @@ interface Props {
   structuredData?: readonly ('restaurant' | 'menu')[];
   /** Header is transparent over the first section until the page scrolls. */
   overlayHeader?: boolean;
+  /** Tone of that first section, so the transparent header can switch to cream on a dark hero. */
+  heroTone?: 'light' | 'dark';
 }
 
-const { overlayHeader = false, ...meta } = Astro.props;
+const { overlayHeader = false, heroTone = 'light', ...meta } = Astro.props;
 ---
 
 <BaseLayout {...meta}>
   <slot name="head" slot="head" />
-  <SiteHeader overlay={overlayHeader} />
+  <SiteHeader overlay={overlayHeader} tone={heroTone} />
   <MobileNav />
   <main id="main" tabindex="-1" class="outline-none">
     {!overlayHeader && <div aria-hidden="true" class="h-(--header-h)"></div>}

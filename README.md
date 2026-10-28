@@ -90,6 +90,7 @@ The owner's facts all go in `src/data/`, and none of it requires touching compon
 
 - Every page uses `PageLayout`. Pass `overlayHeader` when the page opens with a hero, and give that first section the `pt-header` class so its content starts below the header.
 - The header is transparent over a hero and turns solid after 40 px of scroll; without JavaScript it stays solid.
+- Over a dark hero (Home), pass `heroTone="dark"` to `PageLayout`: while transparent, the nav, Order Online and the menu button turn cream and the logo gets a fine gold edge.
 - The mobile drawer is a native modal `<dialog>` (focus stays inside, Esc closes it). It opens with the HTML `command` attribute, with a fallback in `shell.ts` for older browsers.
 - Footer and drawer blocks for address, hours, phone, email and social links appear on their own once the data exists in `restaurant.ts`.
 

@@ -1,231 +1,243 @@
 ---
 /**
- * Home hero (D3 "Main" mobile, "HomeDesktop").
+ * Home hero, "After dark" (B8, approved 2026-10-28; replaces the D3 editorial stage).
  *
- * - Mobile/tablet: eyebrow, headline, arch photo with an overlapping round side dish,
- *   support line, then Order Online and View Menu.
- * - Desktop (≥ 1024 px): an editorial "stage". The three headline words sit around the arch
- *   photo; the stage scales with container-query units, so the composition at 1440 px matches
- *   the mockup and every other width is the same picture, smaller or larger (capped at 1296 px).
+ * An espresso stage where the owner's dark, moody food photography belongs: the photo stands in
+ * a tall arch (the logo's arch) and dissolves into the background at its foot, so it reads as
+ * lit food in a dark room rather than a picture pasted on a page. Type never crosses the food.
+ * The foot of the hero carries the two facts a hungry visitor wants: where, and how to call.
+ *
+ * Desktop: headline, line and actions on the left (7 columns), arch on the right (5 columns).
+ * Mobile: headline, arch, line, actions, then the address and phone.
  */
 import Section from '@/components/layout/Section.astro';
 import Container from '@/components/layout/Container.astro';
-import Eyebrow from '@/components/ui/Eyebrow.astro';
 import Photo from '@/components/ui/Photo.astro';
 import OrderButton from '@/components/ui/OrderButton.astro';
-import Button from '@/components/ui/Button.astro';
+import TextLink from '@/components/ui/TextLink.astro';
 import { copy } from '@/data/copy';
 import { getPhoto } from '@/data/images';
-import { site } from '@/config/site';
+import { restaurant } from '@/data/restaurant';
+import { addressLines, directionsHref, phoneHref } from '@/lib/format';
 
 const hero = getPhoto('hero-dish');
-const side = getPhoto('hero-side-dish');
+const { address, phone } = restaurant;
 ---
 
-<Section surface="hero" padded={false} class="pt-header" labelledby="hero-title">
-  <Container class="pt-9 pb-12 md:pt-14 md:pb-18 lg:pt-10 lg:pb-18">
-    <div class="hero">
-      <Eyebrow class="hero__eyebrow enter">{site.name}</Eyebrow>
+<Section surface="dark" padded={false} labelledby="hero-title" class="night">
+  <Container class="night__grid">
+    <h1 id="hero-title" class="night__title">
+      <span class="enter" style="--enter-i: 1">Flavours</span>
+      <span class="enter" style="--enter-i: 2">Beyond</span>
+      <span class="enter" style="--enter-i: 3">Borders</span>
+    </h1>
 
-      <h1 id="hero-title" class="hero__title font-display font-medium text-ink">
-        <span class="hero__word hero__word--1 enter" style="--enter-i: 1">Flavours</span>{' '}
-        <span class="hero__word hero__word--2 enter text-espresso italic" style="--enter-i: 2">Beyond</span>{' '}
-        <span class="hero__word hero__word--3 enter" style="--enter-i: 3">Borders</span>
-      </h1>
+    <div class="night__media">
+      <div aria-hidden="true" class="night__outline enter rounded-arch" style="--enter-i: 4"></div>
+      <Photo
+        image={hero.image}
+        alt={hero.alt}
+        shape="arch"
+        ratio="4 / 5"
+        priority
+        sizes="(min-width: 81rem) 520px, (min-width: 64rem) 38vw, 88vw"
+        caption="Photo · Hero dish · arch"
+        style="--enter-i: 2"
+        class="night__photo enter-arch"
+      />
+    </div>
 
-      <div class="hero__media">
-        <div aria-hidden="true" class="hero__outline enter rounded-arch border border-b-0 border-gold/55" style="--enter-i: 3"></div>
-        <Photo
-          image={hero.image}
-          alt={hero.alt}
-          shape="arch"
-          ratio="25 / 34"
-          priority
-          elevated
-          sizes="(min-width: 81rem) 500px, (min-width: 64rem) 38vw, 300px"
-          caption="Photo · Hero dish · arch"
-          class="hero__photo enter-arch"
-        />
-        <Photo
-          image={side.image}
-          alt={side.alt}
-          shape="circle"
-          ratio="1 / 1"
-          ring
-          elevated
-          sizes="(min-width: 64rem) 220px, 124px"
-          reveal={false}
-          style="--enter-i: 5"
-          class="hero__side enter"
-        />
-      </div>
-
-      <p class="hero__support enter text-stone" style="--enter-i: 5">{copy.heroSupport.text}</p>
-
-      <div class="hero__actions enter" style="--enter-i: 6">
-        <OrderButton fullWidth class="md:w-auto" />
-        <Button href="/menu" variant="secondary" fullWidth class="md:w-auto">View Menu</Button>
+    <div class="night__body enter" style="--enter-i: 5">
+      <p class="night__line">{copy.heroSupport.text}</p>
+      <div class="night__actions">
+        <OrderButton onDark size="lg" class="night__order" />
+        <TextLink href="/menu" onDark>View the menu</TextLink>
       </div>
     </div>
+
+    {
+      (address || phone) && (
+        <ul class="night__facts enter" style="--enter-i: 6" role="list">
+          {address && (
+            <li>
+              <a href={directionsHref(address)} target="_blank" rel="noopener" class="night__fact">
+                {addressLines(address).join(', ')}
+                <span class="sr-only"> (directions open in a new tab)</span>
+              </a>
+            </li>
+          )}
+          {phone && (
+            <li>
+              <a href={phoneHref(phone)} class="night__fact">
+                {phone}
+              </a>
+            </li>
+          )}
+        </ul>
+      )
+    }
   </Container>
 </Section>
 
 <style is:global>
-  /* Global because the photo classes land on child components; every selector is namespaced .hero. */
-  /* ---------- Mobile and tablet: one centred column ---------- */
-  .hero {
+  /* ---------- Mobile first: one column ---------- */
+  .night__grid {
+    display: grid;
+    grid-template-areas:
+      'title'
+      'media'
+      'body'
+      'facts';
+    row-gap: 1.75rem;
+    padding-top: calc(var(--header-h) + 1.5rem);
+    padding-bottom: 1.5rem;
+  }
+
+  .night__title {
+    grid-area: title;
     display: flex;
     flex-direction: column;
-    align-items: center;
-    gap: 1.375rem;
-    text-align: center;
+    font-size: clamp(3.5rem, 1.6rem + 9vw, 5.5rem);
+    font-weight: 500;
+    line-height: 0.9;
+    letter-spacing: -0.02em;
+    color: var(--color-cream);
   }
 
-  .hero__title {
-    font-size: clamp(3.25rem, 1.5rem + 7.8vw, 5.5rem);
-    line-height: 0.92;
-    letter-spacing: -0.015em;
+  /* The middle line steps in: the one typographic move, echoing a border being crossed. */
+  .night__title span:nth-child(2) {
+    padding-left: 0.62em;
   }
 
-  /* Inline-block so each word can rise on its own during the entrance. */
-  .hero__word {
-    display: inline-block;
-  }
-
-  .hero__media {
+  .night__media {
+    grid-area: media;
     position: relative;
-    width: min(18.75rem, 78vw);
-    margin: 0.375rem 0 1.375rem;
+    width: min(100%, 26rem);
+    justify-self: center;
+    padding: 0.875rem 0.875rem 0;
   }
 
-  .hero__outline {
+  .night__outline {
     position: absolute;
-    inset: -0.75rem -0.75rem 0;
+    inset: 0 0 18%;
+    border: 1px solid rgb(224 188 99 / 0.45);
+    border-bottom: 0;
   }
 
-  /* Mobile arch is a little squatter than desktop (300 × 380 vs 500 × 680 in the mockups). */
-  .hero__photo {
-    aspect-ratio: 15 / 19 !important;
+  /* Dissolve the foot of the photo into the espresso stage. */
+  .night__photo {
+    mask-image: linear-gradient(to bottom, #000 62%, transparent 100%);
+    -webkit-mask-image: linear-gradient(to bottom, #000 62%, transparent 100%);
   }
 
-  .hero__side {
-    position: absolute;
-    z-index: 4;
-    right: -1.875rem;
-    bottom: -1.375rem;
-    width: 41%;
-  }
-
-  .hero__support {
-    max-width: 22rem;
-    padding-top: 0.625rem;
-  }
-
-  .hero__actions {
+  .night__body {
+    grid-area: body;
     display: flex;
     flex-direction: column;
-    gap: 0.625rem;
+    gap: 1.5rem;
+    margin-top: -2.5rem; /* tuck under the dissolved foot of the photo */
+    position: relative;
+  }
+
+  .night__line {
+    max-width: 32ch;
+    color: var(--color-cream-muted);
+    font-size: 1.0625rem;
+    line-height: 1.6;
+  }
+
+  .night__actions {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1.25rem;
+  }
+
+  .night__order {
     width: 100%;
-    max-width: 24rem;
   }
 
-  @media (width >= 48rem) {
-    .hero__media {
-      width: 21rem;
-    }
-
-    .hero__actions {
-      flex-direction: row;
-      justify-content: center;
-      max-width: none;
-    }
+  .night__actions > :last-child {
+    white-space: nowrap;
   }
 
-  /* ---------- Desktop: the editorial stage (mockup coordinates / 1296 × 760) ---------- */
-  @media (width >= 64rem) {
-    .hero {
-      display: block;
-      position: relative;
-      container-type: inline-size;
-      aspect-ratio: 1296 / 760;
-      text-align: left;
-    }
+  .night__facts {
+    grid-area: facts;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 2rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid rgb(245 239 228 / 0.14);
+  }
 
-    .hero > * {
-      position: absolute;
-    }
+  .night__fact {
+    display: inline-flex;
+    align-items: center;
+    min-height: 2.75rem;
+    color: var(--color-cream);
+    font-size: 0.9375rem;
+    text-decoration: none;
+    transition: color 350ms ease;
+  }
 
-    .hero__eyebrow {
-      left: 0.46%;
-      top: 14.5%;
-    }
+  .night__fact:hover {
+    color: var(--color-gold-light);
+  }
 
-    /* The h1 is only a wrapper; its words are placed on the stage. */
-    .hero__title {
-      position: static;
-      max-width: none;
-      font-size: 12.963cqw; /* 168 px at 1296 */
-      line-height: 0.9;
-    }
-
-    .hero__word {
-      position: absolute;
-      z-index: 3;
-      white-space: nowrap;
-    }
-
-    .hero__word--1 {
-      left: 0;
-      top: 21%;
-    }
-
-    .hero__word--2 {
-      left: 48.5%;
-      top: 40.8%;
-    }
-
-    .hero__word--3 {
-      left: 8.3%;
-      top: 60.5%;
-    }
-
-    .hero__photo {
-      aspect-ratio: 25 / 34 !important;
-    }
-
-    .hero__media {
-      left: 30.7%;
-      top: 3.9%;
-      width: 38.58%;
-      margin: 0;
-    }
-
-    .hero__outline {
-      inset: -1.852cqw -1.852cqw 0; /* 24 px at 1296 */
-    }
-
-    .hero__side {
-      right: -12.8%;
-      bottom: 3.1%;
-      width: 44%;
-    }
-
-    .hero__support {
-      left: 0;
-      right: 0;
-      top: 101%;
-      max-width: none;
-      padding: 0;
-      text-align: center;
-      font-size: 1rem;
-    }
-
-    .hero__actions {
-      right: 0;
-      top: 72.4%;
-      flex-direction: column;
+  @media (width >= 40rem) {
+    .night__order {
       width: auto;
-      gap: 0.75rem;
+    }
+
+    .night__actions {
+      flex-direction: row;
+      align-items: center;
+      gap: 2rem;
+    }
+  }
+
+  /* ---------- Desktop: type left, arch right, facts along the foot ---------- */
+  @media (width >= 64rem) {
+    .night__grid {
+      min-height: min(100svh, 62rem);
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+      grid-template-rows: 1fr auto auto;
+      grid-template-areas:
+        'title title title title title title title media media media media media'
+        'body  body  body  body  body  body  .     media media media media media'
+        'facts facts facts facts facts facts facts facts facts facts facts facts';
+      column-gap: 1.5rem;
+      row-gap: 0;
+      padding-top: calc(var(--header-h) + 2rem);
+      padding-bottom: 2rem;
+    }
+
+    .night__title {
+      align-self: end;
+      font-size: clamp(6rem, 1rem + 8.6vw, 9.75rem);
+      padding-bottom: 2.5rem;
+    }
+
+    .night__media {
+      align-self: end;
+      width: 100%;
+      max-width: 34rem;
+      justify-self: end;
+      padding: 1.25rem 1.25rem 0;
+      margin-bottom: -2rem; /* the arch stands on the facts line */
+    }
+
+    .night__body {
+      margin-top: 0;
+      padding-bottom: 3rem;
+      gap: 2rem;
+    }
+
+    .night__facts {
+      margin-top: 0;
+      padding-top: 1.5rem;
+      position: relative;
+      z-index: 1;
     }
   }
 </style>
