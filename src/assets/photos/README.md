@@ -4,9 +4,7 @@ Put the owner's real photographs here: large JPG or PNG files, at least 2000 px 
 
 Crop guidance for each slot is in the `ratio` field of `src/data/photos.ts`.
 
-Dishes and the restaurant itself: the owner's own photographs only. Never add stock or AI-generated images of food or of the venue and present them as Ceylontro's own.
-
-AI-generated images are used only for atmosphere (spices, ingredients, surfaces). Their files start with `mood-` and their slots are marked `source: 'generated'` in `photos.ts`.
+Every slot records where its file came from (`source` in `photos.ts`): the owner's own photos, licensed stock, or images generated with Higgsfield. On 2026-10-28 the owner approved generated images for the 13 priority dishes as stand-ins; replace each with the restaurant's own photo when it exists (same file name, then change `source` to `owner`). The restaurant itself, its kitchen and its people are never generated.
 
 | File | Source | Used for |
 | --- | --- | --- |
@@ -15,6 +13,8 @@ AI-generated images are used only for atmosphere (spices, ingredients, surfaces)
 | `stir-fried-vegetables.jpg` | Owner | Menu intro round dish, Set Menus category (cropped to the plate) |
 | `devilled.jpg` | Owner | Devilled category |
 | `wings.jpg` | Licensed stock (owner holds the licence) | Wings (1 lb) |
+| `kottu-overhead.jpg`, `kottu-detail.jpg`, `ceylontro-kottu-special.jpg` | Generated (Higgsfield), owner approved | Home featured dish, Kottu Special |
+| `pilawoos-cheese-kottu.jpg`, `special-nasi-goreng.jpg`, `chilli-chicken.jpg`, `hot-butter-cuttlefish.jpg`, `stir-fried-cuttlefish.jpg`, `chefs-chilli-chicken-wings.jpg`, `wings-and-fries-combo.jpg`, `ceylontro-classic-beef-burger.jpg`, `nashville-hot-chicken-burger.jpg`, `quesadillas.jpg` | Generated (Higgsfield), owner approved | Those dishes |
 | `mood-spices.jpg` | Generated (Higgsfield) | Menu intro arch |
 | `mood-ingredients.jpg` | Generated (Higgsfield) | Our Story hero arch |
 | `mood-limes.jpg` | Generated (Higgsfield) | Contact intro arch |
