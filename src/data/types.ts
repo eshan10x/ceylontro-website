@@ -173,9 +173,10 @@ export interface PhotoEntry {
   /** Crop guidance for the photographer and for art direction. */
   ratio: string;
   /**
-   * `owner`: the restaurant's own photograph. `generated`: an AI-generated atmosphere image
-   * (ingredients, spices, surfaces), never a dish or the restaurant itself. Dish slots and
-   * anything showing the venue take `owner` photos only.
+   * `owner`: the restaurant's own photograph. `licensed`: a stock photo the owner holds a
+   * licence for. `generated`: AI-generated (Higgsfield): atmosphere images, and dish images
+   * the owner approved on 2026-10-28 as stand-ins until the restaurant's own photos replace them.
+   * Never generated: the restaurant itself, its kitchen or its people.
    */
-  source?: 'owner' | 'generated';
+  source?: 'owner' | 'licensed' | 'generated';
 }

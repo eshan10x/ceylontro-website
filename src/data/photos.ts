@@ -4,9 +4,9 @@
  * A slot with `file: null` shows the sand placeholder at the correct ratio. To add a photo:
  *   1. put it in `src/assets/photos/` (large JPG or PNG, at least 2000 px on the long side);
  *   2. set `file` below (site slots) or in `menuPhotoFiles` (dish and category slots).
- * Dishes and the restaurant itself: the owner's own photographs only, never stock or AI.
- * AI-generated images are allowed only for atmosphere (ingredients, spices, surfaces) and are
- * marked `source: 'generated'`.
+ * Every file records its `source` (owner, licensed stock, or generated). Generated dish images
+ * are owner-approved stand-ins until the restaurant's own photos arrive; the restaurant itself,
+ * its kitchen and its people are never generated.
  */
 import type { PhotoEntry } from './types.ts';
 import { menu } from './menu.ts';
@@ -62,9 +62,10 @@ const sitePhotos: Record<string, PhotoEntry> = {
 };
 
 /** The owner's photographs for dish and category slots, by slot key. */
-const menuPhotoFiles: Record<string, { file: string; alt?: string }> = {
+const menuPhotoFiles: Record<string, { file: string; alt?: string; source?: PhotoEntry['source'] }> = {
   'fried-rice': { file: 'fried-rice.jpg' },
   'stir-fried-noodles': { file: 'stir-fried-noodles.jpg' },
+  wings: { file: 'wings.jpg', alt: 'A platter of sauce-glazed chicken wings', source: 'licensed' },
   'category-devilled': { file: 'devilled.jpg', alt: 'A devilled dish tossed with onion, peppers and tomato' },
   'category-set-menus': {
     file: 'stir-fried-vegetables.jpg',
@@ -77,7 +78,9 @@ function menuPhotos(): Record<string, PhotoEntry> {
   const entries: Record<string, PhotoEntry> = {};
   const entry = (key: string, alt: string, ratio: string): PhotoEntry => {
     const owner = menuPhotoFiles[key];
-    return owner ? { alt: owner.alt ?? alt, file: owner.file, ratio, source: 'owner' } : { alt, file: null, ratio };
+    return owner
+      ? { alt: owner.alt ?? alt, file: owner.file, ratio, source: owner.source ?? 'owner' }
+      : { alt, file: null, ratio };
   };
   for (const category of menu) {
     if (category.image) {

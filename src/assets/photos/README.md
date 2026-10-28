@@ -14,6 +14,7 @@ AI-generated images are used only for atmosphere (spices, ingredients, surfaces)
 | `fried-rice.jpg` | Owner | Home hero round dish, mobile menu, Fried Rice |
 | `stir-fried-vegetables.jpg` | Owner | Menu intro round dish, Set Menus category (cropped to the plate) |
 | `devilled.jpg` | Owner | Devilled category |
+| `wings.jpg` | Licensed stock (owner holds the licence) | Wings (1 lb) |
 | `mood-spices.jpg` | Generated (Higgsfield) | Menu intro arch |
 | `mood-ingredients.jpg` | Generated (Higgsfield) | Our Story hero arch |
 | `mood-limes.jpg` | Generated (Higgsfield) | Contact intro arch |
