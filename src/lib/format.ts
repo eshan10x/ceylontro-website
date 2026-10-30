@@ -90,9 +90,10 @@ export function groupHours(hours: OpeningHours): HoursRow[] {
     const last = run[run.length - 1];
     if (!first || !last) return;
     const multi = run.length > 1;
+    const everyDay = run.length === WEEKDAYS.length;
     rows.push({
-      label: multi ? `${SHORT[first]} – ${SHORT[last]}` : SHORT[first],
-      longLabel: multi ? `${LONG[first]} to ${LONG[last]}` : LONG[first],
+      label: everyDay ? 'Every day' : multi ? `${SHORT[first]} – ${SHORT[last]}` : SHORT[first],
+      longLabel: everyDay ? 'Every day' : multi ? `${LONG[first]} to ${LONG[last]}` : LONG[first],
       text: runText,
       days: run,
     });

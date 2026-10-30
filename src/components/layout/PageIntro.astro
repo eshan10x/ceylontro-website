@@ -6,11 +6,14 @@
  * Extra lines under the title go in the default slot.
  * A `media` slot replaces the arch and round photo with the page's own artwork (Menu's plates);
  * it then sits under the title on phones and beside it from 768 px.
+ * A `backdrop` (Contact's mural) is painted across the right of the intro instead: its edges
+ * dissolve into the linen on every side, so it reads as part of the page, not a framed picture.
  */
 import Section from '@/components/layout/Section.astro';
 import Container from '@/components/layout/Container.astro';
 import Eyebrow from '@/components/ui/Eyebrow.astro';
 import Photo from '@/components/ui/Photo.astro';
+import { Picture } from 'astro:assets';
 import { getPhoto } from '@/data/images';
 import { splitAccent } from '@/lib/text';
 
@@ -22,20 +25,23 @@ interface Props {
   /** Photo registry keys; ignored when the `media` slot is used. */
   archPhoto?: string;
   sidePhoto?: string;
+  /** A wide artwork painted across the right of the intro, instead of the arch. */
+  backdrop?: string;
 }
 
-const { eyebrow, title, titleId, archPhoto, sidePhoto } = Astro.props;
+const { eyebrow, title, titleId, archPhoto, sidePhoto, backdrop } = Astro.props;
 const heading = splitAccent(title);
 const hasMedia = Astro.slots.has('media');
 const arch = !hasMedia && archPhoto ? getPhoto(archPhoto) : null;
 const side = !hasMedia && sidePhoto ? getPhoto(sidePhoto) : null;
+const mural = backdrop ? getPhoto(backdrop) : null;
 ---
 
 <Section surface="hero" padded={false} labelledby={titleId} class="pt-header">
   <Container
     class:list={[
-      'flex gap-3 pt-9 pb-7 md:gap-8 md:pt-16 md:pb-14 lg:gap-12 lg:pt-22 lg:pb-18',
-      hasMedia ? 'flex-col md:flex-row md:items-center' : 'items-end',
+      'relative z-[1] flex gap-3 pt-9 pb-7 md:gap-8 md:pt-16 md:pb-14 lg:gap-12 lg:pt-22 lg:pb-18',
+      hasMedia ? 'flex-col md:flex-row md:items-center' : mural ? 'items-end md:min-h-[26rem] md:items-center lg:min-h-[34rem]' : 'items-end',
     ]}
   >
     <div class="enter flex min-w-0 grow flex-col gap-3 md:gap-5">
@@ -79,4 +85,66 @@ const side = !hasMedia && sidePhoto ? getPhoto(sidePhoto) : null;
       )
     }
   </Container>
+  {
+    mural?.image && (
+      <div class="intro-mural enter" style="--enter-i: 2">
+        <Picture
+          src={mural.image}
+          alt={mural.alt}
+          formats={['avif', 'webp']}
+          sizes="(min-width: 48rem) 66vw, 100vw"
+          widths={[640, 960, 1280, 1600]}
+          layout="none"
+          loading="eager"
+          fetchpriority="high"
+          decoding="async"
+          class="block size-full object-cover"
+        />
+      </div>
+    )
+  }
 </Section>
+
+<style>
+  /*
+   * The mural: on phones a band under the title, on wider screens a panorama across the right
+   * of the intro. Each edge dissolves through a long, eased gradient; the two masks intersect.
+   * Multiply lets the linen's warmth through the artwork's lights.
+   */
+  .intro-mural {
+    position: relative;
+    height: 13rem;
+    margin-top: -1rem;
+    mix-blend-mode: multiply;
+    --fade-x: linear-gradient(to right, transparent 0%, rgb(0 0 0 / 0.35) 14%, #000 34%, #000 86%, transparent 100%);
+    --fade-y: linear-gradient(to bottom, transparent 0%, #000 26%, #000 70%, transparent 100%);
+    mask-image: var(--fade-x), var(--fade-y);
+    mask-composite: intersect;
+    -webkit-mask-image: var(--fade-x), var(--fade-y);
+    -webkit-mask-composite: source-in;
+  }
+
+  .intro-mural :global(img) {
+    object-position: 74% 50%;
+  }
+
+  @media (width >= 48rem) {
+    .intro-mural {
+      position: absolute;
+      top: calc(var(--header-h) * 0.5);
+      right: 0;
+      bottom: 0;
+      width: 64%;
+      height: auto;
+      margin: 0;
+      --fade-x: linear-gradient(to right, transparent 0%, rgb(0 0 0 / 0.25) 18%, rgb(0 0 0 / 0.7) 32%, #000 46%);
+      --fade-y: linear-gradient(to bottom, transparent 0%, rgb(0 0 0 / 0.3) 14%, #000 36%, #000 62%, rgb(0 0 0 / 0.4) 82%, transparent 100%);
+    }
+  }
+
+  @media (width >= 64rem) {
+    .intro-mural {
+      width: 66%;
+    }
+  }
+</style>

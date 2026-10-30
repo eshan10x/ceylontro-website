@@ -66,11 +66,12 @@ const sitePhotos: Record<string, PhotoEntry> = {
     file: null,
     ratio: '3:2',
   },
-  'contact-arch': {
-    alt: 'Fresh limes, curry leaves and green chillies in a woven basket',
-    file: 'mood-limes.jpg',
-    ratio: '4:5 (arch crop)',
-    source: 'generated',
+  // The owner's mural artwork from the menu V1.2 header (Sigiriya, Nine Arches Bridge, the Temple of the Tooth).
+  'contact-mural': {
+    alt: 'Mural of Sri Lankan landmarks: an elephant, Sigiriya, the Nine Arches Bridge, a lighthouse and the Temple of the Tooth',
+    file: 'contact-mural.jpg',
+    ratio: 'Wide panorama (about 3.4:1); edges fade into the page',
+    source: 'owner',
   },
   'nav-dish': {
     alt: 'Fried Rice from Ceylontro Kitchen',

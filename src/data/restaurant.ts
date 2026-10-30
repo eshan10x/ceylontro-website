@@ -8,14 +8,15 @@
  */
 import type { OpeningHours, RestaurantInfo } from './types.ts';
 
+// From the owner (2026-10-31): open 11 a.m. – 11 p.m., every day.
 const hours: OpeningHours = {
-  monday: null,
-  tuesday: null,
-  wednesday: null,
-  thursday: null,
-  friday: null,
-  saturday: null,
-  sunday: null,
+  monday: [{ opens: '11:00', closes: '23:00' }],
+  tuesday: [{ opens: '11:00', closes: '23:00' }],
+  wednesday: [{ opens: '11:00', closes: '23:00' }],
+  thursday: [{ opens: '11:00', closes: '23:00' }],
+  friday: [{ opens: '11:00', closes: '23:00' }],
+  saturday: [{ opens: '11:00', closes: '23:00' }],
+  sunday: [{ opens: '11:00', closes: '23:00' }],
 };
 
 export const restaurant: RestaurantInfo = {
