@@ -131,17 +131,20 @@ The owner's facts all go in `src/data/`, and none of it requires touching compon
 
 ## Deployment
 
-The build output in `dist/` is static. Recommended host: **Cloudflare Pages** (free, fast in Canada, reads `public/_headers`). Netlify works the same way; Vercel uses `vercel.json`.
+The site is static (`dist/`) and is hosted on **Cloudflare Workers with static assets** (Cloudflare's recommended setup for new sites), configured in `wrangler.jsonc`.
 
-| Setting | Value |
+| Setting (Workers & Pages → Create → Import a repository) | Value |
 | --- | --- |
+| Repository / branch | `eshan10x/ceylontro-website` / `main` |
 | Build command | `npm run build` |
-| Output directory | `dist` |
-| Node version | 22 (from `.nvmrc`) |
+| Deploy command | `npx wrangler deploy` |
+| Environment variable | `NODE_VERSION` = `22` |
 
-- `_headers` / `vercel.json` set a Content-Security-Policy (same-origin scripts and fonts; Google Maps is the only allowed frame), HSTS, `nosniff`, a strict referrer policy and a one-year immutable cache for `/_astro/`. Keep the two files in step.
-- URLs have no `.html` and no trailing slash (`/menu`); all three hosts serve them that way (Vercel through `cleanUrls`).
-- `404.html` is served automatically for unknown paths.
+- Every push to `main` builds and deploys automatically.
+- `public/_headers` sets the Content-Security-Policy (same-origin scripts and fonts; Google Maps is the only allowed frame), HSTS, `nosniff`, a strict referrer policy and a one-year immutable cache for `/_astro/`. `vercel.json` mirrors it if the site ever moves to Vercel.
+- URLs have no `.html` and no trailing slash (`/menu`; `/menu.html` redirects). Unknown paths get `404.html` with a 404 status.
+- **Domain:** `ceylontrokitchen.com` is added to Cloudflare (free plan) by pointing the registrar's nameservers to Cloudflare, then attached to the Worker under Settings → Domains & Routes (`ceylontrokitchen.com` and `www.ceylontrokitchen.com`, with `www` redirecting to the apex, which is the canonical domain in `restaurant.ts`).
+- Test locally with `npm run build && npx wrangler dev`.
 
 ## Launch checklist
 

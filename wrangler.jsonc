@@ -1,0 +1,13 @@
+// Cloudflare Workers (static assets) deployment for the static Astro build in ./dist.
+// Build: `npm run build` · Deploy: `npx wrangler deploy` (Workers Builds runs both on every push to main).
+{
+  "name": "ceylontro-website",
+  "compatibility_date": "2026-10-30",
+  "assets": {
+    "directory": "./dist",
+    // Unknown paths get dist/404.html with a 404 status.
+    "not_found_handling": "404-page",
+    // /menu serves menu.html; /menu.html redirects to /menu.
+    "html_handling": "drop-trailing-slash"
+  }
+}

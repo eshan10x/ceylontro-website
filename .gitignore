@@ -20,3 +20,6 @@ npm-debug.log*
 
 # generated report
 MISSING-FACTS.md
+
+# Cloudflare local dev state
+.wrangler/
