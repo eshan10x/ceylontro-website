@@ -4,6 +4,8 @@
  * an arch photo on the right, and on desktop an optional round photo overlapping it.
  * Warm hero surface with grain; the header overlays it (pages pass `overlayHeader`).
  * Extra lines under the title go in the default slot.
+ * A `media` slot replaces the arch and round photo with the page's own artwork (Menu's plates);
+ * it then sits under the title on phones and beside it from 768 px.
  */
 import Section from '@/components/layout/Section.astro';
 import Container from '@/components/layout/Container.astro';
@@ -17,19 +19,25 @@ interface Props {
   /** Title; its last word takes the italic accent ("Say hello" → Say *hello*). */
   title: string;
   titleId: string;
-  /** Photo registry keys. */
-  archPhoto: string;
+  /** Photo registry keys; ignored when the `media` slot is used. */
+  archPhoto?: string;
   sidePhoto?: string;
 }
 
 const { eyebrow, title, titleId, archPhoto, sidePhoto } = Astro.props;
 const heading = splitAccent(title);
-const arch = getPhoto(archPhoto);
-const side = sidePhoto ? getPhoto(sidePhoto) : null;
+const hasMedia = Astro.slots.has('media');
+const arch = !hasMedia && archPhoto ? getPhoto(archPhoto) : null;
+const side = !hasMedia && sidePhoto ? getPhoto(sidePhoto) : null;
 ---
 
 <Section surface="hero" padded={false} labelledby={titleId} class="pt-header">
-  <Container class="flex items-end gap-3 pt-9 pb-7 md:gap-8 md:pt-16 md:pb-14 lg:gap-12 lg:pt-22 lg:pb-18">
+  <Container
+    class:list={[
+      'flex gap-3 pt-9 pb-7 md:gap-8 md:pt-16 md:pb-14 lg:gap-12 lg:pt-22 lg:pb-18',
+      hasMedia ? 'flex-col md:flex-row md:items-center' : 'items-end',
+    ]}
+  >
     <div class="enter flex min-w-0 grow flex-col gap-3 md:gap-5">
       <Eyebrow>{eyebrow}</Eyebrow>
       <h1 id={titleId} class="text-display-l text-ink">
@@ -37,18 +45,23 @@ const side = sidePhoto ? getPhoto(sidePhoto) : null;
       </h1>
       <slot />
     </div>
-    <Photo
-      image={arch.image}
-      alt={arch.alt}
-      shape="arch"
-      ratio="7 / 9"
-      elevated
-      priority
-      sizes="(min-width: 64rem) 280px, (min-width: 48rem) 200px, 110px"
-      caption="Photo · 4:5"
-      style="--enter-i: 1"
-      class="enter-arch w-27.5 shrink-0 md:w-50 lg:w-70"
-    />
+    <slot name="media" />
+    {
+      arch && (
+        <Photo
+          image={arch.image}
+          alt={arch.alt}
+          shape="arch"
+          ratio="7 / 9"
+          elevated
+          priority
+          sizes="(min-width: 64rem) 280px, (min-width: 48rem) 200px, 110px"
+          caption="Photo · 4:5"
+          style="--enter-i: 1"
+          class="enter-arch w-27.5 shrink-0 md:w-50 lg:w-70"
+        />
+      )
+    }
     {
       side && (
         <Photo

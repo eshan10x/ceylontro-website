@@ -30,14 +30,17 @@ export const restaurant: RestaurantInfo = {
     country: 'CA',
   },
   phone: '(416) 783-8872',
-  email: null,
+  email: 'ceylontrokitchen@gmail.com',
   hours,
   ordering: {
     url: null,
     platformName: null,
     deliveryPartners: [],
   },
-  social: [],
+  social: [
+    { network: 'instagram', label: 'Instagram', url: 'https://www.instagram.com/ceylontro_kitchen.ca/' },
+    { network: 'facebook', label: 'Facebook', url: 'https://www.facebook.com/people/Ceylontro-Kitchen/61594937559596/' },
+  ],
   // Printed on the menu V1.2 as "ceylontrokitchen.com".
   domain: 'https://ceylontrokitchen.com',
   // From the owner's brief: a fusion menu with strong Sri Lankan, Asian and Western influences.

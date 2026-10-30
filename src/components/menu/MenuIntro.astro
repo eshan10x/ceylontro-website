@@ -1,9 +1,12 @@
 ---
 /**
- * Menu page intro (D3 "MenuMobile" / "MenuDesktop"): the owner's printed line as eyebrow,
- * "The Menu" title, a short line, and a key to the dietary markers in use.
+ * Menu page intro: the owner's printed line as eyebrow, "The Menu" title, a short line, a key
+ * to the dietary markers in use, and two plates (Kottu Special behind, Nasi Goreng in front)
+ * cut out of their photos so they sit straight on the linen with soft shadows.
  */
 import PageIntro from '@/components/layout/PageIntro.astro';
+import Cutout from '@/components/ui/Cutout.astro';
+import { getPhoto } from '@/data/images';
 import DietaryMarker from '@/components/ui/DietaryMarker.astro';
 import { copy } from '@/data/copy';
 import { allMenuItems } from '@/data/menu';
@@ -12,9 +15,29 @@ import type { DietaryTag } from '@/data/types';
 // Only explain markers that actually appear on the menu.
 const order: readonly DietaryTag[] = ['spicy', 'vegetarian'];
 const tagsInUse = order.filter((tag) => allMenuItems().some((item) => item.tags.includes(tag)));
+const back = getPhoto('menu-intro-plate-back');
+const front = getPhoto('menu-intro-plate-front');
 ---
 
-<PageIntro eyebrow={copy.freshBold.text} title="The Menu" titleId="menu-title" archPhoto="menu-intro" sidePhoto="menu-intro-side">
+<PageIntro eyebrow={copy.freshBold.text} title="The Menu" titleId="menu-title">
+  <div slot="media" class="plates">
+    <Cutout
+      image={back.image}
+      alt={back.alt}
+      priority
+      sizes="(min-width: 64rem) 430px, (min-width: 48rem) 250px, 72vw"
+      style="--enter-i: 1"
+      class="plates__back enter"
+    />
+    <Cutout
+      image={front.image}
+      alt={front.alt}
+      priority
+      sizes="(min-width: 64rem) 400px, (min-width: 48rem) 230px, 68vw"
+      style="--enter-i: 2"
+      class="plates__front enter"
+    />
+  </div>
   <p class="max-w-[27.5rem] text-[0.875rem] leading-relaxed text-stone md:text-small">{copy.menuIntro.text}</p>
   {
     tagsInUse.length > 0 && (
@@ -28,3 +51,43 @@ const tagsInUse = order.filter((tag) => allMenuItems().some((item) => item.tags.
     )
   }
 </PageIntro>
+
+<style>
+  /* Kottu behind and to the right, Nasi Goreng in front and to the left, overlapping. */
+  .plates {
+    position: relative;
+    width: min(100%, 26rem);
+    aspect-ratio: 16 / 11;
+    align-self: center;
+    margin-top: 0.5rem;
+  }
+
+  .plates :global(.plates__back) {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 76%;
+  }
+
+  .plates :global(.plates__front) {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 72%;
+    z-index: 1;
+  }
+
+  @media (width >= 48rem) {
+    .plates {
+      flex-shrink: 0;
+      width: 20rem;
+      margin-top: 0;
+    }
+  }
+
+  @media (width >= 64rem) {
+    .plates {
+      width: 34rem;
+    }
+  }
+</style>

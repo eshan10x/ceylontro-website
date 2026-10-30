@@ -10,12 +10,12 @@ Every slot records where its file came from (`source` in `photos.ts`): the owner
 | --- | --- | --- |
 | `stir-fried-noodles.jpg` | Owner | Home hero arch, Stir-Fried Noodles |
 | `fried-rice.jpg` | Owner | Home hero round dish, mobile menu, Fried Rice |
-| `stir-fried-vegetables.jpg` | Owner | Menu intro round dish, Set Menus category (cropped to the plate) |
-| `devilled.jpg` | Owner | Devilled category |
+| `stir-fried-vegetables.jpg` | Owner | Set Menus category (cropped to the plate) |
+| `devilled.jpg` | Owner (file named Prawns_devilled) | Shrimp Devilled, Devilled category |
 | `wings.jpg` | Licensed stock (owner holds the licence) | Wings (1 lb) |
 | `kottu-overhead.jpg`, `kottu-detail.jpg`, `ceylontro-kottu-special.jpg` | Generated (Higgsfield), owner approved | Home featured dish, Kottu Special |
 | `pilawoos-cheese-kottu.jpg`, `special-nasi-goreng.jpg`, `chilli-chicken.jpg`, `hot-butter-cuttlefish.jpg`, `stir-fried-cuttlefish.jpg`, `chefs-chilli-chicken-wings.jpg`, `wings-and-fries-combo.jpg`, `ceylontro-classic-beef-burger.jpg`, `nashville-hot-chicken-burger.jpg`, `quesadillas.jpg` | Generated (Higgsfield), owner approved | Those dishes |
-| `mood-spices.jpg` | Generated (Higgsfield) | Menu intro arch |
+| `cutout-kottu-special.png`, `cutout-nasi-goreng.png` | Cut out of the generated Kottu Special and Nasi Goreng images (transparent PNG; the Kottu plate fades out on the left, where its photo cut it off) | Menu intro plates |
 | `mood-ingredients.jpg` | Generated (Higgsfield) | Our Story hero arch |
 | `mood-limes.jpg` | Generated (Higgsfield) | Contact intro arch |
 
