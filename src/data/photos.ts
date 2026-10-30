@@ -49,10 +49,11 @@ const sitePhotos: Record<string, PhotoEntry> = {
     ratio: 'Cut-out (transparent background), plate at about 45°',
     source: 'generated',
   },
-  'story-hero': {
-    alt: 'Fresh leeks, carrots, chillies, tomatoes and cabbage on a chopping board',
-    file: 'mood-ingredients.jpg',
-    ratio: '4:5 (arch crop)',
+  // Our Story mural (Higgsfield, 2026-10-31): Sri Lanka on the left, the crossing, Canada on the right.
+  'story-mural': {
+    alt: 'Carved mural of a journey from Sri Lanka to Canada: tea hills, spices and an oruwa canoe, a ship crossing the ocean, a Canadian lake with autumn maples, and the Toronto skyline',
+    file: 'story-mural.jpg',
+    ratio: 'Wide panorama (21:9), centred; edges fade into the page',
     source: 'generated',
   },
   'story-origin': { alt: 'Ceylontro Kitchen', file: null, ratio: '3:2' },
