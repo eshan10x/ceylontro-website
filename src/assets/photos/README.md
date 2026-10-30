@@ -17,6 +17,6 @@ Every slot records where its file came from (`source` in `photos.ts`): the owner
 | `pilawoos-cheese-kottu.jpg`, `special-nasi-goreng.jpg`, `chilli-chicken.jpg`, `hot-butter-cuttlefish.jpg`, `stir-fried-cuttlefish.jpg`, `chefs-chilli-chicken-wings.jpg`, `wings-and-fries-combo.jpg`, `ceylontro-classic-beef-burger.jpg`, `nashville-hot-chicken-burger.jpg`, `quesadillas.jpg` | Generated (Higgsfield), owner approved | Those dishes |
 | `cutout-kottu-special.png`, `cutout-nasi-goreng.png` | Cut out of the generated Kottu Special and Nasi Goreng images (transparent PNG; the Kottu plate fades out on the left, where its photo cut it off) | Menu intro plates |
 | `mood-ingredients.jpg` | Generated (Higgsfield) | Our Story hero arch |
-| `contact-mural.jpg` | Owner (the mural artwork from the menu V1.2 header) | Contact intro, edges faded into the page |
+| `contact-mural.jpg` | Generated (Higgsfield), recreated at 3840 px from the owner's menu V1.2 mural | Contact intro, edges faded into the page |
 
 The owner's photos were cropped to remove the logo text baked into the social posts. The generated images have a light film grain added so they sit with the photographs.

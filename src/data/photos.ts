@@ -66,12 +66,13 @@ const sitePhotos: Record<string, PhotoEntry> = {
     file: null,
     ratio: '3:2',
   },
-  // The owner's mural artwork from the menu V1.2 header (Sigiriya, Nine Arches Bridge, the Temple of the Tooth).
+  // Recreated at 3840 px from the owner's menu V1.2 mural (Higgsfield, 2026-10-31), composed for
+  // this intro: quiet plaster on the left and at the edges, the landmarks in arched panels to the right.
   'contact-mural': {
-    alt: 'Mural of Sri Lankan landmarks: an elephant, Sigiriya, the Nine Arches Bridge, a lighthouse and the Temple of the Tooth',
+    alt: 'Carved mural of Sri Lankan landmarks in arched panels: a ceremonial elephant, Sigiriya, the Nine Arches Bridge, a lighthouse and the Temple of the Tooth',
     file: 'contact-mural.jpg',
-    ratio: 'Wide panorama (about 3.4:1); edges fade into the page',
-    source: 'owner',
+    ratio: 'Wide panorama (21:9); edges fade into the page',
+    source: 'generated',
   },
   'nav-dish': {
     alt: 'Fried Rice from Ceylontro Kitchen',

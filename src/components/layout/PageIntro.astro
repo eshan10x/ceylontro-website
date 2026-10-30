@@ -92,8 +92,8 @@ const mural = backdrop ? getPhoto(backdrop) : null;
           src={mural.image}
           alt={mural.alt}
           formats={['avif', 'webp']}
-          sizes="(min-width: 48rem) 66vw, 100vw"
-          widths={[640, 960, 1280, 1600]}
+          sizes="(min-width: 64rem) 75vw, (min-width: 48rem) 66vw, 100vw"
+          widths={[640, 960, 1280, 1600, 2000, 2400]}
           layout="none"
           loading="eager"
           fetchpriority="high"
@@ -113,7 +113,7 @@ const mural = backdrop ? getPhoto(backdrop) : null;
    */
   .intro-mural {
     position: relative;
-    height: 13rem;
+    height: 15rem;
     margin-top: -1rem;
     mix-blend-mode: multiply;
     --fade-x: linear-gradient(to right, transparent 0%, rgb(0 0 0 / 0.35) 14%, #000 34%, #000 86%, transparent 100%);
@@ -124,6 +124,7 @@ const mural = backdrop ? getPhoto(backdrop) : null;
     -webkit-mask-composite: source-in;
   }
 
+  /* The mural keeps its scenes on the right and quiet plaster on the left; anchor to the right. */
   .intro-mural :global(img) {
     object-position: 74% 50%;
   }
@@ -137,14 +138,14 @@ const mural = backdrop ? getPhoto(backdrop) : null;
       width: 64%;
       height: auto;
       margin: 0;
-      --fade-x: linear-gradient(to right, transparent 0%, rgb(0 0 0 / 0.25) 18%, rgb(0 0 0 / 0.7) 32%, #000 46%);
+      --fade-x: linear-gradient(to right, transparent 0%, rgb(0 0 0 / 0.35) 9%, rgb(0 0 0 / 0.8) 18%, #000 26%);
       --fade-y: linear-gradient(to bottom, transparent 0%, rgb(0 0 0 / 0.3) 14%, #000 36%, #000 62%, rgb(0 0 0 / 0.4) 82%, transparent 100%);
     }
   }
 
   @media (width >= 64rem) {
     .intro-mural {
-      width: 66%;
+      width: 76%;
     }
   }
 </style>
