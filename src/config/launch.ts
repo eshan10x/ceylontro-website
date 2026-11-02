@@ -6,4 +6,4 @@
  * Indexing also needs `domain` in `src/data/restaurant.ts`, because sitemap and canonical
  * URLs must be absolute.
  */
-export const LAUNCHED = false;
+export const LAUNCHED = true;
