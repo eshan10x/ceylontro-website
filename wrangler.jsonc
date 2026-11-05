@@ -20,6 +20,13 @@
   "vars": {
     // Clover sandbox until go-live (O5); production is https://api.clover.com.
     "CLOVER_API_BASE": "https://apisandbox.dev.clover.com"
+  },
+  // Branch previews (`wrangler preview`, used by Workers Builds for non-production branches)
+  // need their own settings. Previews always talk to the Clover sandbox, never production.
+  "previews": {
+    "vars": {
+      "CLOVER_API_BASE": "https://apisandbox.dev.clover.com"
+    }
   }
   // Secrets, set in Cloudflare and never committed: CLOVER_PRIVATE_TOKEN, CLOVER_MERCHANT_ID,
   // CLOVER_WEBHOOK_SECRET.
