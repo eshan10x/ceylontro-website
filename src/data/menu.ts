@@ -388,6 +388,15 @@ export const menu: readonly MenuCategory[] = [
       },
     ],
   },
+  {
+    // From the owner's Clover inventory (2026-11-06). "Pop" is hidden in Clover, so it is left off.
+    id: 'beverages',
+    name: 'Beverages',
+    items: [
+      { id: 'water', name: 'Water', price: '$1.99', tags: [] },
+      { id: 'perrier', name: 'Perrier', price: '$4.99', tags: [] },
+    ],
+  },
 ];
 
 /** Every item with its category attached (the flat shape from the project instructions). */
