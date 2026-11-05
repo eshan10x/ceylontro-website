@@ -7,6 +7,8 @@
  * - Scheduled pickup is later the same day, every `slotStepMinutes`, from the first slot at least
  *   `prepMinutes` away until the last order time plus `prepMinutes`.
  * - No pre-ordering while closed.
+ * - Testing: with `ORDERING.enforceHours` off, ordering is open all day (00:00 – 23:59) and
+ *   pickup slots run until midnight.
  *
  * Opening periods that run past midnight are not supported (the owner's hours don't).
  */
@@ -72,8 +74,12 @@ function periodsFor(hours: OpeningHours, weekday: Weekday) {
     .map((p) => ({ ...p, lastOrder: p.closes - ORDERING.lastOrderBeforeCloseMinutes }));
 }
 
+/** The whole day, for testing with opening hours switched off. */
+const ALL_DAY = { opens: 0, closes: 24 * 60 - 1, lastOrder: 24 * 60 - 1 - ORDERING.prepMinutes };
+
 export function orderingWindow(now: Date = new Date(), hours: OpeningHours = restaurant.hours): OrderingWindow {
   const local = zonedNow(now);
+  if (!ORDERING.enforceHours) return { open: ORDERING.enabled, today: ALL_DAY, next: null };
   const periods = periodsFor(hours, local.weekday);
   const current = periods.find((p) => local.minutes >= p.opens && local.minutes <= p.lastOrder) ?? null;
   const laterToday = periods.find((p) => p.opens > local.minutes) ?? null;

@@ -4,11 +4,32 @@
  *
  * Shared by the browser (Menu, checkout) and the server (`worker/`), so both apply the same rules.
  */
-export const ORDERING = {
+interface OrderingSettings {
+  readonly enabled: boolean;
+  readonly enforceHours: boolean;
+  readonly mode: 'pickup';
+  readonly prepMinutes: number;
+  readonly lastOrderBeforeCloseMinutes: number;
+  readonly slotStepMinutes: number;
+  readonly timeZone: string;
+  readonly tax: { readonly name: string; readonly percent: number };
+  readonly tips: boolean;
+  readonly notes: { readonly allowed: boolean; readonly maxLength: number };
+  readonly maxQuantityPerLine: number;
+  readonly maxLines: number;
+}
+
+export const ORDERING: OrderingSettings = {
   /** Master switch. `false` hides every Add button and the order UI; Order Online goes to Contact. */
   enabled: true,
   /** Pickup only for now (owner, 2026-11-05). Delivery is not built. */
   mode: 'pickup',
+  /**
+   * Take orders only during opening hours (11:00 – 22:50). TESTING: off while the owner tests on
+   * the `feature/online-ordering` branch, so ordering is open around the clock.
+   * MUST be `true` before going live (O5); the build warns while it is off.
+   */
+  enforceHours: false,
   /** Usual preparation time, used for "as soon as possible" and the first pickup slot. */
   prepMinutes: 20,
   /** Last order is 10 minutes before closing: 22:50 with the current 11 a.m. – 11 p.m. hours. */
@@ -25,4 +46,4 @@ export const ORDERING = {
   notes: { allowed: true, maxLength: 140 },
   maxQuantityPerLine: 20,
   maxLines: 30,
-} as const;
+};

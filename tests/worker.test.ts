@@ -3,10 +3,15 @@
  */
 import { test, mock } from 'node:test';
 import assert from 'node:assert/strict';
+import { ORDERING } from '../src/ordering/config.ts';
 import worker from '../worker/index.ts';
 import { cleanPhone, cloverCheckoutBody } from '../worker/checkout.ts';
 import { verifySignature } from '../worker/webhook.ts';
 import type { Env } from '../worker/env.ts';
+
+
+// Opening-hours rules are tested as they will run live, whatever the test-mode switch says.
+(ORDERING as { enforceHours: boolean }).enforceHours = true;
 
 const ORIGIN = 'https://preview.ceylontrokitchen.com';
 // 18:22 in Toronto on a Thursday: open, ASAP ready 18:42.

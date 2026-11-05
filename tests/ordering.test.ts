@@ -3,11 +3,16 @@
  */
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
+import { ORDERING } from '../src/ordering/config.ts';
 import { buildCatalog, catalogById, parsePrice } from '../src/ordering/catalog.ts';
 import { lineKey, priceOrder, taxOn } from '../src/ordering/pricing.ts';
 import { checkPickup, orderingWindow, pickupOptions, zonedNow } from '../src/ordering/hours.ts';
 
 /** A moment in Toronto (EST in November, UTC−5). */
+
+// Opening-hours rules are tested as they will run live, whatever the test-mode switch says.
+(ORDERING as { enforceHours: boolean }).enforceHours = true;
+
 const toronto = (date: string, time: string) => new Date(`${date}T${time}:00-05:00`);
 
 test('parses printed prices into cents', () => {
@@ -131,4 +136,14 @@ test('the server accepts only offered pickup times', () => {
   assert.equal(checkPickup({ type: 'scheduled', time: '18:30' }, now).ok, false);
   assert.equal(checkPickup({ type: 'scheduled', time: '19:07' }, now).ok, false);
   assert.deepEqual(checkPickup({ type: 'asap' }, toronto('2026-11-05', '23:05')), { ok: false, error: 'closed' });
+});
+
+test('test mode: with opening hours off, ordering is open all day', (t) => {
+  (ORDERING as { enforceHours: boolean }).enforceHours = false;
+  t.after(() => ((ORDERING as { enforceHours: boolean }).enforceHours = true));
+  assert.equal(orderingWindow(toronto('2026-11-06', '01:30')).open, true);
+  const options = pickupOptions(toronto('2026-11-06', '01:30'));
+  assert.equal(options?.asap, 1 * 60 + 50);
+  assert.equal(options?.slots.at(-1), 23 * 60 + 45);
+  assert.equal(checkPickup({ type: 'asap' }, toronto('2026-11-06', '03:00')).ok, true);
 });

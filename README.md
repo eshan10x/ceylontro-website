@@ -134,7 +134,7 @@ The owner's facts all go in `src/data/`, and none of it requires touching compon
 
 Guests order on the Menu and pay on Clover's secure Hosted Checkout page; pickup only. Built on the `feature/online-ordering` branch and merged into `main` only after the go-live step (O5) is approved.
 
-- **Settings:** `src/ordering/config.ts` — on/off switch, 20-minute preparation, last order 10 minutes before closing (22:50), 15-minute pickup slots, 13% HST, tips off, optional special instructions. Hours come from `restaurant.ts` and are read in Toronto time.
+- **Settings:** `src/ordering/config.ts` — on/off switch, `enforceHours` (**off for testing**: ordering is open around the clock; must be `true` at go-live, and a Cloudflare build of `main` fails while it is off), 20-minute preparation, last order 10 minutes before closing (22:50), 15-minute pickup slots, 13% HST, tips off, optional special instructions. Hours come from `restaurant.ts` and are read in Toronto time.
 - **Prices:** `src/ordering/catalog.ts` turns `menu.ts` into orderable dishes (choices are required, extras optional, prices in cents). The server rebuilds every order from it, so a browser can never set a price; if the menu changed, checkout answers 409 and the guest sees the new total.
 - **Screens** (approved O2 design): Add buttons and the View order bar or panel (`src/components/order/`), the options sheet and order drawer (`src/scripts/order/app.ts`, loaded only when a guest starts an order), `/checkout` and `/order-confirmed`. The order is kept in localStorage.
 - **Server:** `worker/` runs only for `/api/*` (`run_worker_first` in `wrangler.jsonc`); everything else is served straight from `dist/`.

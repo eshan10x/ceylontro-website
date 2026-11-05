@@ -6,6 +6,7 @@
  */
 import { existsSync, writeFileSync } from 'node:fs';
 import { buildReport, formatReport } from '../src/data/report.ts';
+import { ORDERING } from '../src/ordering/config.ts';
 
 const photosDir = new URL('../src/assets/photos/', import.meta.url);
 const report = buildReport({ photoFileExists: (file) => existsSync(new URL(file, photosDir)) });
@@ -19,5 +20,12 @@ if (process.argv.includes('--write')) {
 }
 
 if (report.errors.length) {
+  process.exitCode = 1;
+}
+
+// Online ordering test mode must never reach the live site: Cloudflare Workers Builds names the
+// branch it builds in WORKERS_CI_BRANCH, and a build of main stops here while hours are off.
+if (process.env['WORKERS_CI_BRANCH'] === 'main' && ORDERING.enabled && !ORDERING.enforceHours) {
+  console.error('\nERROR: online ordering hours are off (enforceHours in src/ordering/config.ts). Turn them on before deploying main.');
   process.exitCode = 1;
 }
