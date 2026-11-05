@@ -12,10 +12,7 @@ export interface OrderStore {
 export interface Env {
   /** The static site (dist/), served for everything that isn't /api/*. */
   ASSETS: { fetch(request: Request): Promise<Response> };
-  /**
-   * Clover API host. Sandbox: https://apisandbox.dev.clover.com (the default).
-   * Production (North America): https://api.clover.com — set at go-live (O5).
-   */
+  /** Clover API host: production, North America (https://api.clover.com), set in wrangler.jsonc. */
   CLOVER_API_BASE?: string;
   /** Secret: Ecommerce API private token (Hosted checkout integration). */
   CLOVER_PRIVATE_TOKEN?: string;

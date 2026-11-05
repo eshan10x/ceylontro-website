@@ -18,18 +18,19 @@
   },
   "observability": { "enabled": true },
   "vars": {
-    // Clover sandbox until go-live (O5); production is https://api.clover.com.
-    "CLOVER_API_BASE": "https://apisandbox.dev.clover.com"
+    // Clover's production API (North America). No sandbox: the owner tests with real, refunded orders.
+    "CLOVER_API_BASE": "https://api.clover.com"
   },
-  // Branch previews (`wrangler preview`, used by Workers Builds for non-production branches)
-  // need their own settings. Previews always talk to the Clover sandbox, never production.
+  // Branch previews (`wrangler preview`, used by Workers Builds for non-production branches) need
+  // their own settings and their own secrets (Settings → Variables and secrets → Previews Base).
+  // They use the real Clover account too, so every preview payment is a real charge.
   "previews": {
     "vars": {
-      "CLOVER_API_BASE": "https://apisandbox.dev.clover.com"
+      "CLOVER_API_BASE": "https://api.clover.com"
     }
   }
-  // Secrets, set in Cloudflare and never committed: CLOVER_PRIVATE_TOKEN, CLOVER_MERCHANT_ID,
-  // CLOVER_WEBHOOK_SECRET.
+  // Secrets, set in Cloudflare (for production and for Previews Base) and never committed:
+  // CLOVER_PRIVATE_TOKEN, CLOVER_MERCHANT_ID, CLOVER_WEBHOOK_SECRET.
   // Order store (O3): create a KV namespace and add
   //   "kv_namespaces": [{ "binding": "ORDERS", "id": "<namespace id>" }]
 }

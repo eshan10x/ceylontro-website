@@ -20,7 +20,7 @@ import type { Env } from './env.ts';
 export { cleanPhone } from '../src/ordering/customer.ts';
 
 const MAX_BODY_BYTES = 20_000;
-const SANDBOX_API = 'https://apisandbox.dev.clover.com';
+const CLOVER_API = 'https://api.clover.com';
 
 /** What is kept for the kitchen hand-off and the webhook, keyed by Clover's session id. */
 export interface StoredOrder {
@@ -128,7 +128,7 @@ export async function handleCheckout(request: Request, env: Env, now: Date = new
 
   let session: { href?: string; checkoutSessionId?: string; expirationTime?: number };
   try {
-    const response = await fetch(`${env.CLOVER_API_BASE ?? SANDBOX_API}/invoicingcheckoutservice/v1/checkouts`, {
+    const response = await fetch(`${env.CLOVER_API_BASE ?? CLOVER_API}/invoicingcheckoutservice/v1/checkouts`, {
       method: 'POST',
       headers: {
         accept: 'application/json',

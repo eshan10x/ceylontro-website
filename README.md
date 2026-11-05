@@ -140,8 +140,8 @@ Guests order on the Menu and pay on Clover's secure Hosted Checkout page; pickup
 - **Server:** `worker/` runs only for `/api/*` (`run_worker_first` in `wrangler.jsonc`); everything else is served straight from `dist/`.
   - `POST /api/checkout` checks hours, pickup time, the guest's details and the order, then creates a Clover checkout session and returns its address.
   - `POST /api/clover-webhook` accepts Clover's payment notice only with a valid `Clover-Signature`, and marks the stored order paid or declined.
-- **Secrets** (Cloudflare → Workers → ceylontro-website → Settings → Variables and secrets; never in the repo): `CLOVER_PRIVATE_TOKEN`, `CLOVER_MERCHANT_ID`, `CLOVER_WEBHOOK_SECRET`. `CLOVER_API_BASE` is the sandbox until go-live. Without the token, checkout answers 503 and the guest is asked to call.
-- **Still to do:** the order store (a KV namespace bound as `ORDERS`), the kitchen hand-off and the order-alert email, once the Clover sandbox test (O1) shows whether paid Hosted Checkout orders reach the POS and printer; sold-out dishes read from Clover's inventory.
+- **Secrets** (Cloudflare → Workers → ceylontro-website → Settings → Variables and secrets; never in the repo): `CLOVER_PRIVATE_TOKEN`, `CLOVER_MERCHANT_ID`, `CLOVER_WEBHOOK_SECRET`. `CLOVER_API_BASE` is Clover's production API: there is no sandbox, so test orders are real charges, refunded afterwards. Previews need the same three secrets under Previews Base. Without the token, checkout answers 503 and the guest is asked to call.
+- **Still to do:** the order store (a KV namespace bound as `ORDERS`), the kitchen hand-off and the order-alert email, once the first real test order (O1) shows whether paid Hosted Checkout orders reach the POS and printer; sold-out dishes read from Clover's inventory.
 
 ## Deployment
 

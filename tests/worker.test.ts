@@ -63,7 +63,7 @@ test('checkout creates a Clover session from menu prices', async (t) => {
   const calls: { url: string; init: RequestInit }[] = [];
   const fetchMock = mock.method(globalThis, 'fetch', async (url: string, init: RequestInit) => {
     calls.push({ url, init });
-    return Response.json({ href: 'https://sandbox.dev.clover.com/checkout/abc', checkoutSessionId: 'sess-1', expirationTime: 1 });
+    return Response.json({ href: 'https://checkout.clover.com/abc', checkoutSessionId: 'sess-1', expirationTime: 1 });
   });
   t.after(() => fetchMock.mock.restore());
 
@@ -71,12 +71,12 @@ test('checkout creates a Clover session from menu prices', async (t) => {
   const res = await worker.fetch(post('/api/checkout', goodBody), e);
   assert.equal(res.status, 200, await res.clone().text());
   const data = (await res.json()) as { href: string; ref: string; order: { totalCents: number } };
-  assert.equal(data.href, 'https://sandbox.dev.clover.com/checkout/abc');
+  assert.equal(data.href, 'https://checkout.clover.com/abc');
   assert.match(data.ref, /^CK-[2-9A-Z]{4}$/);
   assert.equal(data.order.totalCents, 5297 + 689);
 
   assert.equal(calls.length, 1);
-  assert.equal(calls[0]?.url, 'https://apisandbox.dev.clover.com/invoicingcheckoutservice/v1/checkouts');
+  assert.equal(calls[0]?.url, 'https://api.clover.com/invoicingcheckoutservice/v1/checkouts');
   const headers = calls[0]?.init.headers as Record<string, string>;
   assert.equal(headers['authorization'], 'Bearer test-token');
   assert.equal(headers['X-Clover-Merchant-Id'], 'MERCHANT1');
