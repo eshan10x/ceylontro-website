@@ -185,3 +185,18 @@ test('an approved payment marks the stored order paid', async (t) => {
   const forged = await worker.fetch(post('/api/clover-webhook', body, { 'clover-signature': 't=1,v1=abc' }), e);
   assert.equal(forged.status, 401);
 });
+
+test('status shows which settings are present, never their values', async () => {
+  const res = await worker.fetch(new Request(`${ORIGIN}/api/status`), env());
+  const body = await res.text();
+  assert.equal(res.status, 200);
+  assert.doesNotMatch(body, /test-token|MERCHANT1|whsec/);
+  assert.deepEqual(JSON.parse(body), {
+    ordering: true,
+    cloverApi: null,
+    merchantId: true,
+    privateToken: true,
+    webhookSecret: true,
+    orderStore: true,
+  });
+});
