@@ -182,7 +182,12 @@ form.addEventListener('submit', async (event) => {
       showAlert('Something in your order needs a look', `${((result['messages'] as string[]) ?? []).map(esc).join(' ')} <a href="/menu#your-order" class="underline">Edit your order</a>.`);
       break;
     default:
-      showAlert('Payment isn’t available right now', `Nothing was charged. Please try again in a few minutes${call}.`);
+      // The reference tells staff which problem it was (e.g. "unavailable" = Clover keys missing,
+      // "payment_unavailable" = Clover refused) without exposing anything sensitive.
+      showAlert(
+        'Payment isn’t available right now',
+        `Nothing was charged. Please try again in a few minutes${call}. <span class="text-stone">(Ref: ${esc(String(result['error'] ?? response.status))})</span>`,
+      );
   }
 });
 

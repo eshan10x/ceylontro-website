@@ -140,7 +140,8 @@ export async function handleCheckout(request: Request, env: Env, now: Date = new
     });
     if (!response.ok) {
       console.error(`checkout: Clover answered ${response.status}: ${(await response.text()).slice(0, 300)}`);
-      return json({ error: 'payment_unavailable' }, 502);
+      // The status (e.g. 401 = token not accepted) helps diagnose; Clover's message stays in the logs.
+      return json({ error: `payment_unavailable_${response.status}` }, 502);
     }
     session = (await response.json()) as typeof session;
   } catch (error) {
