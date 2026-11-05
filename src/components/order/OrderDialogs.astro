@@ -1,0 +1,28 @@
+---
+/**
+ * The ordering screens' containers (O2): the dish options sheet, the "Your order" drawer and the
+ * "Added" toast. Their contents are drawn by `src/scripts/order/app.ts`, which loads only when a
+ * guest starts an order.
+ *
+ * Both dialogs are native modal <dialog>s: focus stays inside, Esc closes, the page behind is
+ * inert and locked (global.css). Phones get bottom sheets; tablets and up get a centred options
+ * dialog and a drawer from the right.
+ */
+import '@/styles/order.css';
+---
+
+<dialog id="order-sheet" class="order-dialog order-dialog--sheet" aria-labelledby="order-sheet-title">
+  <form method="dialog" data-order-sheet class="flex max-h-[inherit] min-h-0 flex-col"></form>
+</dialog>
+
+<dialog id="order-drawer" class="order-dialog order-dialog--drawer" aria-labelledby="order-drawer-title">
+  <div data-order-drawer class="flex max-h-[inherit] min-h-0 flex-col"></div>
+</dialog>
+
+<div
+  data-order-toast
+  role="status"
+  aria-live="polite"
+  class="order-toast pointer-events-none fixed inset-x-4 bottom-[calc(5.75rem+env(safe-area-inset-bottom))] z-50 mx-auto max-w-md xl:bottom-8"
+>
+</div>

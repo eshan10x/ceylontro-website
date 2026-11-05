@@ -1,0 +1,47 @@
+---
+/**
+ * "Add +" on a dish (O2 "Menu with Add"). Shown only while online ordering is open: the menu's
+ * ordering script sets `html[data-ordering="open"]`, so without JavaScript or after the last
+ * order time the button never appears. Its row reserves the button's height, so nothing shifts.
+ *
+ * "1 in your order" beside it is filled in by the ordering script.
+ */
+import { ORDERING } from '@/ordering/config';
+
+interface Props {
+  id: string;
+  name: string;
+  /** Cream outline on espresso surfaces (the combo card). */
+  onDark?: boolean;
+  /** Narrow rows (name and price only): "1 in your order" shows from tablet width up. */
+  compact?: boolean;
+  class?: string | undefined;
+}
+
+const { id, name, onDark = false, compact = false, class: className } = Astro.props;
+---
+
+{
+  ORDERING.enabled && (
+    <div class:list={['order-add items-center gap-3', className]}>
+      <span
+        data-order-in={id}
+        class:list={['text-[0.8125rem] font-semibold empty:hidden', compact && 'max-md:hidden', onDark ? 'text-cream-muted' : 'text-herb']}
+      ></span>
+      <button
+        type="button"
+        data-order-add={id}
+        aria-label={`Add ${name} to your order`}
+        class:list={[
+          'inline-flex min-h-11 items-center gap-2 rounded-full border pr-4 pl-4.5 text-[0.75rem] font-semibold tracking-[0.12em] uppercase',
+          'transition-colors duration-350 ease-out',
+          onDark
+            ? 'border-cream/60 text-cream hover:border-cream hover:bg-cream hover:text-espresso active:bg-cream-muted'
+            : 'border-espresso bg-white text-espresso hover:bg-espresso hover:text-white active:bg-espresso-press',
+        ]}
+      >
+        Add <span aria-hidden="true" class="text-lg leading-none font-medium tracking-normal">+</span>
+      </button>
+    </div>
+  )
+}

@@ -1,0 +1,30 @@
+---
+/**
+ * "View order" bar (O2): pinned to the bottom of the Menu below 1440 px once the order has
+ * something in it. Sticky inside the menu, so it comes to rest above the footer. The count and
+ * subtotal are filled in by the menu's ordering script; tapping opens the "Your order" drawer.
+ */
+---
+
+<div
+  data-order-bar
+  hidden
+  class="sticky bottom-0 z-30 border-t border-line-soft bg-white/95 px-4 pt-3 pb-[max(0.875rem,env(safe-area-inset-bottom))] shadow-[0_-16px_30px_-24px_rgb(43_27_18/0.5)] backdrop-blur-md md:flex md:justify-center md:px-10 xl:hidden"
+>
+  <button
+    type="button"
+    data-order-open
+    class="flex min-h-[3.375rem] w-full items-center justify-between gap-3 rounded-full bg-espresso pr-2.5 pl-6 text-button font-semibold tracking-[0.12em] text-white uppercase shadow-button transition-colors duration-350 hover:bg-espresso-hover active:bg-espresso-press md:max-w-md"
+  >
+    <span class="inline-flex items-center gap-2.5">
+      <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"
+        ><path d="M3 6h12l-1 10H4L3 6z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"
+        ></path><path d="M6.5 6V4.5a2.5 2.5 0 0 1 5 0V6" fill="none" stroke="currentColor" stroke-width="1.5"></path></svg
+      >
+      View order
+      <span class="order-cta-count bg-cream! text-espresso" data-order-count>0</span>
+      <span class="sr-only">items,</span>
+    </span>
+    <span class="px-3.5 text-[0.9375rem] tracking-normal tabular-nums" data-order-subtotal></span>
+  </button>
+</div>

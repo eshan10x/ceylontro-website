@@ -6,7 +6,10 @@
  *    when a link inside it is used or when the window grows to desktop width.
  * 3. Hours: reveals today's opening hours for the visitor's weekday, and marks today's row
  *    in the full opening-hours list (Contact).
+ * 4. Online ordering: once something is in the order, Order Online buttons read "Your order"
+ *    with the count and open it (`src/ordering/client/chrome.ts`).
  */
+import { syncChrome } from '@/ordering/client/chrome';
 
 const header = document.getElementById('site-header');
 const sentinel = document.querySelector('[data-header-sentinel]');
@@ -46,3 +49,7 @@ for (const line of document.querySelectorAll<HTMLElement>('[data-weekday]')) {
 for (const row of document.querySelectorAll<HTMLElement>('[data-hours-day]')) {
   if (row.dataset['hoursDay'] === today) row.setAttribute('aria-current', 'date');
 }
+
+syncChrome();
+window.addEventListener('storage', syncChrome);
+window.addEventListener('pageshow', syncChrome);

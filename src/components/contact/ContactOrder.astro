@@ -5,6 +5,7 @@
  * - With `ordering.url`: Order Online (opens the ordering site), the platform name if given,
  *   and any delivery partners the owner confirms.
  * - Without it: View Menu instead, so the card never links back to itself.
+ * - With the website's own ordering on (B9): Order Online goes to the Menu, pickup only.
  */
 import Button from '@/components/ui/Button.astro';
 import Eyebrow from '@/components/ui/Eyebrow.astro';
@@ -12,6 +13,7 @@ import MissingData from '@/components/ui/MissingData.astro';
 import OrderButton from '@/components/ui/OrderButton.astro';
 import { copy } from '@/data/copy';
 import { restaurant } from '@/data/restaurant';
+import { ORDERING } from '@/ordering/config';
 
 interface Props {
   class?: string | undefined;
@@ -34,11 +36,25 @@ const { url, platformName, deliveryPartners } = restaurant.ordering;
     <h2 id="order-title" class="text-[2rem] leading-none text-cream italic md:text-[2.75rem] lg:text-[3.25rem]">
       {copy.contactOrder.text}
     </h2>
-    {platformName && <p class="text-small text-cream-muted">Order through {platformName}.</p>}
+    {
+      ORDERING.enabled ? (
+        <p class="text-small text-cream-muted">Order on our menu for pickup, and pay securely online.</p>
+      ) : (
+        platformName && <p class="text-small text-cream-muted">Order through {platformName}.</p>
+      )
+    }
 
     <div class="flex flex-col gap-3 pt-2">
-      {url ? <OrderButton onDark fullWidth /> : <Button href="/menu" variant="cream" fullWidth>View Menu</Button>}
-      {!url && <MissingData label="Ordering link" onDark />}
+      {
+        ORDERING.enabled || url ? (
+          <OrderButton onDark fullWidth />
+        ) : (
+          <Button href="/menu" variant="cream" fullWidth>
+            View Menu
+          </Button>
+        )
+      }
+      {!ORDERING.enabled && !url && <MissingData label="Ordering link" onDark />}
     </div>
 
     {
