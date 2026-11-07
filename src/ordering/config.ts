@@ -32,11 +32,10 @@ export const ORDERING: OrderingSettings = {
    */
   payment: 'at_pickup',
   /**
-   * Take orders only during opening hours (11:00 – 22:50). TESTING: off while the owner tests on
-   * the `feature/online-ordering` branch, so ordering is open around the clock.
-   * MUST be `true` before going live (O5); the build warns while it is off.
+   * Take orders only during opening hours (11:00 – 22:50, Toronto time). Switched off only for
+   * testing on a branch; a Cloudflare build of main fails while it is off.
    */
-  enforceHours: false,
+  enforceHours: true,
   /** Usual preparation time, used for "as soon as possible" and the first pickup slot. */
   prepMinutes: 20,
   /** Last order is 10 minutes before closing: 22:50 with the current 11 a.m. – 11 p.m. hours. */
