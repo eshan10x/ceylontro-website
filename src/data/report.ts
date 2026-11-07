@@ -7,6 +7,7 @@
  * Pure TypeScript with no Astro imports, so `scripts/missing-facts.ts` can run it with Node.
  */
 import { LAUNCHED } from '../config/launch.ts';
+import { ORDERING } from '../ordering/config.ts';
 import { copy } from './copy.ts';
 import { homeFavourites, homeFavouritesConfirmed, homeFeaturedItem, menu } from './menu.ts';
 import { photos } from './photos.ts';
@@ -42,8 +43,9 @@ export function buildReport(options: { photoFileExists?: (file: string) => boole
   const missingDays = WEEKDAYS.filter((day) => restaurant.hours[day] === null);
   if (missingDays.length === WEEKDAYS.length) facts.push('Opening hours (all 7 days)');
   else if (missingDays.length) facts.push(`Opening hours for ${missingDays.join(', ')}`);
-  if (!restaurant.ordering.url) facts.push('Online ordering URL');
-  if (!restaurant.ordering.platformName) facts.push('Ordering platform name');
+  // With the website's own ordering on (B9), there is no outside ordering link to supply.
+  if (!ORDERING.enabled && !restaurant.ordering.url) facts.push('Online ordering URL');
+  if (!ORDERING.enabled && !restaurant.ordering.platformName) facts.push('Ordering platform name');
   if (!restaurant.social.length) facts.push('Social media links');
   if (!restaurant.domain) facts.push('Website domain');
   if (restaurant.acceptsReservations === null) facts.push('Whether reservations are accepted');
@@ -150,6 +152,13 @@ export function buildReport(options: { photoFileExists?: (file: string) => boole
     {
       title: 'Launch',
       lines: LAUNCHED ? [] : ['Launch switch is off (src/config/launch.ts): every page is kept out of search engines.'],
+    },
+    {
+      title: 'Online ordering',
+      lines:
+        ORDERING.enabled && !ORDERING.enforceHours
+          ? ['TESTING: ordering hours are off (enforceHours in src/ordering/config.ts). Turn them on before going live.']
+          : [],
     },
     {
       title: 'Photography',

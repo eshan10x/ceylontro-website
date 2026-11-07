@@ -1,0 +1,216 @@
+/*
+ * Online ordering (B9, O2 design): dialogs, option rows, form fields and the order count.
+ * Imported by the ordering components and the checkout page.
+ */
+
+.order-dialog {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  max-width: none;
+  width: 100%;
+  max-height: calc(100dvh - 2.5rem);
+  inset: auto 0 0;
+  position: fixed;
+  background: var(--color-white);
+  color: var(--color-ink);
+  border-radius: 1.75rem 1.75rem 0 0;
+  box-shadow: 0 -30px 60px -30px rgb(43 27 18 / 0.6);
+  overflow: hidden;
+}
+
+.order-dialog[open] {
+  display: flex;
+  flex-direction: column;
+}
+
+.order-dialog::backdrop {
+  background: rgb(26 23 20 / 0.48);
+}
+
+@media (width >= 48rem) {
+  .order-dialog--sheet {
+    inset: 0;
+    margin: auto;
+    width: min(34rem, calc(100vw - 4rem));
+    max-height: min(54rem, calc(100dvh - 4rem));
+    border-radius: 1.75rem;
+    box-shadow: var(--shadow-soft);
+  }
+
+  .order-dialog--drawer {
+    inset: 0 0 0 auto;
+    width: 28rem;
+    height: 100dvh;
+    max-height: 100dvh;
+    border-radius: 1.75rem 0 0 1.75rem;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .order-dialog[open] {
+    animation: order-rise 420ms var(--ease-soft);
+  }
+
+  .order-dialog[open]::backdrop {
+    animation: order-fade 300ms ease-out;
+  }
+
+  @media (width >= 48rem) {
+    .order-dialog--drawer[open] {
+      animation-name: order-slide;
+    }
+
+    .order-dialog--sheet[open] {
+      animation-name: order-pop;
+    }
+  }
+
+  .order-toast > * {
+    animation: order-rise 380ms var(--ease-soft);
+  }
+}
+
+@keyframes order-rise {
+  from {
+    transform: translateY(2rem);
+    opacity: 0;
+  }
+}
+
+@keyframes order-slide {
+  from {
+    transform: translateX(2rem);
+    opacity: 0;
+  }
+}
+
+@keyframes order-pop {
+  from {
+    transform: translateY(1rem) scale(0.98);
+    opacity: 0;
+  }
+}
+
+@keyframes order-fade {
+  from {
+    opacity: 0;
+  }
+}
+
+/* Add buttons and the order panel exist only while ordering is open (set by the menu script). */
+.order-add,
+[data-order-panel] {
+  display: none;
+}
+
+html[data-ordering='open'] .order-add {
+  display: flex;
+}
+
+@media (width >= 90rem) {
+  html[data-ordering='open'] [data-order-panel] {
+    display: flex;
+  }
+}
+
+html:not([data-ordering='closed']) [data-order-closed] {
+  display: none;
+}
+
+/* Radio and checkbox rows in the options sheet (O2 "dish options sheet"). */
+.order-opt input {
+  appearance: none;
+  margin: 0;
+  flex: 0 0 1.375rem;
+  width: 1.375rem;
+  height: 1.375rem;
+  border: 1.5px solid #b9ae9f;
+  background: var(--color-white);
+  display: grid;
+  place-content: center;
+  transition:
+    background-color 200ms ease,
+    border-color 200ms ease,
+    box-shadow 200ms ease;
+}
+
+.order-opt input[type='radio'] {
+  border-radius: 50%;
+}
+
+.order-opt input[type='checkbox'] {
+  border-radius: 0.4375rem;
+}
+
+.order-opt input:checked {
+  border-color: var(--color-espresso);
+}
+
+.order-opt input[type='radio']:checked {
+  box-shadow: inset 0 0 0 5px var(--color-espresso);
+}
+
+.order-opt input[type='checkbox']:checked {
+  background: var(--color-espresso);
+}
+
+.order-opt input[type='checkbox']:checked::after {
+  content: '';
+  width: 0.625rem;
+  height: 0.375rem;
+  border-left: 2px solid var(--color-white);
+  border-bottom: 2px solid var(--color-white);
+  transform: translateY(-1px) rotate(-45deg);
+}
+
+.order-opt input:focus-visible {
+  outline: 2px solid var(--color-ink);
+  outline-offset: 3px;
+}
+
+.order-field {
+  width: 100%;
+  min-height: 3.25rem;
+  padding: 0 1rem;
+  border: 1px solid #d9cfc1;
+  border-radius: 0.875rem;
+  background: var(--color-white);
+  font: inherit;
+  font-size: 1rem;
+  color: var(--color-ink);
+}
+
+textarea.order-field {
+  min-height: 5.25rem;
+  padding: 0.875rem 1rem;
+  resize: vertical;
+}
+
+.order-field::placeholder {
+  color: #8a8178;
+}
+
+.order-field:focus-visible {
+  outline: 2px solid var(--color-espresso);
+  outline-offset: 1px;
+  border-color: var(--color-espresso);
+}
+
+.order-field[aria-invalid='true'] {
+  border-color: #9a2a1c;
+  box-shadow: 0 0 0 1px #9a2a1c;
+}
+
+/* The count on Order Online buttons once something is in the order. */
+.order-cta-count {
+  display: inline-grid;
+  place-content: center;
+  min-width: 1.375rem;
+  height: 1.375rem;
+  padding: 0 0.375rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, currentColor 18%, transparent);
+  font-size: 0.6875rem;
+  letter-spacing: 0;
+}

@@ -53,7 +53,7 @@ const pill =
           }
         </div>
         <a href="/menu" class:list={[pill, 'border-line bg-white text-ink hover:border-gold']}>
-          All {menu.length === 9 ? 'nine' : menu.length}
+          All {(['nine', 'ten', 'eleven', 'twelve'] as const)[menu.length - 9] ?? menu.length}
         </a>
       </div>
 

@@ -1,0 +1,46 @@
+---
+/**
+ * Kitchen closed (O2 "edge cases"): shown on the Menu outside ordering hours, in place of the
+ * Add buttons. "When we open again" is filled in by the menu's ordering script.
+ */
+import { restaurant } from '@/data/restaurant';
+import { phoneHref } from '@/lib/format';
+
+interface Props {
+  class?: string | undefined;
+}
+
+const { class: className } = Astro.props;
+---
+
+<div data-order-closed role="status" class:list={['rounded-card border border-line-soft bg-linen px-5 py-5 md:px-8 md:py-6', className]}>
+  <div class="flex flex-col gap-3 md:flex-row md:items-center md:justify-between md:gap-8">
+    <div class="flex flex-col gap-1.5">
+      <p class="eyebrow flex items-center gap-2.5 text-[0.6875rem] text-gold-deep">
+        <svg width="16" height="16" viewBox="0 0 18 18" aria-hidden="true"
+          ><circle cx="9" cy="9" r="7.5" fill="none" stroke="currentColor" stroke-width="1.4"></circle><path
+            d="M9 4.5V9l3 2"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.4"
+            stroke-linecap="round"></path></svg
+        >
+        Online ordering is closed
+      </p>
+      <p class="text-[1.75rem] leading-[1.05] font-display md:text-[2rem]">
+        We open again <i data-order-next>soon</i>
+      </p>
+      <p class="text-small text-stone">You can still browse the menu.</p>
+    </div>
+    {
+      restaurant.phone && (
+        <a
+          href={phoneHref(restaurant.phone)}
+          class="inline-flex min-h-12 items-center justify-center self-start rounded-full bg-sand px-6 text-[0.75rem] font-semibold tracking-[0.12em] whitespace-nowrap text-espresso uppercase hover:bg-sand-hover md:self-center"
+        >
+          Call {restaurant.phone}
+        </a>
+      )
+    }
+  </div>
+</div>

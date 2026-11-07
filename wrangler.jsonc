@@ -1,13 +1,39 @@
-// Cloudflare Workers (static assets) deployment for the static Astro build in ./dist.
-// Build: `npm run build` · Deploy: `npx wrangler deploy` (Workers Builds runs both on every push to main).
+// Cloudflare Workers deployment: the static Astro build in ./dist, plus a small Worker for /api/*.
+// Build: `npm run build` · Deploy: `npx wrangler deploy` (Workers Builds runs both on every push to main;
+// other branches get a preview version when non-production branch builds are on).
 {
   "name": "ceylontro-website",
   "compatibility_date": "2026-10-30",
+  // Online ordering (B9): checkout and Clover's webhook. Everything else is static.
+  "main": "./worker/index.ts",
   "assets": {
     "directory": "./dist",
+    "binding": "ASSETS",
+    // Only /api/* reaches the Worker; pages and files are served straight from the assets.
+    "run_worker_first": ["/api/*"],
     // Unknown paths get dist/404.html with a 404 status.
     "not_found_handling": "404-page",
     // /menu serves menu.html; /menu.html redirects to /menu.
     "html_handling": "drop-trailing-slash"
+  },
+  "observability": { "enabled": true },
+  "vars": {
+    // Clover's production API (North America). No sandbox: the owner tests with real, refunded orders.
+    "CLOVER_API_BASE": "https://api.clover.com",
+    // The merchant's HST 13% tax rate (Clover inventory export, 2026-11-06).
+    "CLOVER_TAX_RATE_ID": "3G86Y6CS8VA3C"
+  },
+  // Branch previews (`wrangler preview`, used by Workers Builds for non-production branches) need
+  // their own settings and their own secrets (Settings → Variables and secrets → Previews Base).
+  // They use the real Clover account too, so every preview payment is a real charge.
+  "previews": {
+    "vars": {
+      "CLOVER_API_BASE": "https://api.clover.com",
+      "CLOVER_TAX_RATE_ID": "3G86Y6CS8VA3C"
+    }
   }
+  // Secrets, set in Cloudflare (for production and for Previews Base) and never committed:
+  // CLOVER_PRIVATE_TOKEN, CLOVER_MERCHANT_ID, CLOVER_WEBHOOK_SECRET.
+  // Order store (O3): create a KV namespace and add
+  //   "kv_namespaces": [{ "binding": "ORDERS", "id": "<namespace id>" }]
 }

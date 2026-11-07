@@ -1,0 +1,19 @@
+---
+/**
+ * "Your order" panel beside the menu at 1440 px and wider (O2 "desktop Menu with order panel").
+ * Sticky; its contents are drawn by the ordering script, with this empty state until then.
+ * Shown only while ordering is open.
+ */
+---
+
+<aside
+  data-order-panel
+  aria-labelledby="order-panel-title"
+  class="sticky top-[calc(var(--header-h)+1.5rem)] flex-col self-start rounded-card bg-linen p-7 shadow-[0_50px_100px_-60px_rgb(43_27_18/0.45)]"
+>
+  <div data-order-panel-body class="flex flex-col">
+    <p class="eyebrow text-[0.6875rem] text-gold-deep">Pickup order</p>
+    <h2 id="order-panel-title" class="pt-1.5 pb-2 text-[2.375rem] leading-none">Your <i>order</i></h2>
+    <p class="py-6 text-small text-stone">Your order is empty. Add a dish to get started.</p>
+  </div>
+</aside>

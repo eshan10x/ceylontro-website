@@ -15,7 +15,8 @@ The site is static, built with **Astro 7**, **TypeScript** (strictest settings) 
 | `npm install` | Installs dependencies |
 | `npm run dev` | Starts the dev server at http://localhost:4321 |
 | `npm run check` | Type-checks `.astro` and `.ts` files |
-| `npm run build` | Type-checks, prints the missing-facts report, then builds to `dist/` |
+| `npm test` | Runs the ordering tests (menu prices, hours, checkout and webhook with Clover mocked) |
+| `npm run build` | Type-checks, runs the tests, prints the missing-facts report, then builds to `dist/` |
 | `npm run report` | Prints the missing-facts report (`-- --write` saves `MISSING-FACTS.md`) |
 | `npm run preview` | Serves the production build locally |
 
@@ -129,9 +130,22 @@ The owner's facts all go in `src/data/`, and none of it requires touching compon
 - Further down, anything with `data-reveal` fades up as it scrolls into view, and photos open from the bottom while the image settles. `<Photo>` does this by default (not for priority photos); `<SectionHeading>` and `<Container reveal>` opt blocks in. Stagger with `revealIndex` / `--reveal-i`.
 - Nothing is hidden without JavaScript or before the script runs, content already on screen is never hidden, and `prefers-reduced-motion` turns all of it off. Only opacity, transform and clip-path animate, so there is no layout shift.
 
+## Online ordering (B9)
+
+Guests order on the Menu for pickup. **Current mode: pay at pickup** (`payment: 'at_pickup'`): the order goes straight onto the Clover POS as an Open order with its items, notes, pickup time and HST total, and prints on the kitchen printer (`worker/pos-order.ts`); the guest pays the cashier on collection. The online-payment mode (Clover Hosted Checkout) is built and switched off until Clover enables online card payments. Built on the `feature/online-ordering` branch and merged into `main` only after the go-live step (O5) is approved.
+
+- **Settings:** `src/ordering/config.ts` — on/off switch, `enforceHours` (**off for testing**: ordering is open around the clock; must be `true` at go-live, and a Cloudflare build of `main` fails while it is off), 20-minute preparation, last order 10 minutes before closing (22:50), 15-minute pickup slots, 13% HST, tips off, optional special instructions. Hours come from `restaurant.ts` and are read in Toronto time.
+- **Prices:** `src/ordering/catalog.ts` turns `menu.ts` into orderable dishes (choices are required, extras optional, prices in cents). The server rebuilds every order from it, so a browser can never set a price; if the menu changed, checkout answers 409 and the guest sees the new total.
+- **Screens** (approved O2 design): Add buttons and the View order bar or panel (`src/components/order/`), the options sheet and order drawer (`src/scripts/order/app.ts`, loaded only when a guest starts an order), `/checkout` and `/order-confirmed`. The order is kept in localStorage.
+- **Server:** `worker/` runs only for `/api/*` (`run_worker_first` in `wrangler.jsonc`); everything else is served straight from `dist/`.
+  - `POST /api/checkout` checks hours, pickup time, the guest's details and the order, then creates a Clover checkout session and returns its address.
+  - `POST /api/clover-webhook` accepts Clover's payment notice only with a valid `Clover-Signature`, and marks the stored order paid or declined.
+- **Secrets** (Cloudflare → Workers → ceylontro-website → Settings → Variables and secrets; never in the repo): `CLOVER_MERCHANT_ID` and, for pay at pickup, `CLOVER_API_TOKEN` (a merchant API token with Orders read and write); for online payment, `CLOVER_PRIVATE_TOKEN` and `CLOVER_WEBHOOK_SECRET`. `GET /api/status` shows which are present (true/false only). `CLOVER_API_BASE` is Clover's production API: there is no sandbox, so test orders are real charges, refunded afterwards. Previews need the same three secrets under Previews Base. Without the token, checkout answers 503 and the guest is asked to call.
+- **Still to do:** the order store (a KV namespace bound as `ORDERS`), the kitchen hand-off and the order-alert email, once the first real test order (O1) shows whether paid Hosted Checkout orders reach the POS and printer; sold-out dishes read from Clover's inventory.
+
 ## Deployment
 
-The site is static (`dist/`) and is hosted on **Cloudflare Workers with static assets** (Cloudflare's recommended setup for new sites), configured in `wrangler.jsonc`.
+The site is static (`dist/`), plus a small Worker for `/api/*` (online ordering), hosted on **Cloudflare Workers with static assets** (Cloudflare's recommended setup for new sites), configured in `wrangler.jsonc`.
 
 | Setting (Workers & Pages → Create → Import a repository) | Value |
 | --- | --- |

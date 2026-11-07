@@ -12,6 +12,7 @@ import MenuRow from './MenuRow.astro';
 import { getPhoto } from '@/data/images';
 import type { MenuCategory, MenuItemWithCategory } from '@/data/types';
 import { pad2, spaceSlashes, splitAccent } from '@/lib/text';
+import { ORDERING } from '@/ordering/config';
 
 interface Props {
   category: MenuCategory;
@@ -80,7 +81,14 @@ const hasAside = Boolean(category.intro || category.sharedOptions?.length || cat
       <div
         class:list={[
           'grid md:gap-x-10',
-          compact ? 'md:grid-cols-2 xl:grid-cols-3' : 'md:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2 xl:gap-x-14',
+          // With ordering on, the order panel takes the right of wide screens: one column fewer.
+          compact
+            ? ORDERING.enabled
+              ? 'md:grid-cols-2'
+              : 'md:grid-cols-2 xl:grid-cols-3'
+            : ORDERING.enabled
+              ? 'md:grid-cols-2 lg:grid-cols-1'
+              : 'md:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2 xl:gap-x-14',
         ]}
       >
         {rows.map((item) => (
