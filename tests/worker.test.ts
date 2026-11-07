@@ -242,7 +242,7 @@ test('pay at pickup: the order goes onto the Clover POS with items, tax and tota
   const base = 'https://api.clover.com/v3/merchants/MERCHANT1';
   assert.deepEqual(
     calls.map((c) => `${c.method} ${c.url.replace(base, '')}`),
-    ['GET /tax_rates', 'POST /orders', 'POST /orders/ORDER1/bulk_line_items', 'POST /print_event'],
+    ['GET /tax_rates', 'POST /orders', 'POST /orders/ORDER1/line_items', 'POST /orders/ORDER1/line_items', 'POST /orders/ORDER1/line_items', 'POST /print_event'],
   );
   assert.ok(calls.every((c) => c.auth === 'Bearer api-token'));
 
@@ -255,14 +255,14 @@ test('pay at pickup: the order goes onto the Clover POS with items, tax and tota
   assert.match(order.note, /Sam Perera · \(416\) 555-0199 · sam@example\.com/);
   assert.match(order.note, /Note: Peanut allergy/);
 
-  const items = calls[2]!.body.items as { name: string; price: number; note?: string; taxRates: { id: string }[] }[];
-  assert.equal(items.length, 3, 'one line item per portion');
-  assert.deepEqual(items[0], { name: 'Wings (1 lb)', price: 1699, note: 'Flavour: Honey garlic', taxRates: [{ id: 'HST13' }] });
+  const items = calls.slice(2, 5).map((c) => c.body) as { name: string; price: number; note?: string; taxRates: unknown[] }[];
+  const hst = { id: 'HST13', name: 'HST', rate: 1300000 };
+  assert.deepEqual(items[0], { name: 'Wings (1 lb)', price: 1699, note: 'Flavour: Honey garlic', taxRates: [hst] });
   assert.deepEqual(items[1], items[2]);
   assert.equal(items[1]!.price, 1799);
   assert.equal(items[1]!.note, 'Chicken (+$2) · “extra spicy”');
 
-  assert.deepEqual(calls[3]!.body, { orderRef: { id: 'ORDER1' } });
+  assert.deepEqual(calls[5]!.body, { orderRef: { id: 'ORDER1' } });
   assert.equal(JSON.parse(e.ORDERS.data.get('order:ORDER1') ?? '{}').status, 'pay_at_pickup');
 });
 
@@ -277,7 +277,7 @@ test('pay at pickup: a failed line-item step removes the empty order; a print fa
     seen.push(`${method} ${url.split('/MERCHANT1')[1]}`);
     if (url.endsWith('/tax_rates')) return Response.json({ elements: [{ id: 'HST13', rate: 1300000 }] });
     if (url.endsWith('/orders') && method === 'POST') return Response.json({ id: 'ORDER2' });
-    if (url.endsWith('/bulk_line_items') && failItems) return new Response('nope', { status: 500 });
+    if (url.endsWith('/line_items') && failItems) return new Response('nope', { status: 500 });
     if (url.endsWith('/print_event')) return new Response('offline', { status: 503 });
     return Response.json({});
   });

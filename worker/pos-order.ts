@@ -6,8 +6,9 @@
  *    (GET tax_rates, which needs Inventory read), so the POS charges the same tax.
  * 2. Creates the order: state "open", a title the staff can spot ("Web CK-7K2Q · Sam"), the pickup
  *    details in the order note, and the total including tax.
- * 3. Adds the dishes as line items (one per portion, as the POS does), each with its choices,
- *    extras and special instructions in the line note, and the HST rate.
+ * 3. Adds the dishes as line items, one request per portion (as the POS lists them), each with
+ *    its choices, extras and special instructions in the line note, and the HST rate. (The bulk
+ *    line-items endpoint rejected valid items on this account: "'name' is required".)
  * 4. Asks Clover to print it on the order (kitchen) printer. A print failure doesn't undo the order:
  *    it is still on the POS, and the log says so.
  *
@@ -105,15 +106,16 @@ export function posOrderNote(input: PosOrderInput): string {
     .join('\n');
 }
 
-/** Line items as Clover's bulk endpoint takes them: one entry per portion. */
+/** Line items for Clover's line_items endpoint: one entry per portion. */
 export function posLineItems(order: PricedOrder, taxId: string) {
+  const tax = { id: taxId, name: ORDERING.tax.name, rate: cloverRate(ORDERING.tax.percent) };
   return order.lines.flatMap((line) => {
     const note = [...line.details, line.note ? `“${line.note}”` : ''].filter(Boolean).join(' · ');
     return Array.from({ length: line.qty }, () => ({
       name: line.name,
       price: line.unitCents,
       ...(note ? { note: note.slice(0, 255) } : {}),
-      taxRates: [{ id: taxId }],
+      taxRates: [tax],
     }));
   });
 }
@@ -132,7 +134,9 @@ export async function createPosOrder(env: Env, input: PosOrderInput): Promise<{ 
   if (!created.id) throw new CloverError('order created without an id', 502);
 
   try {
-    await call('POST', `/orders/${created.id}/bulk_line_items`, { items: posLineItems(input.order, taxId) });
+    for (const item of posLineItems(input.order, taxId)) {
+      await call('POST', `/orders/${created.id}/line_items`, item);
+    }
   } catch (error) {
     if (error instanceof CloverError) error.step = 'items';
     // Don't leave an empty order on the POS.
