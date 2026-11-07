@@ -38,7 +38,9 @@ const { url, platformName, deliveryPartners } = restaurant.ordering;
     </h2>
     {
       ORDERING.enabled ? (
-        <p class="text-small text-cream-muted">Order on our menu for pickup, and pay securely online.</p>
+        <p class="text-small text-cream-muted">
+          {ORDERING.payment === 'at_pickup' ? 'Order on our menu for pickup, and pay when you collect it.' : 'Order on our menu for pickup, and pay securely online.'}
+        </p>
       ) : (
         platformName && <p class="text-small text-cream-muted">Order through {platformName}.</p>
       )

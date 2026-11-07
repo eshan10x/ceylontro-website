@@ -1,5 +1,9 @@
 /**
- * POST /api/checkout — turns the guest's order into a Clover Hosted Checkout session.
+ * POST /api/checkout — places the guest's order.
+ *
+ * Pay at pickup (ORDERING.payment = 'at_pickup', the current mode): the order goes onto the Clover
+ * POS as an Open order and prints in the kitchen (`pos-order.ts`); the guest pays on collection.
+ * Online (later): the order becomes a Clover Hosted Checkout session, as below.
  *
  * 1. Checks the request came from this site and is a reasonable size.
  * 2. Checks ordering is open and the pickup time is one we offer (Toronto time).
@@ -15,6 +19,7 @@ import { priceOrder, formatCents, type PricedOrder } from '../src/ordering/prici
 import { checkPickup, toClock, zonedNow } from '../src/ordering/hours.ts';
 import { formatTime } from '../src/lib/format.ts';
 import { checkCustomer, type Customer } from '../src/ordering/customer.ts';
+import { createPosOrder, CloverError } from './pos-order.ts';
 import type { Env } from './env.ts';
 
 export { cleanPhone } from '../src/ordering/customer.ts';
@@ -27,7 +32,7 @@ export interface StoredOrder {
   ref: string;
   sessionId: string;
   createdAt: string;
-  status: 'awaiting_payment' | 'paid' | 'declined';
+  status: 'awaiting_payment' | 'paid' | 'declined' | 'pay_at_pickup';
   customer: Customer;
   pickup: { type: 'asap' | 'scheduled'; time: string; label: string; date: string };
   kitchenNote: string;
@@ -108,8 +113,12 @@ export async function handleCheckout(request: Request, env: Env, now: Date = new
     return json({ error: 'prices_changed', order: priced.order }, 409);
   }
 
-  if (!env.CLOVER_PRIVATE_TOKEN || !env.CLOVER_MERCHANT_ID) {
-    console.error('checkout: Clover credentials are not configured');
+  // Honeypot: a field people never see. Bots that fill it get a polite answer and no order.
+  if (typeof body['website'] === 'string' && body['website'] !== '') return json({ error: 'unavailable' }, 503);
+
+  const payAtPickup = ORDERING.payment === 'at_pickup';
+  if (!env.CLOVER_MERCHANT_ID || !(payAtPickup ? env.CLOVER_API_TOKEN : env.CLOVER_PRIVATE_TOKEN)) {
+    console.error(`checkout: Clover credentials are not configured (${payAtPickup ? 'CLOVER_API_TOKEN' : 'CLOVER_PRIVATE_TOKEN'})`);
     return json({ error: 'unavailable' }, 503);
   }
 
@@ -125,6 +134,20 @@ export async function handleCheckout(request: Request, env: Env, now: Date = new
     kitchenNote,
     order: priced.order,
   };
+
+  if (payAtPickup) {
+    try {
+      const { orderId, printed } = await createPosOrder(env, draft);
+      const stored: StoredOrder = { ...draft, sessionId: orderId, status: 'pay_at_pickup' };
+      await env.ORDERS?.put(`order:${orderId}`, JSON.stringify(stored), { expirationTtl: 60 * 60 * 24 * 30 });
+      console.log(`checkout: ${draft.ref} on POS as ${orderId}${printed ? '' : ' (NOT printed)'} ${formatCents(draft.order.totalCents)} pickup ${label}`);
+      return json({ ref: draft.ref, payAt: 'pickup', pickup: draft.pickup, order: draft.order });
+    } catch (error) {
+      console.error(`checkout: POS order failed for ${draft.ref}: ${String(error)}`);
+      const status = error instanceof CloverError ? error.status : 0;
+      return json({ error: `order_unavailable_${status}` }, 502);
+    }
+  }
 
   let session: { href?: string; checkoutSessionId?: string; expirationTime?: number };
   try {

@@ -132,7 +132,7 @@ The owner's facts all go in `src/data/`, and none of it requires touching compon
 
 ## Online ordering (B9)
 
-Guests order on the Menu and pay on Clover's secure Hosted Checkout page; pickup only. Built on the `feature/online-ordering` branch and merged into `main` only after the go-live step (O5) is approved.
+Guests order on the Menu for pickup. **Current mode: pay at pickup** (`payment: 'at_pickup'`): the order goes straight onto the Clover POS as an Open order with its items, notes, pickup time and HST total, and prints on the kitchen printer (`worker/pos-order.ts`); the guest pays the cashier on collection. The online-payment mode (Clover Hosted Checkout) is built and switched off until Clover enables online card payments. Built on the `feature/online-ordering` branch and merged into `main` only after the go-live step (O5) is approved.
 
 - **Settings:** `src/ordering/config.ts` — on/off switch, `enforceHours` (**off for testing**: ordering is open around the clock; must be `true` at go-live, and a Cloudflare build of `main` fails while it is off), 20-minute preparation, last order 10 minutes before closing (22:50), 15-minute pickup slots, 13% HST, tips off, optional special instructions. Hours come from `restaurant.ts` and are read in Toronto time.
 - **Prices:** `src/ordering/catalog.ts` turns `menu.ts` into orderable dishes (choices are required, extras optional, prices in cents). The server rebuilds every order from it, so a browser can never set a price; if the menu changed, checkout answers 409 and the guest sees the new total.
@@ -140,7 +140,7 @@ Guests order on the Menu and pay on Clover's secure Hosted Checkout page; pickup
 - **Server:** `worker/` runs only for `/api/*` (`run_worker_first` in `wrangler.jsonc`); everything else is served straight from `dist/`.
   - `POST /api/checkout` checks hours, pickup time, the guest's details and the order, then creates a Clover checkout session and returns its address.
   - `POST /api/clover-webhook` accepts Clover's payment notice only with a valid `Clover-Signature`, and marks the stored order paid or declined.
-- **Secrets** (Cloudflare → Workers → ceylontro-website → Settings → Variables and secrets; never in the repo): `CLOVER_PRIVATE_TOKEN`, `CLOVER_MERCHANT_ID`, `CLOVER_WEBHOOK_SECRET`. `CLOVER_API_BASE` is Clover's production API: there is no sandbox, so test orders are real charges, refunded afterwards. Previews need the same three secrets under Previews Base. Without the token, checkout answers 503 and the guest is asked to call.
+- **Secrets** (Cloudflare → Workers → ceylontro-website → Settings → Variables and secrets; never in the repo): `CLOVER_MERCHANT_ID` and, for pay at pickup, `CLOVER_API_TOKEN` (a merchant API token with Orders read and write); for online payment, `CLOVER_PRIVATE_TOKEN` and `CLOVER_WEBHOOK_SECRET`. `GET /api/status` shows which are present (true/false only). `CLOVER_API_BASE` is Clover's production API: there is no sandbox, so test orders are real charges, refunded afterwards. Previews need the same three secrets under Previews Base. Without the token, checkout answers 503 and the guest is asked to call.
 - **Still to do:** the order store (a KV namespace bound as `ORDERS`), the kitchen hand-off and the order-alert email, once the first real test order (O1) shows whether paid Hosted Checkout orders reach the POS and printer; sold-out dishes read from Clover's inventory.
 
 ## Deployment

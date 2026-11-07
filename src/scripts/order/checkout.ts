@@ -20,6 +20,8 @@ const ESC: Record<string, string> = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"
 const esc = (text: string): string => text.replace(/[&<>"']/g, (c) => ESC[c] ?? c);
 const clock = (minutes: number) => formatTime(toClock(minutes));
 const call = restaurant.phone ? ` or call us on ${esc(restaurant.phone)}` : '';
+const payAtPickup = ORDERING.payment === 'at_pickup';
+const SUBMIT_LABEL = payAtPickup ? 'Place order' : 'Continue to payment';
 
 function showAlert(title: string, body: string, tone: 'warn' | 'error' = 'error'): void {
   alertBox.innerHTML = `<div class="flex flex-col gap-1 rounded-2xl border px-4 py-3.5 ${tone === 'warn' ? 'border-[#ebd7ae] bg-[#f9eeda]' : 'border-[#e8c4bd] bg-[#fbebeb]'}">
@@ -109,7 +111,7 @@ form.addEventListener('change', (event) => {
 
 function busy(on: boolean): void {
   submit.disabled = on;
-  form.querySelector('[data-submit-label]')!.textContent = on ? 'Opening secure payment…' : 'Continue to payment';
+  form.querySelector('[data-submit-label]')!.textContent = on ? (payAtPickup ? 'Placing your order…' : 'Opening secure payment…') : SUBMIT_LABEL;
 }
 
 form.addEventListener('submit', async (event) => {
@@ -139,6 +141,7 @@ form.addEventListener('submit', async (event) => {
         customer: readCustomer(),
         pickup: when === 'scheduled' ? { type: 'scheduled', time: slot } : { type: 'asap' },
         note: String(data.get('note') ?? ''),
+        website: String(data.get('website') ?? ''),
       }),
     });
   } catch {
@@ -149,11 +152,21 @@ form.addEventListener('submit', async (event) => {
 
   const result = (await response.json().catch(() => ({}))) as Record<string, unknown>;
 
-  if (response.ok && typeof result['href'] === 'string') {
+  const placed = result['payAt'] === 'pickup';
+  if (response.ok && (placed || typeof result['href'] === 'string')) {
     const order = result['order'] as { lines: { name: string; qty: number; lineCents: number; details: string[]; note: string }[]; subtotalCents: number; taxCents: number; totalCents: number };
     const pickup = result['pickup'] as { type: 'asap' | 'scheduled'; time: string; label: string };
-    setPending({ ref: String(result['ref']), createdAt: Date.now(), name: readCustomer().name.trim(), email: readCustomer().email.trim(), pickup, order });
-    location.assign(result['href']);
+    setPending({
+      ref: String(result['ref']),
+      createdAt: Date.now(),
+      name: readCustomer().name.trim(),
+      email: readCustomer().email.trim(),
+      pickup,
+      order,
+      payAt: placed ? 'pickup' : 'online',
+    });
+    // Pay at pickup: the order is already on the POS. Online: on to Clover's payment page.
+    location.assign(placed ? '/order-confirmed' : String(result['href']));
     return;
   }
 
@@ -164,7 +177,7 @@ form.addEventListener('submit', async (event) => {
       const fresh = (result['order'] as { lines: { name: string; unitCents: number; details: string[] }[] }).lines;
       setLines(lines.map((line, i) => ({ ...line, name: fresh[i]?.name ?? line.name, unitCents: fresh[i]?.unitCents ?? line.unitCents, details: fresh[i]?.details ?? line.details })));
       renderSummary();
-      showAlert('Our menu prices have changed', 'We’ve updated your order. Please check the total, then continue to payment.', 'warn');
+      showAlert('Our menu prices have changed', `We’ve updated your order. Please check the total, then ${payAtPickup ? 'place your order' : 'continue to payment'}.`, 'warn');
       break;
     }
     case 'closed':
@@ -185,8 +198,8 @@ form.addEventListener('submit', async (event) => {
       // The reference tells staff which problem it was (e.g. "unavailable" = Clover keys missing,
       // "payment_unavailable" = Clover refused) without exposing anything sensitive.
       showAlert(
-        'Payment isn’t available right now',
-        `Nothing was charged. Please try again in a few minutes${call}. <span class="text-stone">(Ref: ${esc(String(result['error'] ?? response.status))})</span>`,
+        payAtPickup ? 'We couldn’t place your order' : 'Payment isn’t available right now',
+        `${payAtPickup ? 'Your order is saved here.' : 'Nothing was charged.'} Please try again in a few minutes${call}. <span class="text-stone">(Ref: ${esc(String(result['error'] ?? response.status))})</span>`,
       );
   }
 });

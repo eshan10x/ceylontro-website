@@ -1,6 +1,7 @@
 ---
 /**
- * Order confirmed (O2 "confirmation"): where Clover sends the guest after a successful payment.
+ * Order confirmed (O2 "confirmation"): after a pay-at-pickup order is placed, or where Clover
+ * sends the guest after a successful online payment.
  * Shows the order reference, pickup time, what was ordered, and how to find and call the
  * restaurant. The details come from this device (saved just before payment) and are filled in by
  * `src/scripts/order/confirmed.ts`, which also empties the order. Never indexed.
@@ -23,7 +24,7 @@ import { addressQuery, directionsHref, phoneHref } from '@/lib/format';
       </span>
       <p class="eyebrow text-gold-light" data-confirm-ref>Order received</p>
       <h1 class="text-[3rem] leading-[0.98] text-cream md:text-[4rem]" data-confirm-title>Thank <i>you</i></h1>
-      <p class="max-w-sm text-small text-cream-muted" data-confirm-lead>Your order is in the kitchen. Your receipt is on its way to your email.</p>
+      <p class="max-w-sm text-small text-cream-muted" data-confirm-lead>Your order is in the kitchen.</p>
       <div data-confirm-pickup hidden class="mt-2 flex flex-col gap-1 rounded-[1.375rem] border border-gold-light/45 px-7 py-4.5">
         <span class="label text-cream-muted">Ready for pickup</span>
         <span class="font-display text-[2.125rem] leading-tight text-cream" data-confirm-time></span>

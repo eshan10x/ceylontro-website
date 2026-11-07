@@ -7,11 +7,20 @@ import { ORDERING } from '../src/ordering/config.ts';
 import worker from '../worker/index.ts';
 import { cleanPhone, cloverCheckoutBody } from '../worker/checkout.ts';
 import { verifySignature } from '../worker/webhook.ts';
+import { resetPosCache } from '../worker/pos-order.ts';
 import type { Env } from '../worker/env.ts';
 
 
 // Opening-hours rules are tested as they will run live, whatever the test-mode switch says.
 (ORDERING as { enforceHours: boolean }).enforceHours = true;
+
+type Payment = typeof ORDERING.payment;
+/** Runs one test in a payment mode, then puts the configured mode back. */
+function inMode(t: { after(fn: () => void): void }, mode: Payment): void {
+  const before = ORDERING.payment;
+  (ORDERING as { payment: Payment }).payment = mode;
+  t.after(() => ((ORDERING as { payment: Payment }).payment = before));
+}
 
 const ORIGIN = 'https://preview.ceylontrokitchen.com';
 // 18:22 in Toronto on a Thursday: open, ASAP ready 18:42.
@@ -26,6 +35,7 @@ function env(overrides: { [K in keyof Env]?: Env[K] | undefined } = {}): Env & {
   return {
     ASSETS: { fetch: async () => new Response('page') },
     CLOVER_PRIVATE_TOKEN: 'test-token',
+    CLOVER_API_TOKEN: 'api-token',
     CLOVER_MERCHANT_ID: 'MERCHANT1',
     CLOVER_WEBHOOK_SECRET: 'whsec',
     ORDERS: memoryStore(),
@@ -58,7 +68,8 @@ test('pages are served from static assets; unknown /api paths are 404', async ()
   assert.equal((await worker.fetch(new Request(`${ORIGIN}/api/checkout`), env())).status, 405);
 });
 
-test('checkout creates a Clover session from menu prices', async (t) => {
+test('online payment: checkout creates a Clover session from menu prices', async (t) => {
+  inMode(t, 'online');
   t.mock.timers.enable({ apis: ['Date'], now: OPEN_NOW });
   const calls: { url: string; init: RequestInit }[] = [];
   const fetchMock = mock.method(globalThis, 'fetch', async (url: string, init: RequestInit) => {
@@ -96,6 +107,7 @@ test('checkout creates a Clover session from menu prices', async (t) => {
 });
 
 test('checkout refuses tampered totals, closed hours, bad details and other sites', async (t) => {
+  inMode(t, 'online');
   const fetchMock = mock.method(globalThis, 'fetch', async () => {
     throw new Error('Clover must not be called');
   });
@@ -190,13 +202,104 @@ test('status shows which settings are present, never their values', async () => 
   const res = await worker.fetch(new Request(`${ORIGIN}/api/status`), env());
   const body = await res.text();
   assert.equal(res.status, 200);
-  assert.doesNotMatch(body, /test-token|MERCHANT1|whsec/);
+  assert.doesNotMatch(body, /test-token|api-token|MERCHANT1|whsec/);
   assert.deepEqual(JSON.parse(body), {
     ordering: true,
     cloverApi: null,
     merchantId: true,
+    payment: ORDERING.payment,
+    apiToken: true,
     privateToken: true,
     webhookSecret: true,
     orderStore: true,
   });
+});
+
+test('pay at pickup: the order goes onto the Clover POS with items, tax and total, then prints', async (t) => {
+  inMode(t, 'at_pickup');
+  resetPosCache();
+  t.mock.timers.enable({ apis: ['Date'], now: OPEN_NOW });
+  const calls: { method: string; url: string; body: any; auth: string }[] = [];
+  const fetchMock = mock.method(globalThis, 'fetch', async (url: string, init: RequestInit) => {
+    const method = init.method ?? 'GET';
+    calls.push({ method, url, body: init.body ? JSON.parse(String(init.body)) : undefined, auth: (init.headers as Record<string, string>)['authorization'] ?? '' });
+    if (url.endsWith('/tax_rates')) {
+      return Response.json({ elements: [{ id: 'GST5', rate: 500000 }, { id: 'HST13', name: 'HST', rate: 1300000, isDefault: true }] });
+    }
+    if (url.endsWith('/orders') && method === 'POST') return Response.json({ id: 'ORDER1' });
+    return Response.json({});
+  });
+  t.after(() => fetchMock.mock.restore());
+
+  const e = env();
+  const res = await worker.fetch(post('/api/checkout', goodBody), e);
+  assert.equal(res.status, 200, await res.clone().text());
+  const data = (await res.json()) as { ref: string; payAt: string; href?: string; order: { totalCents: number } };
+  assert.equal(data.payAt, 'pickup');
+  assert.equal(data.href, undefined);
+  assert.equal(data.order.totalCents, 5297 + 689);
+
+  const base = 'https://api.clover.com/v3/merchants/MERCHANT1';
+  assert.deepEqual(
+    calls.map((c) => `${c.method} ${c.url.replace(base, '')}`),
+    ['GET /tax_rates', 'POST /orders', 'POST /orders/ORDER1/bulk_line_items', 'POST /print_event'],
+  );
+  assert.ok(calls.every((c) => c.auth === 'Bearer api-token'));
+
+  const order = calls[1]!.body;
+  assert.equal(order.state, 'open');
+  assert.match(order.title, /^Web CK-.... · Sam Perera$/);
+  assert.equal(order.total, 5986);
+  assert.match(order.note, /PAY AT PICKUP \$59\.86/);
+  assert.match(order.note, /Pickup: ASAP, about 6:42 p\.m\./);
+  assert.match(order.note, /Sam Perera · \(416\) 555-0199 · sam@example\.com/);
+  assert.match(order.note, /Note: Peanut allergy/);
+
+  const items = calls[2]!.body.items as { name: string; price: number; note?: string; taxRates: { id: string }[] }[];
+  assert.equal(items.length, 3, 'one line item per portion');
+  assert.deepEqual(items[0], { name: 'Wings (1 lb)', price: 1699, note: 'Flavour: Honey garlic', taxRates: [{ id: 'HST13' }] });
+  assert.deepEqual(items[1], items[2]);
+  assert.equal(items[1]!.price, 1799);
+  assert.equal(items[1]!.note, 'Chicken (+$2) · “extra spicy”');
+
+  assert.deepEqual(calls[3]!.body, { orderRef: { id: 'ORDER1' } });
+  assert.equal(JSON.parse(e.ORDERS.data.get('order:ORDER1') ?? '{}').status, 'pay_at_pickup');
+});
+
+test('pay at pickup: a failed line-item step removes the empty order; a print failure keeps it', async (t) => {
+  inMode(t, 'at_pickup');
+  resetPosCache();
+  t.mock.timers.enable({ apis: ['Date'], now: OPEN_NOW });
+  let failItems = true;
+  const seen: string[] = [];
+  const fetchMock = mock.method(globalThis, 'fetch', async (url: string, init: RequestInit) => {
+    const method = init.method ?? 'GET';
+    seen.push(`${method} ${url.split('/MERCHANT1')[1]}`);
+    if (url.endsWith('/tax_rates')) return Response.json({ elements: [{ id: 'HST13', rate: 1300000 }] });
+    if (url.endsWith('/orders') && method === 'POST') return Response.json({ id: 'ORDER2' });
+    if (url.endsWith('/bulk_line_items') && failItems) return new Response('nope', { status: 500 });
+    if (url.endsWith('/print_event')) return new Response('offline', { status: 503 });
+    return Response.json({});
+  });
+  t.after(() => fetchMock.mock.restore());
+
+  const failed = await worker.fetch(post('/api/checkout', goodBody), env());
+  assert.equal(failed.status, 502);
+  assert.equal(((await failed.json()) as { error: string }).error, 'order_unavailable_500');
+  assert.ok(seen.includes('DELETE /orders/ORDER2'));
+
+  failItems = false;
+  const ok = await worker.fetch(post('/api/checkout', goodBody), env());
+  assert.equal(ok.status, 200, 'still placed when the printer is offline');
+});
+
+test('pay at pickup: needs the API token; bots filling the hidden field get no order', async (t) => {
+  inMode(t, 'at_pickup');
+  t.mock.timers.enable({ apis: ['Date'], now: OPEN_NOW });
+  const fetchMock = mock.method(globalThis, 'fetch', async () => {
+    throw new Error('Clover must not be called');
+  });
+  t.after(() => fetchMock.mock.restore());
+  assert.equal((await worker.fetch(post('/api/checkout', goodBody), env({ CLOVER_API_TOKEN: undefined }))).status, 503);
+  assert.equal((await worker.fetch(post('/api/checkout', { ...goodBody, website: 'spam.example' }), env())).status, 503);
 });

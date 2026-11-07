@@ -16,6 +16,8 @@ export interface Env {
   CLOVER_API_BASE?: string;
   /** Secret: Ecommerce API private token (Hosted checkout integration). */
   CLOVER_PRIVATE_TOKEN?: string;
+  /** Secret (pay at pickup): merchant API token with Orders read and write, for POS orders. */
+  CLOVER_API_TOKEN?: string;
   /** Secret: the merchant ID the token belongs to. */
   CLOVER_MERCHANT_ID?: string;
   /** Secret: Hosted Checkout webhook signing secret. */

@@ -8,6 +8,7 @@ interface OrderingSettings {
   readonly enabled: boolean;
   readonly enforceHours: boolean;
   readonly mode: 'pickup';
+  readonly payment: 'at_pickup' | 'online';
   readonly prepMinutes: number;
   readonly lastOrderBeforeCloseMinutes: number;
   readonly slotStepMinutes: number;
@@ -24,6 +25,12 @@ export const ORDERING: OrderingSettings = {
   enabled: true,
   /** Pickup only for now (owner, 2026-11-05). Delivery is not built. */
   mode: 'pickup',
+  /**
+   * How guests pay. 'at_pickup' (owner, 2026-11-07): the order goes straight onto the Clover POS
+   * and prints in the kitchen; the guest pays the cashier on collection. 'online': pay first on
+   * Clover's Hosted Checkout page (built, waiting for Clover to enable online card payments).
+   */
+  payment: 'at_pickup',
   /**
    * Take orders only during opening hours (11:00 – 22:50). TESTING: off while the owner tests on
    * the `feature/online-ordering` branch, so ordering is open around the clock.

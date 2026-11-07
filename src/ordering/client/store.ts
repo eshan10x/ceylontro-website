@@ -88,6 +88,8 @@ export interface PendingOrder {
   name: string;
   email: string;
   pickup: { type: 'asap' | 'scheduled'; time: string; label: string };
+  /** 'pickup': placed on the POS, paid on collection. 'online': paid on Clover's page. */
+  payAt?: 'pickup' | 'online';
   order: {
     lines: { name: string; qty: number; lineCents: number; details: string[]; note: string }[];
     subtotalCents: number;

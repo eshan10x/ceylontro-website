@@ -10,6 +10,7 @@
  */
 import { handleCheckout, json } from './checkout.ts';
 import { handleWebhook } from './webhook.ts';
+import { ORDERING } from '../src/ordering/config.ts';
 import type { Env } from './env.ts';
 
 export default {
@@ -28,6 +29,8 @@ export default {
         ordering: true,
         cloverApi: env.CLOVER_API_BASE ?? null,
         merchantId: Boolean(env.CLOVER_MERCHANT_ID),
+        payment: ORDERING.payment,
+        apiToken: Boolean(env.CLOVER_API_TOKEN),
         privateToken: Boolean(env.CLOVER_PRIVATE_TOKEN),
         webhookSecret: Boolean(env.CLOVER_WEBHOOK_SECRET),
         orderStore: Boolean(env.ORDERS),
