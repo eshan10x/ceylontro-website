@@ -5,9 +5,13 @@
  * Shows the order reference, pickup time, what was ordered, and how to find and call the
  * restaurant. The details come from this device (saved just before payment) and are filled in by
  * `src/scripts/order/confirmed.ts`, which also empties the order. Never indexed.
+ *
+ * "Print receipt" prints a plain one-page receipt (the `data-receipt` block, shown only when
+ * printing): restaurant details, order number, date, pickup time, items, HST and the amount due.
  */
 import PageLayout from '@/layouts/PageLayout.astro';
 import Button from '@/components/ui/Button.astro';
+import Logo from '@/components/ui/Logo.astro';
 import '@/styles/order.css';
 import { restaurant } from '@/data/restaurant';
 import { addressQuery, directionsHref, phoneHref } from '@/lib/format';
@@ -66,9 +70,132 @@ import { addressQuery, directionsHref, phoneHref } from '@/lib/format';
       {restaurant.phone && <>Need to change something? Call us on {restaurant.phone}.</>}
     </p>
 
-    <Button href="/menu" fullWidth>Back to the menu</Button>
+    <div class="flex flex-col gap-3">
+      <button
+        type="button"
+        data-print-receipt
+        hidden
+        class="inline-flex min-h-[3.375rem] w-full items-center justify-center gap-3 rounded-full bg-sand px-8 text-button font-semibold tracking-[0.12em] text-espresso uppercase transition-colors duration-350 hover:bg-sand-hover focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ink"
+      >
+        <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"
+          ><path d="M4.5 6.5V1.5h9v5M4.5 13.5h-2a1 1 0 0 1-1-1v-5a1 1 0 0 1 1-1h13a1 1 0 0 1 1 1v5a1 1 0 0 1-1 1h-2" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"
+          ></path><path d="M4.5 10.5h9v6h-9z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"></path></svg
+        >
+        Print receipt
+      </button>
+      <Button href="/menu" fullWidth>Back to the menu</Button>
+    </div>
+  </section>
+
+  <!-- Printed receipt: hidden on screen, the only thing on the page when printing. -->
+  <section data-receipt class="receipt" aria-hidden="true">
+    <div class="receipt-head">
+      <Logo size={56} alt="" class="receipt-logo" />
+      <div>
+        <p class="receipt-name">{restaurant.name}</p>
+        {restaurant.address && <p>{addressQuery(restaurant.address)}</p>}
+        <p>{[restaurant.phone, restaurant.email].filter(Boolean).join(' · ')}</p>
+      </div>
+    </div>
+    <div data-receipt-body></div>
+    <p class="receipt-foot">Thank you for ordering with {restaurant.name}.</p>
   </section>
 </PageLayout>
+
+<style is:global>
+  @media screen {
+    .receipt {
+      display: none;
+    }
+  }
+
+  @media print {
+    @page {
+      margin: 14mm;
+    }
+
+    body > *:not(main),
+    main > *:not([data-receipt]) {
+      display: none !important;
+    }
+
+    body,
+    main {
+      background: #fff !important;
+    }
+
+    .receipt {
+      display: block;
+      max-width: 120mm;
+      margin: 0 auto;
+      font: 10.5pt/1.45 'Manrope', system-ui, sans-serif;
+      color: #000;
+    }
+
+    .receipt-head {
+      display: flex;
+      gap: 12pt;
+      align-items: center;
+      padding-bottom: 10pt;
+      border-bottom: 1px solid #000;
+    }
+
+    .receipt-logo {
+      width: 15mm;
+      height: 15mm;
+      box-shadow: none !important;
+    }
+
+    .receipt-name {
+      font-size: 14pt;
+      font-weight: 700;
+    }
+
+    .receipt h2 {
+      font: 700 9pt/1.3 'Manrope', system-ui, sans-serif;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin: 12pt 0 4pt;
+    }
+
+    .receipt .row {
+      display: flex;
+      justify-content: space-between;
+      gap: 12pt;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .receipt .detail {
+      font-size: 9pt;
+      color: #333;
+      padding-left: 12pt;
+    }
+
+    .receipt .rule {
+      border-top: 1px dashed #000;
+      margin: 8pt 0;
+    }
+
+    .receipt .total {
+      font-size: 12.5pt;
+      font-weight: 700;
+    }
+
+    .receipt .status {
+      margin-top: 10pt;
+      padding: 6pt 8pt;
+      border: 1.5px solid #000;
+      font-weight: 700;
+      text-align: center;
+    }
+
+    .receipt-foot {
+      margin-top: 14pt;
+      text-align: center;
+      font-size: 9pt;
+    }
+  }
+</style>
 
 <script>
   import '@/scripts/order/confirmed';
