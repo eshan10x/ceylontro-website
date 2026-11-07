@@ -18,6 +18,8 @@ export interface Env {
   CLOVER_PRIVATE_TOKEN?: string;
   /** Secret (pay at pickup): merchant API token with Orders read and write, for POS orders. */
   CLOVER_API_TOKEN?: string;
+  /** The merchant's 13% HST tax rate in Clover (not secret; from the inventory export). */
+  CLOVER_TAX_RATE_ID?: string;
   /** Secret: the merchant ID the token belongs to. */
   CLOVER_MERCHANT_ID?: string;
   /** Secret: Hosted Checkout webhook signing secret. */

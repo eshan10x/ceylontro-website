@@ -285,7 +285,7 @@ test('pay at pickup: a failed line-item step removes the empty order; a print fa
 
   const failed = await worker.fetch(post('/api/checkout', goodBody), env());
   assert.equal(failed.status, 502);
-  assert.equal(((await failed.json()) as { error: string }).error, 'order_unavailable_500');
+  assert.equal(((await failed.json()) as { error: string }).error, 'order_unavailable_items_500');
   assert.ok(seen.includes('DELETE /orders/ORDER2'));
 
   failItems = false;
@@ -302,4 +302,23 @@ test('pay at pickup: needs the API token; bots filling the hidden field get no o
   t.after(() => fetchMock.mock.restore());
   assert.equal((await worker.fetch(post('/api/checkout', goodBody), env({ CLOVER_API_TOKEN: undefined }))).status, 503);
   assert.equal((await worker.fetch(post('/api/checkout', { ...goodBody, website: 'spam.example' }), env())).status, 503);
+});
+
+test('pay at pickup: a configured tax rate skips the lookup; refusals name the step', async (t) => {
+  inMode(t, 'at_pickup');
+  resetPosCache();
+  t.mock.timers.enable({ apis: ['Date'], now: OPEN_NOW });
+  const seen: string[] = [];
+  const fetchMock = mock.method(globalThis, 'fetch', async (url: string, init: RequestInit) => {
+    seen.push(`${init.method ?? 'GET'} ${url.split('/MERCHANT1')[1]}`);
+    return new Response('{"message":"401 Unauthorized"}', { status: 401 });
+  });
+  t.after(() => fetchMock.mock.restore());
+
+  const configured = await worker.fetch(post('/api/checkout', goodBody), env({ CLOVER_TAX_RATE_ID: 'HST13' }));
+  assert.equal(((await configured.json()) as { error: string }).error, 'order_unavailable_order_401');
+  assert.deepEqual(seen, ['POST /orders']);
+
+  const lookedUp = await worker.fetch(post('/api/checkout', goodBody), env());
+  assert.equal(((await lookedUp.json()) as { error: string }).error, 'order_unavailable_tax_401');
 });

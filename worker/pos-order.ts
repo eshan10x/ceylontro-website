@@ -2,7 +2,8 @@
  * Pay at pickup: puts a website order straight onto the Clover POS as an Open order, then sends
  * it to the kitchen printer. The guest pays the cashier when they collect it.
  *
- * 1. Finds the merchant's 13% HST rate (GET tax_rates), so the POS charges the same tax.
+ * 1. Uses the merchant's 13% HST rate: CLOVER_TAX_RATE_ID (wrangler.jsonc), else looks it up
+ *    (GET tax_rates, which needs Inventory read), so the POS charges the same tax.
  * 2. Creates the order: state "open", a title the staff can spot ("Web CK-7K2Q · Sam"), the pickup
  *    details in the order note, and the total including tax.
  * 3. Adds the dishes as line items (one per portion, as the POS does), each with its choices,
@@ -31,9 +32,21 @@ export interface PosOrderInput {
 
 export class CloverError extends Error {
   readonly status: number;
+  /** Which step failed: tax, order, items. Shown to staff in the error reference. */
+  step = '';
   constructor(message: string, status: number) {
     super(message);
     this.status = status;
+  }
+}
+
+/** Runs one step, labelling any Clover error with the step's name. */
+async function step<T>(name: string, run: () => Promise<T>): Promise<T> {
+  try {
+    return await run();
+  } catch (error) {
+    if (error instanceof CloverError) error.step = name;
+    throw error;
   }
 }
 
@@ -66,7 +79,8 @@ function client(env: Env) {
 let cachedTaxRateId: string | null = null;
 
 /** The merchant's tax rate matching ORDERING.tax (13%), preferring the default one. */
-async function taxRateId(call: ReturnType<typeof client>): Promise<string> {
+async function taxRateId(call: ReturnType<typeof client>, env: Env): Promise<string> {
+  if (env.CLOVER_TAX_RATE_ID) return env.CLOVER_TAX_RATE_ID;
   if (cachedTaxRateId) return cachedTaxRateId;
   const { elements = [] } = await call<{ elements?: { id: string; name?: string; rate?: number; isDefault?: boolean }[] }>(
     'GET',
@@ -107,19 +121,20 @@ export function posLineItems(order: PricedOrder, taxId: string) {
 /** Creates the Open order on the POS and prints it. Returns Clover's order id. */
 export async function createPosOrder(env: Env, input: PosOrderInput): Promise<{ orderId: string; printed: boolean }> {
   const call = client(env);
-  const taxId = await taxRateId(call);
+  const taxId = await step('tax', () => taxRateId(call, env));
 
-  const created = await call<{ id?: string }>('POST', '/orders', {
+  const created = await step('order', () => call<{ id?: string }>('POST', '/orders', {
     state: 'open',
     title: `Web ${input.ref} · ${input.customer.name}`.slice(0, 127),
     note: posOrderNote(input).slice(0, 2000),
     total: input.order.totalCents,
-  });
+  }));
   if (!created.id) throw new CloverError('order created without an id', 502);
 
   try {
     await call('POST', `/orders/${created.id}/bulk_line_items`, { items: posLineItems(input.order, taxId) });
   } catch (error) {
+    if (error instanceof CloverError) error.step = 'items';
     // Don't leave an empty order on the POS.
     await call('DELETE', `/orders/${created.id}`).catch(() => undefined);
     throw error;

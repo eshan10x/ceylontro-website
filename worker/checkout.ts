@@ -144,8 +144,9 @@ export async function handleCheckout(request: Request, env: Env, now: Date = new
       return json({ ref: draft.ref, payAt: 'pickup', pickup: draft.pickup, order: draft.order });
     } catch (error) {
       console.error(`checkout: POS order failed for ${draft.ref}: ${String(error)}`);
-      const status = error instanceof CloverError ? error.status : 0;
-      return json({ error: `order_unavailable_${status}` }, 502);
+      // e.g. "order_unavailable_tax_401": which step Clover refused, and its status.
+      const detail = error instanceof CloverError ? `${error.step ? `${error.step}_` : ''}${error.status}` : '0';
+      return json({ error: `order_unavailable_${detail}` }, 502);
     }
   }
 
